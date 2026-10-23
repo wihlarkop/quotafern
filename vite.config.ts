@@ -7,6 +7,11 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [svelte(), tailwindcss()],
   resolve: { alias: { $lib: fileURLToPath(new URL("./src/lib", import.meta.url)) } },
-  server: { host: "127.0.0.1", port: 1420, strictPort: true },
+  server: {
+    host: "127.0.0.1",
+    port: 1420,
+    strictPort: true,
+    watch: { ignored: ["**/src-tauri/**"] },
+  },
   clearScreen: false,
 });

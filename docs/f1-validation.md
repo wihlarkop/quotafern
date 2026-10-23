@@ -9,6 +9,7 @@ Passed on Windows with Bun 1.4.4 and stable Rust 1.99.1:
 
 ```text
 bun install --frozen-lockfile
+bun run dev:desktop
 bun run lint
 bun run check
 bun run fmt:check
@@ -39,6 +40,8 @@ Exercised the running `bun run dev` preview through real browser controls:
 Local screenshots live in ignored `.impeccable/review/`; they are not CI artifacts. The first full-page screenshot export was blank and was discarded as evidence. The replacement captures use the actual rendered viewport and were reopened for validation.
 
 ## Windows runtime
+
+`bun run dev:desktop` also started Vite, compiled the native host, and rendered the development WebView at `http://127.0.0.1:1420/` under the separate development CSP. Vite ignores `src-tauri/**` so generated Rust assets do not trigger frontend reloads. The restricted sandbox initially prevented the CLI's loopback readiness probe; the normal-access launch succeeded.
 
 The unbundled executable started with the production frontend at `http://tauri.localhost/`. Its actual native WebView rendered the demo overview and Settings; the development-only fixture selector was absent. The restricted frontend hide command hid the popup while its host session remained alive. The native title-bar Close also hid the popup while the host remained alive.
 
