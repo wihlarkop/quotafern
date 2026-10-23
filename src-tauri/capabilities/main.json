@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Restrict the sole main window to the hide-popup command.",
+  "windows": ["main"],
+  "permissions": ["allow-hide-popup"]
+}

@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend quality
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun 1.4.4
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Type and Svelte checks
+        run: bun run check
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Check formatting
+        run: bun run fmt:check
+
+      - name: Build frontend
+        run: bun run build
+
+  desktop:
+    name: Desktop checks (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun 1.4.4
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Set up stable Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Install Tauri Linux prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            build-essential \
+            curl \
+            file \
+            libayatana-appindicator3-dev \
+            libssl-dev \
+            libwebkit2gtk-4.1-dev \
+            libxdo-dev \
+            librsvg2-dev \
+            patchelf \
+            wget
+
+      - name: Check Rust formatting
+        run: bun run fmt:rust
+
+      - name: Build frontend assets for the native context
+        run: bun run build
+
+      - name: Lint Rust
+        run: bun run lint:rust
+
+      - name: Check Rust package
+        run: bun run check:rust
+
+      - name: Compile desktop app without bundling
+        run: bun run build:desktop --no-bundle

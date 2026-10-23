@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Quotafern</title>
+  <desc id="description">Provisional jade fern mark for the F1 desktop tray popup.</desc>
+  <!-- Provisional F1 artwork; use the Tauri CLI to derive platform icon sizes. -->
+  <rect x="4" y="4" width="120" height="120" rx="34" fill="#173a31"/>
+  <path d="M55 107C65 88 69 62 76 22" fill="none" stroke="#9ad9a9" stroke-linecap="round" stroke-width="7"/>
+  <g fill="#6fc48a" stroke="#9ad9a9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M64 88 27 72c6-15 19-18 29-9l18 17-10 8Z"/>
+    <path d="M68 75 103 57c-2-15-14-22-26-13L64 63l4 12Z"/>
+    <path d="M72 60 38 43c4-14 17-19 28-11l12 13-6 15Z"/>
+    <path d="M75 46 100 29c-1-12-11-17-21-11L72 30l3 16Z"/>
+    <path d="M77 33 57 24c4-10 14-13 21-7l5 7-6 9Z"/>
+  </g>
+  <circle cx="55" cy="107" r="5" fill="#9ad9a9"/>
+</svg>
