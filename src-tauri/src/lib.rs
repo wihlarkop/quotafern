@@ -6,6 +6,9 @@ use tauri::tray::TrayIconBuilder;
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconEvent};
 use tauri::{Manager, WebviewWindow, WindowEvent};
 
+use codex::CodexBridge;
+
+mod codex;
 mod popup;
 
 const FOCUS_LOSS_RACE_WINDOW: Duration = Duration::from_millis(250);
@@ -149,17 +152,29 @@ fn tray_icon() -> Image<'static> {
 }
 
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
+        .manage(CodexBridge::default())
         .manage(LastTrayAnchor::default())
         .manage(TrayIconHandle::default())
-        .manage(WindowFocusHistory::default())
+        .manage(WindowFocusHistory::default());
+    // Rust-only native confirmation. No renderer capability. Headless unit
+    // tests install only their compile-time trusted presenter, never OS dialogs.
+    #[cfg(not(test))]
+    let builder = builder.plugin(tauri_plugin_dialog::init());
+    let app = builder
         // Prevent duplicate processes and duplicate tray icons. A repeated
         // launch brings the existing, single popup back into view.
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let anchor = current_tray_anchor(app);
             show_main_window(app, anchor);
         }))
-        .invoke_handler(tauri::generate_handler![hide_popup])
+        .invoke_handler(tauri::generate_handler![
+            hide_popup,
+            codex::codex_connect,
+            codex::codex_refresh,
+            codex::codex_disconnect,
+            codex::codex_status
+        ])
         .on_window_event(|window, event| {
             if window.label() == "main" {
                 if let WindowEvent::CloseRequested { api, .. } = event {
@@ -259,8 +274,18 @@ pub fn run() {
 
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running Quotafern");
+        .build(tauri::generate_context!())
+        .expect("failed to build Quotafern");
+    app.run(|app, event| {
+        if matches!(
+            event,
+            tauri::RunEvent::Exit | tauri::RunEvent::ExitRequested { .. }
+        ) {
+            if let Some(bridge) = app.try_state::<CodexBridge>() {
+                bridge.shutdown();
+            }
+        }
+    });
 }
 
 #[cfg(test)]

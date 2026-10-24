@@ -1,6 +1,18 @@
 # Quotafern
 
-Quotafern helps people check remaining AI subscription quotas from a compact system-tray app. The F1 foundation establishes the Tauri 2 shell and frontend presentation boundary with synthetic examples only; it does not connect to a quota provider.
+Quotafern is a compact local-first system-tray app for remaining AI subscription quotas. F3 adds a Codex bridge foundation, but **live connection is disabled in this build** until Codex exposes a documented safe startup policy. No account or credential is accessed by opening the app.
+
+## Codex connection status
+
+Overview starts disconnected. Accounts explains the intended **Connect existing Codex session** permission and the current blocker. Codex app-server can restore a saved Remote Control setting even in stdio mode; Quotafern will not start it while that startup policy is unresolved. Installing or signing in to Codex does not bypass this gate. See [the integration decision](docs/codex-integration.md).
+
+Once a separately reviewed change enables it, the intended flow is Accounts → read the consent disclosure → Connect. Codex manages its own login and may refresh/save its credentials or enforce login/workspace restrictions. Quotafern never asks for a secret, starts an agent turn, or logs out the CLI. Disconnect stops Quotafern's monitor. F3 does not remember connection consent, store quota history, or auto-refresh provider data.
+
+For credential-free examples, enable **Demo preview** in Settings. Every synthetic view is labeled Demo and stays separate from live state; release builds use the healthy demo fixture, and development offers all eight scenarios. Failed live requests never use demo values. [F3 validation](docs/f3-validation.md) separates mock evidence, UI acceptance, and authenticated behavior.
+
+Codex Details groups optional credits, spending controls, earned resets and Activity. The activity calendar distinguishes known zero from unavailable dates and never estimates money from tokens. These features are mock-validated while live connection is gated; a single Plus account is sufficient for later owner acceptance, but compatibility with that actual account remains unverified. Claude Code and Gemini CLI are **Coming Soon**, without login controls.
+
+Sign in with ChatGPT is a future preference, not a functional login option in this build. Its published identity/inference scopes do not explicitly establish existing Codex monitoring access. [Authentication decision](docs/chatgpt-auth-decision.md) and [security roadmap](docs/security-roadmap.md) record the evidence and remaining gates.
 
 The local fern icon is provisional artwork. Desktop icon sizes are checked in under `src-tauri/icons/`; no remote assets are loaded.
 
@@ -9,9 +21,9 @@ The local fern icon is provisional artwork. Desktop icon sizes are checked in un
 - The `main` window opens visibly at 380 × 660 on first launch, near the tray when native geometry is available and safely clamped otherwise. It can be resized to 320–420 logical pixels wide and a configured minimum of 480 pixels high; smaller work areas temporarily relax those limits. Close and Escape hide it. The tray menu provides **Show Quotafern**, **Hide Quotafern**, and **Quit**.
 - On Windows/macOS, primary tray click opens, focuses, or toggles the popup; secondary click opens its menu. Native tray geometry positions the popup near the icon when available, with work-area clamping and a safe fallback. Losing focus leaves Settings and account inspection open.
 - A second launch routes to the already-running app. On Linux, use the tray context menu; left-click tray events are not supported by the current Linux tray integration.
-- All F1 quota data are synthetic and visibly labeled as demo, including in release builds. Development can switch demo scenarios; release uses the healthy sample. There is no provider integration and no implicit mock fallback.
+- F1/F2 quota data were synthetic only. F3 preserves those fixtures behind the explicit Demo preview flow, with no implicit fallback.
 - Appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) are separate, non-sensitive preferences stored in `localStorage`.
-- F1 does not access credentials, make provider HTTP requests, perform OAuth, synchronize account data, or send telemetry.
+- Quotafern sends no telemetry and has no cloud server or synchronization. F3's production gate prevents Codex startup and credential/provider access.
 
 ## Development
 
@@ -52,3 +64,7 @@ F1 has no unit-test suite. As product features are added, include the regression
 - [Security boundaries](docs/security.md)
 - [F1 validation and owner acceptance](docs/f1-validation.md)
 - [F2 validation and native acceptance checklist](docs/f2-validation.md)
+- [F3 validation and launch-policy blocker](docs/f3-validation.md)
+- [Codex integration research](docs/codex-integration.md)
+- [Sign in with ChatGPT authorization decision](docs/chatgpt-auth-decision.md)
+- [Security roadmap](docs/security-roadmap.md)

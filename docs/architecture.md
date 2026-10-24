@@ -1,6 +1,6 @@
 # Architecture
 
-Quotafern keeps the desktop lifecycle in the Tauri host and the quota presentation in the Svelte frontend. F2 improves native tray behavior; provider integration remains out of scope.
+Quotafern keeps the desktop lifecycle in the Tauri host and quota presentation in Svelte. F3 adds a Codex bridge foundation and consent UI; production connection is disabled pending a documented safe app-server startup policy. The F1/F2 sections below record the foundation; the F3 section supersedes their provider-only restrictions.
 
 ## Responsibilities
 
@@ -40,3 +40,19 @@ These are boundaries for later design work, not F1 capabilities:
 4. Only sanitized quota snapshots should cross into the renderer. Raw credentials and provider secrets never belong in frontend state or logs.
 
 F1 does not read, store, refresh, or transmit credentials.
+
+## F3 Codex foundation
+
+The trust boundary is **Codex-managed session → Rust bridge → validated live snapshot → Svelte**. `src/lib/codex.ts` describes only presentation fields: fixed provider/source identity, connection/data state, generic window labels, remaining percentages, reset/duration metadata, fetch time, and sanitized diagnostics. It does not mirror Codex authentication or protocol models. The existing `src/lib/quota.ts` synthetic contract and eight fixtures are preserved.
+
+The native host owns the fixed `codex_connect`, `codex_refresh`, `codex_status`, and `codex_disconnect` commands, in addition to `hide_popup`. All are scoped to `main`. None accepts an executable, command fragment, URL, or raw RPC method from the renderer. `codex_status` reads local sanitized memory only. **`codex_connect` currently returns a launch-policy diagnostic before discovery, version probing, or spawning**; Svelte also disables the consent action. There is no runtime override for the gate.
+
+The dormant bridge targets native Codex 0.164.0 from absolute PATH entries and rejects shell shims. It uses bounded JSONL over stdio, an initialization handshake, account-state validation, and independent rate-limit window normalization. No socket listener, shell plugin, general provider framework, or Quotafern server is introduced. Process ownership, deadlines, native containment, and cleanup belong to Rust. See [integration decision and blocker](codex-integration.md) for the compatibility boundary.
+
+The UI starts with an honest disconnected Codex view. Demo preview is an explicit temporary Settings choice, available in release; scenario selection remains development-only. Entering demo mode disconnects monitoring. Preferences remain limited to appearance/palette, with no connection persistence. A future enabled connection uses manual refresh with cooldown/backoff; local status checks do not poll the provider. Last-known data ages to stale after five minutes, failures never fall back to demo data, and authentication changes invalidate previous quota.
+
+Real Codex authentication and native child behavior have not been exercised for F3. The gate remains closed until the startup-policy blocker is resolved and separately reviewed; compilation and fake transport checks do not authorize credential access.
+
+The in-flight addendum extends this presentation contract with optional credit/spending/reset metadata and account token activity. Codex Details contains the Activity calendar and summary, leaving Overview compact. The bridge owns account/usage RPCs; calendar layout and relative intensities are pure TypeScript presentation. Missing values, unsupported activity and stale data remain explicit. Claude Code and Gemini CLI are catalog entries marked Coming Soon, with no adapter or credential discovery.
+
+Connection ownership remains distinct from monitoring data: the fixed native lifecycle methods produce the same sanitized snapshot regardless of a future authentication adapter. Adding official Sign in with ChatGPT would require a reviewed monitoring grant and app-owned credential lifecycle; it would not replace the quota/window/activity model or introduce a generic provider framework. No identity-only or inference token is assumed to authorize Codex monitoring.
