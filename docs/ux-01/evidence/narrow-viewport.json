@@ -1,0 +1,35 @@
+[
+  {
+    "content": [
+      {
+        "scrollWidth": 290,
+        "width": 290
+      }
+    ],
+    "documentWidth": 305,
+    "scrollWidth": 305,
+    "viewport": 320
+  },
+  {
+    "content": [
+      {
+        "scrollWidth": 350,
+        "width": 350
+      }
+    ],
+    "documentWidth": 365,
+    "scrollWidth": 365,
+    "viewport": 380
+  },
+  {
+    "content": [
+      {
+        "scrollWidth": 390,
+        "width": 390
+      }
+    ],
+    "documentWidth": 405,
+    "scrollWidth": 405,
+    "viewport": 420
+  }
+]

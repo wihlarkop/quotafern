@@ -1,0 +1,186 @@
+[
+  {
+    "popups": [
+      {
+        "height": 1516,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 1409,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 1403,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=overview&mode=light&palette=native&width=380&height=full&fixture=multi&variant=all"
+  },
+  {
+    "popups": [
+      {
+        "height": 1516,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 1409,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 1403,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=overview&mode=dark&palette=native&width=380&height=full&fixture=multi&variant=all"
+  },
+  {
+    "popups": [
+      {
+        "height": 1533,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 1527,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 1505,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=accounts&mode=light&palette=native&width=380&height=full&fixture=multi&variant=all"
+  },
+  {
+    "popups": [
+      {
+        "height": 1533,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 1527,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 1505,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=accounts&mode=dark&palette=native&width=380&height=full&fixture=multi&variant=all"
+  },
+  {
+    "popups": [
+      {
+        "height": 1393,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 1352,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 1366,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=details&mode=light&palette=native&width=380&height=full&fixture=multi&variant=all"
+  },
+  {
+    "popups": [
+      {
+        "height": 1393,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 1352,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 1366,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=details&mode=dark&palette=native&width=380&height=full&fixture=multi&variant=all"
+  },
+  {
+    "popups": [
+      {
+        "height": 914,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 890,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 909,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=settings&mode=light&palette=native&width=380&height=full&fixture=multi&variant=all"
+  },
+  {
+    "popups": [
+      {
+        "height": 914,
+        "overflow": false,
+        "variant": "A",
+        "width": 380
+      },
+      {
+        "height": 890,
+        "overflow": false,
+        "variant": "B",
+        "width": 380
+      },
+      {
+        "height": 909,
+        "overflow": false,
+        "variant": "C",
+        "width": 380
+      }
+    ],
+    "url": "http://127.0.0.1:4174/?screen=settings&mode=dark&palette=native&width=380&height=full&fixture=multi&variant=all"
+  }
+]

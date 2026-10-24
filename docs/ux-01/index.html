@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Quotafern · UX-01 design exploration</title>
+    <link rel="stylesheet" href="./preview.css" />
+    <script type="module" src="./preview.js"></script>
+  </head>
+  <body>
+    <header class="review-header">
+      <div>
+        <h1>Quotafern <span>Design exploration</span></h1>
+        <p>Three ways to feel at home on your desktop. Synthetic data only.</p>
+      </div>
+      <a href="./README.md">Read the design report</a>
+    </header>
+    <form class="review-controls" aria-label="Design preview controls">
+      <label
+        >Surface<select name="screen">
+          <option value="overview">Overview</option>
+          <option value="accounts">Accounts</option>
+          <option value="details">Details & Activity</option>
+          <option value="settings">Settings</option>
+        </select></label
+      >
+      <label
+        >Appearance<select name="mode">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="system">Follow System</option>
+        </select></label
+      >
+      <label
+        >Palette<select name="palette">
+          <option value="native">Direction default</option>
+          <option value="graphite-jade">Graphite & Jade</option>
+          <option value="zinc-signal">Zinc & Signal</option>
+        </select></label
+      >
+      <label
+        >Popup width<select name="width">
+          <option>320</option>
+          <option selected>380</option>
+          <option>420</option>
+        </select></label
+      >
+      <label
+        >Height<select name="height">
+          <option value="660">660 · standard</option>
+          <option value="480">480 · short</option>
+          <option value="full">Full content</option>
+        </select></label
+      >
+      <label
+        >Fixture<select name="fixture">
+          <option value="multi">Multi-account</option>
+          <option value="empty">No accounts</option>
+          <option value="single">Single account</option>
+          <option value="two">Two Codex accounts</option>
+          <option value="keys">Multiple API keys</option>
+          <option value="mixed">Mixed connections</option>
+          <option value="auth">Authentication required</option>
+          <option value="error">Source error</option>
+          <option value="stale">Stale & current</option>
+          <option value="unknown">Unknown quota & reset</option>
+          <option value="low">Low & critical</option>
+          <option value="shared">Verified shared billing</option>
+          <option value="billing">Unknown billing relationship</option>
+          <option value="duplicate">Duplicate aliases</option>
+          <option value="unicode">Long Unicode aliases</option>
+          <option value="removing">Removal pending</option>
+          <option value="soon">Coming Soon</option>
+          <option value="demo">Explicit Demo preview</option>
+        </select></label
+      >
+      <label
+        >Compare<select name="variant">
+          <option value="all">A / B / C</option>
+          <option value="A">A · Soft Native</option>
+          <option value="B">B · Refined Graphite</option>
+          <option value="C">C · Refined Zinc</option>
+        </select></label
+      >
+    </form>
+    <p class="review-note">
+      Throwaway preview · Nothing connects, authenticates or persists. “Connected” below is a
+      simulated state. Provider support remains gated / Coming Soon.
+    </p>
+    <main id="comparisons" aria-label="Design comparisons"></main>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+    <footer class="review-footer">
+      UX-01 · Owner selection pending · Arrow keys on the variant switcher cycle concepts
+    </footer>
+    <nav class="variant-switcher" aria-label="Quick design switcher">
+      <button type="button" data-cycle="-1" aria-label="Previous design">←</button
+      ><span id="variant-label">Compare A / B / C</span
+      ><button type="button" data-cycle="1" aria-label="Next design">→</button>
+    </nav>
+    <dialog
+      id="rename-dialog"
+      aria-labelledby="rename-heading"
+      aria-describedby="rename-context rename-help"
+    >
+      <form id="rename-form">
+        <h2 id="rename-heading">Rename account</h2>
+        <p id="rename-context"></p>
+        <label for="alias-input">Local name</label
+        ><input
+          id="alias-input"
+          name="alias"
+          aria-describedby="rename-help alias-count alias-error"
+        />
+        <p id="alias-count"></p>
+        <p id="rename-help">
+          Local name only. This does not change your provider account, sign-in, quotas or billing.
+        </p>
+        <p id="alias-error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" data-cancel>Cancel</button
+          ><button type="submit" class="primary">Save preview name</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog
+      id="action-dialog"
+      aria-labelledby="action-heading"
+      aria-describedby="action-description"
+    >
+      <h2 id="action-heading"></h2>
+      <p id="action-description"></p>
+      <div class="dialog-actions">
+        <button type="button" data-cancel autofocus>Cancel</button
+        ><button type="button" id="simulate-action" class="primary">Simulate</button>
+      </div>
+    </dialog>
+  </body>
+</html>
