@@ -40,6 +40,16 @@ Preserve Quotafern's identity and established stack. The objective is refinement
 
 **Information hierarchy:** Overview answers "how much is left?", "when does it reset?", and "is it current?" Details expose separate Quota, Credits/Spending, and Activity sections. Credits must not be conflated with usage tokens or reset-credit entitlements. Keep the GitHub-style activity heatmap out of the crowded primary Overview.
 
+## Multi-account UX requirement (cross-reference ACC-01–04)
+
+All future supported providers must expose a **multi-account and multi-connection collection**, with **user-editable names for each connected account and each connection / API key**. An app using two Codex accounts, two API keys or multiple other provider accounts should be understandable at a glance. This is a **post-F3 design requirement**, not permission to activate additional sessions or bypass provider terms.
+
+- **Accounts:** visually group by provider, then by account/workspace, then by connection/key. Support Add account, Add connection, **Rename account**, **Rename connection**, Disconnect and Remove as distinct actions; design editable alias states, empty/duplicate labels and safe confirmation for destructive operations.
+- **Overview:** provider/account filter including **All Accounts**; show each named account's quota limits/reset times independently with source and freshness. Do not collapse multiple sessions into one visually misleading quota meter or double-count shared billing.
+- **Labels:** user-defined names ("Codex · Personal", "Codex · Work", "OpenRouter · Key A") are local display labels and do not prove an external identity; show truthful connecting, disconnected, stale, unknown, auth-needed and unsupported states. Keep actual secret values, key fragments and sensitive provider identity hidden by default.
+- **Compact layout:** validate grouped account lists and renamed long aliases at 320/380/420px; preserve keyboard focus order, selection, screen-reader names, reduced motion and scroll behavior. Avoid making optional auto-reconnect look pre-approved.
+- **Timing:** design/acceptance are staged in `docs/provider-connections-roadmap.md` ACC-01–04, coordinated with UX-01 exploration and only implemented after owner sign-off.
+
 ## Candidate visual explorations (not yet selected)
 
 Create lightweight, comparable variants **after F3**:
@@ -55,13 +65,13 @@ Native materials (macOS vibrancy or other platform effects, Windows Mica, potent
 
 ### Dependency: finish F3 Codex integration and security review
 
-**Status: IN PROGRESS / LIVE BLOCKED as of 2026-10-24.** PR #3 is a mock-validated foundation with live connection disabled. Do not start UX implementation or infer that a working Plus connection has been accepted. Track genuine auth/startup/consent/process-containment blockers independently.
+**Status: F3 foundation MERGED / live Codex BLOCKED as of 2026-10-25.** PR #3 was squash-merged as a mock-validated foundation after Windows 30/30 acceptance and exact-HEAD CI 4/4; its live connection remains disabled. Do not start UX implementation or infer that a working Plus connection has been accepted. Track genuine auth/startup/consent/process-containment blockers independently.
 
 ### UX-01 — Design exploration and selection
 
 **Status: PLANNED.** No production visual changes.
 
-- Audit current Overview, Accounts, Settings and Codex Details, both palettes, light/dark/system, and empty/error/stale/live/demo states.
+- Audit current Overview, Accounts, Settings and Codex Details, both palettes, light/dark/system, and empty/error/stale/live/demo states; add exploratory cases for multiple accounts/connections and user-editable account/key aliases.
 - Compare three visual directions at 320/380/420px, plus short-height Settings and Codex Details.
 - Produce annotated before/after layouts and light/dark screenshots; explain spacing, type hierarchy, color token, interaction, and platform differences.
 - Assess readability, keyboard focus, heatmap cell sizing, tooltip access, and credits semantics.
@@ -76,7 +86,7 @@ Native materials (macOS vibrancy or other platform effects, Windows Mica, potent
 - Refine existing tokens, typography, spacing, surface/border/elevation system, component layout, and deliberate scrolling.
 - Preserve Graphite & Jade and Zinc & Signal across independent light/dark/system modes.
 - Implement subtle feedback and predictable, low-jitter state changes; respect reduced motion.
-- Polish Codex quota/credits/activity and Coming Soon presentation, with authentic unknown/stale and accessibility semantics.
+- Polish Codex quota/credits/activity and Coming Soon presentation, with authentic unknown/stale and accessibility semantics. Implement account grouping/rename views only when ACC-01 identity model is approved; do not invent active accounts.
 - Keep Rust provider/auth logic and native permissions unchanged unless a separately reviewed issue demands it.
 - Avoid new frameworks and cosmetic dependency growth.
 
@@ -100,6 +110,6 @@ A user can open Quotafern, read Codex subscription quota and next reset immediat
 
 ## Coordination notes
 
-- Keep this roadmap separate from F3 security-gate implementation; do not retarget or modify PR #3 for cosmetic work.
+- Keep this roadmap separate from the merged F3 foundation and deferred live-connection F4 security work; do not change authorization or credentials for cosmetic work.
 - When Codex F3 is accepted, return to this roadmap for UX-01 exploration.
 - Retain the validated stack and design tokens; the roadmap is a **future design backlog**, not a request for immediate implementation.
