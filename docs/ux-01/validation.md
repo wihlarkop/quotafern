@@ -16,16 +16,16 @@ The prototype has no imports of the production application, ACC-01 runtime or na
 
 ## Frontend validation
 
-| Command                             | Observed result                                      |
-| ----------------------------------- | ---------------------------------------------------- |
-| `bun install --frozen-lockfile`     | Passed, committed lockfile unchanged                 |
+| Command                             | Observed result                               |
+| ----------------------------------- | --------------------------------------------- |
+| `bun install --frozen-lockfile`     | Passed, committed lockfile unchanged          |
 | `bun run fmt` / `bun run fmt:check` | Passed; final artifact formatting check clean |
-| `bun run lint:ux`                   | Passed, isolated source lint                         |
-| `bun run lint`                      | Passed, production lint                              |
-| `bun run check`                     | Passed, 0 Svelte errors / 0 warnings                 |
-| `bun run regression`                | Passed, 12 groups, 827 assertions, 0 failures        |
-| `bun run build`                     | Passed; production bundle excludes preview           |
-| Impeccable detector                 | `[]`, no findings on HTML/CSS/JS                     |
+| `bun run lint:ux`                   | Passed, isolated source lint                  |
+| `bun run lint`                      | Passed, production lint                       |
+| `bun run check`                     | Passed, 0 Svelte errors / 0 warnings          |
+| `bun run regression`                | Passed, 12 groups, 827 assertions, 0 failures |
+| `bun run build`                     | Passed; production bundle excludes preview    |
+| Impeccable detector                 | `[]`, no findings on HTML/CSS/JS              |
 
 No new unit suite was added for the throwaway prototype. Existing feature/security regression checks ran unchanged. Rust commands were not rerun locally because no native source/configuration changed. The baseline's hosted Linux, Windows and macOS desktop jobs all passed.
 
