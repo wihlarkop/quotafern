@@ -33,3 +33,14 @@ bun run lint:rust           bun run fmt:rust
 Keep this application local-first and secure by default. Prefer minimal dependencies and small, reviewable changes. Never merge or publish a release without explicit owner approval.
 
 Do not use TDD for this foundation slice. Unit suites are deferred until main features; add the regression, integration, and security checks required by those features. CI covers locked frontend quality, Rust formatting/lint/check on Linux, Windows, and macOS, and an unbundled desktop compilation. Compilation does not prove native tray behavior. Record actual browser or OS acceptance separately from CI results, and leave unexercised platform behavior explicitly pending.
+
+## F3 Codex exception and ongoing boundaries
+
+F1 rules above remain historical foundation boundaries. F3 separately authorizes one native Codex app-server integration after explicit in-app consent. The Rust bridge owns process/protocol communication and returns a small sanitized live presentation contract to TypeScript. No other live provider is authorized.
+
+- Start disconnected; never remember or silently restore consent. Opening a view must not initiate provider access. Manual refresh only, with a native cooldown.
+- Codex owns authentication. Never directly inspect/copy its credential files, enumerate secrets, or implement login/logout, token injection, turns, reset redemption, purchases, or a raw app-server proxy. Disclose Codex-managed refresh and possible authentication-state writes before connection.
+- No developer or CI credential access is authorized. Use synthetic protocol fixtures and isolated fake processes. Real authenticated acceptance belongs to the owner unless separately authorized.
+- Keep live and demo sources explicit and separate. A live failure must never fall back to synthetic data. Persist only the existing appearance preferences.
+- Native commands are fixed, main-only operations; no renderer-controlled executable, path, arguments, filesystem access, or network URL. Keep CSP unchanged and disable optional child telemetry.
+- Review subprocess containment/cleanup and all new permissions. Never merge, deploy, publish, or release without explicit owner approval.

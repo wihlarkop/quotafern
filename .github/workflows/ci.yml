@@ -96,7 +96,7 @@ jobs:
       - name: Check Rust package
         run: bun run check:rust
 
-      - name: Run popup placement regression
+      - name: Run popup and Codex mock regression
         run: bun run regression:rust
 
       - name: Compile desktop app without bundling

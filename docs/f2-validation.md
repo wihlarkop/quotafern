@@ -70,10 +70,18 @@ Focused source/config review confirmed one `main` window, one `hide_popup` rende
 
 Independent review identified three P2 issues that were fixed before delivery: the document's 320px width floor conflicted with temporary smaller native constraints; a global recent-blur allowance could hide an unfocused popup; and minimized/zero-sized geometry needed exclusion from placement. The final focus regression narrows the allowance to a focused popup while the pointer is over its tray icon and consumes it once. A rapid keyboard app switch while hovering the tray remains a platform-acceptance risk. The lead also corrected half-open monitor containment at a shared monitor boundary and added the boundary case to regression.
 
-## Owner acceptance still needed
+## Historical owner acceptance request
 
 On the final PR executable, inspect one persistent icon; primary-click hidden/focused/unfocused states; secondary-click Show Quotafern, Hide Quotafern, and Quit; X then Show; relaunch; process termination and icon removal after Quit. Repeat the context-menu path on Linux and primary/menu paths on macOS. Keep Settings open while clicking away and interacting with native controls. Test rapid app switching while hovering the icon, each supported taskbar edge, 125/150/200% Windows scaling, small work areas, monitor removal, and restoration after display changes. Switch the actual OS light/dark and reduced-motion settings. Record PASS/FAIL per interaction and OS; packaging and signing stay excluded.
 
 ## Smallest F3 recommendation (design only)
 
 Scope one read-only provider adapter with explicit owner-authorized app-owned authentication, a separately discriminated sanitized live snapshot, honest unavailable/stale/error states, and no demo fallback. Review authentication and endpoint choices before implementing; external CLI credential discovery remains outside this recommendation.
+
+## Subsequent owner-reported Windows acceptance
+
+The owner reported **10/10 PASS** for final F2 source HEAD `51c97c67527391e5e8d141d571b7727d979facef`, subsequently squash-merged as `61333d4069ddd15cb296a53c1b97cc90d7819042` in PR #2. This is owner-reported manual evidence, separate from the Codex automation above.
+
+Reported passes cover primary-click open/toggle, focus restoration, right-click Show/Hide/Quit, Escape and X-to-hide, Quit cleanup, single-instance behavior, correct monitor/tray-area placement, rapid Alt+Tab while hovering the tray, and available screen-scaling behavior. The original automation BLOCKED and NOT RUN entries remain historical evidence and have not been rewritten as automated passes.
+
+This report does not establish additional monitors, other Windows configurations, macOS, or Linux behavior. F3 changes require their own acceptance; the F2 report is not an F3 runtime pass.

@@ -1,6 +1,22 @@
 # Security boundaries
 
-## F1/F2 runtime
+## Current F3 delivery
+
+**Live Codex connection is disabled.** The native gate runs before executable discovery, version checks, process launch, or account reads. The UI presents the blocker and disables Connect. There is no environment variable, persisted setting, renderer parameter, or debug-only UI that bypasses the production gate. Development and CI use synthetic protocol inputs/fake processes only. No real credential access was authorized or used during F3 implementation.
+
+The blocker is app-server startup policy, not a missing token: [pinned public source](https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/cli/src/main.rs) can restore Remote Control even when stdio is selected, and the public documentation does not provide a guaranteed disable control. It also starts model-catalog refresh independently of quota requests. Quotafern does not use an undocumented internal environment override to bypass this uncertainty. See [the research decision](codex-integration.md).
+
+The foundation's native commands are `codex_connect`, `codex_refresh`, `codex_status`, `codex_disconnect`, and existing `hide_popup`. Each is main-only and takes no renderer-controlled process/path/network input. The exact four new permissions are `allow-codex-connect`, `allow-codex-refresh`, `allow-codex-status`, and `allow-codex-disconnect`. No shell, filesystem, generic fetch, raw RPC proxy, or event-listen permission is granted. Release and development CSP are unchanged.
+
+The dormant protocol allowlist is initialization plus account and quota reads. No login/logout, token injection, thread/agent execution, credits redemption, purchase, or account switching method exists. All diagnostics are static categories; child stderr is discarded and raw protocol frames are never persisted. Native state includes only reduced presentation fields, not full responses. Unknown provider text and auth fields do not become labels. Emails, cookies, headers, tokens, account IDs, credential paths and credits do not cross the renderer boundary.
+
+Explicit connection consent is designed to explain that Codex owns authentication and may automatically refresh/save its session, write native runtime state, or enforce login/workspace policies. `refreshToken: false` is not a guarantee of filesystem read-only behavior. Disconnect stops Quotafern monitoring and clears snapshots without logging out the CLI. No consent is remembered across startup. This intended behavior remains behind the launch gate.
+
+Dependencies added for the bridge are Serde/serde_json for typed output and bounded JSON parsing, plus target-native process containment bindings (`libc`, `windows-sys`). No frontend dependency or credential/network library is added. Focused source/config regression is evidence at these seams, not a complete security audit or native-process acceptance.
+
+Threats considered: compromised renderer attempting arbitrary subprocess execution; malformed, oversized, interrupted, or identity-bearing RPC payloads; inherited telemetry/background services; stale values looking healthy; account changes retaining another account's quotas; child process leaks. Main-only argument-free commands, bounded framing/deadlines, static diagnostics, generated labels, source discrimination, stale/auth invalidation, child containment, and the closed live gate reduce those risks. A malicious installed executable or compromised OS remains outside this process trust boundary. Do not lift the gate merely because mock checks pass.
+
+## Historical F1/F2 runtime
 
 F1 has no provider integration. The app does not read credentials from environment variables, local CLI configuration, credential files, OS keychains, or other apps' credential stores. It does not otherwise access credentials, make provider HTTP requests, perform OAuth or token refresh, synchronize account data, or send telemetry.
 

@@ -6,6 +6,9 @@ use tauri::tray::TrayIconBuilder;
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconEvent};
 use tauri::{Manager, WebviewWindow, WindowEvent};
 
+use codex::CodexBridge;
+
+mod codex;
 mod popup;
 
 const FOCUS_LOSS_RACE_WINDOW: Duration = Duration::from_millis(250);
@@ -149,7 +152,8 @@ fn tray_icon() -> Image<'static> {
 }
 
 pub fn run() {
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
+        .manage(CodexBridge::default())
         .manage(LastTrayAnchor::default())
         .manage(TrayIconHandle::default())
         .manage(WindowFocusHistory::default())
@@ -159,7 +163,13 @@ pub fn run() {
             let anchor = current_tray_anchor(app);
             show_main_window(app, anchor);
         }))
-        .invoke_handler(tauri::generate_handler![hide_popup])
+        .invoke_handler(tauri::generate_handler![
+            hide_popup,
+            codex::codex_connect,
+            codex::codex_refresh,
+            codex::codex_disconnect,
+            codex::codex_status
+        ])
         .on_window_event(|window, event| {
             if window.label() == "main" {
                 if let WindowEvent::CloseRequested { api, .. } = event {
@@ -259,8 +269,18 @@ pub fn run() {
 
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running Quotafern");
+        .build(tauri::generate_context!())
+        .expect("failed to build Quotafern");
+    app.run(|app, event| {
+        if matches!(
+            event,
+            tauri::RunEvent::Exit | tauri::RunEvent::ExitRequested { .. }
+        ) {
+            if let Some(bridge) = app.try_state::<CodexBridge>() {
+                bridge.shutdown();
+            }
+        }
+    });
 }
 
 #[cfg(test)]
