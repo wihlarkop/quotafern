@@ -29,6 +29,7 @@ bun run lint:fix
 bun run fmt
 bun run fmt:check
 bun run check
+bun run regression
 bun run check:rust
 bun run lint:rust
 bun run fmt:rust
@@ -39,6 +40,8 @@ Tauri desktop development needs the platform prerequisites documented in the [Ta
 Commit both `bun.lock` and `Cargo.lock`. CI uses Bun 1.4.4 and stable Rust. Its desktop matrix runs Rust formatting, lint, and check commands, then `bun run build:desktop --no-bundle`; it does not package or upload releases. These compilation checks do not establish that native tray behavior works on a user's desktop. Verify first-launch visibility, close-to-hide, tray Show/Hide/Quit, and single-instance relaunch manually on Windows, macOS, and Linux. On Linux, verify the context-menu path.
 
 F1 has no unit-test suite. As product features are added, include the regression, integration, and security checks needed for those features; a successful compile is not behavioral acceptance. Keep controls keyboard accessible, pair color-coded states with readable text, and respect reduced-motion preferences.
+
+`bun run regression` runs the committed, deterministic F1 smoke assertions against synthetic snapshots and native security configuration. It needs no credentials, network, or test framework and runs in the Frontend quality CI job.
 
 ## Project notes
 

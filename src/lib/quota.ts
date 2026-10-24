@@ -123,9 +123,12 @@ export function formatRemainingPercent(value: number | null): string {
   return `${value.toFixed(precision)}%`;
 }
 
-export function createDemoSnapshot(scenario: DemoScenario): QuotaSnapshot {
+export function createDemoSnapshot(
+  scenario: DemoScenario,
+  nowMs: number = Date.now(),
+): QuotaSnapshot {
   const values = SAMPLE_VALUES[scenario];
-  const fetchedAt = new Date(Date.now() - (scenario === "stale" ? 45 * 60_000 : 0)).toISOString();
+  const fetchedAt = new Date(nowMs - (scenario === "stale" ? 45 * 60_000 : 0)).toISOString();
   const connectionStatus: ConnectionStatus =
     scenario === "auth" ? "auth-required" : "not-connected";
   const dataStatus: DataStatus =
@@ -152,7 +155,7 @@ export function createDemoSnapshot(scenario: DemoScenario): QuotaSnapshot {
           remainingPercent === null
             ? null
             : new Date(
-                Date.now() + RESET_OFFSETS_MINUTES[provider.id][windowIndex] * 60_000,
+                nowMs + RESET_OFFSETS_MINUTES[provider.id][windowIndex] * 60_000,
               ).toISOString(),
       })),
     })),

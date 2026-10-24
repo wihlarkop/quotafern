@@ -14,6 +14,7 @@ bun run build               bun run build:desktop
 bun run lint                bun run lint:fix
 bun run fmt                 bun run fmt:check
 bun run check               bun run check:rust
+bun run regression
 bun run lint:rust           bun run fmt:rust
 ```
 

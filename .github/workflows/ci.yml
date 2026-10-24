@@ -38,6 +38,9 @@ jobs:
       - name: Build frontend
         run: bun run build
 
+      - name: Run F1 regression
+        run: bun run regression
+
   desktop:
     name: Desktop checks (${{ matrix.os }})
     strategy:
