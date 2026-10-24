@@ -128,6 +128,10 @@ export function ageCodexSnapshot(
 }
 
 export function codexMessage(snapshot: LiveCodexSnapshot): string {
+  if (snapshot.diagnostic === "nativeConsentPending")
+    return "A native confirmation is already open or monitoring is active. Finish that interaction or disconnect before connecting again.";
+  if (snapshot.diagnostic === "nativeConsentCancelled")
+    return "Native confirmation was cancelled or invalidated. No new monitoring session was authorized.";
   if (snapshot.diagnostic === "startupPolicyUnverified")
     return "Live connection is disabled: Codex app-server may enable saved Remote Control. A documented startup policy is required before connection can be enabled.";
   switch (snapshot.connectionStatus) {

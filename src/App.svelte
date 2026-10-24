@@ -1063,7 +1063,8 @@
             </p>
             <p>
               Quotafern would not send agent turns or remember this connection. Disconnect would
-              stop Quotafern monitoring without signing out of Codex CLI.
+              stop Quotafern monitoring without signing out of Codex CLI. A native system dialog
+              would ask for confirmation before any Codex process starts.
             </p>
           </div>
           <label class="codex-consent-check">
@@ -1072,7 +1073,7 @@
               bind:checked={connectConsent}
               disabled={codexBusy || !CODEX_CONNECTION_AVAILABLE}
             />
-            <span>I understand and want to connect this Codex session.</span>
+            <span>I understand and want to continue to native confirmation.</span>
           </label>
           <Button
             class="codex-connect-button"

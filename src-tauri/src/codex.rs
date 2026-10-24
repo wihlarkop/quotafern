@@ -3,16 +3,29 @@ use serde_json::{json, Value};
 use std::env;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
-use tauri::{State, WebviewWindow};
+use tauri::{Runtime, State, WebviewWindow};
+#[cfg(not(test))]
+use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 
+mod consent;
 mod monitoring;
+#[cfg(windows)]
+mod process;
+#[cfg(unix)]
+#[path = "codex/process_unix.rs"]
+mod process;
+use consent::{ConsentGate, NativeConsent};
 use monitoring::{apply_activity_result, apply_quota_monitoring, CodexMonitoring};
+use process::{ChildInput, InputMode, OutputMode, SupervisedChild as OwnedChild};
+mod watchdog;
+use watchdog::{Deadline, IoWatchdog, RequestDeadline};
+#[cfg(test)]
+mod lifecycle_tests;
 
 const MAX_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_QUEUED_FRAMES: usize = 8;
@@ -219,14 +232,17 @@ struct FrameStream {
 
 struct AppServerSession {
     child: OwnedChild,
-    rpc: RpcConnection<ChildStdin>,
+    rpc: RpcConnection<ChildInput>,
     reader: Option<JoinHandle<()>>,
+    watchdog: Option<IoWatchdog>,
 }
 
 impl AppServerSession {
     fn shutdown(&mut self) {
         self.rpc.cancel.store(true, Ordering::Relaxed);
-        self.child.terminate();
+        // Stop the out-of-band killer before reaping (Unix PID reuse safety).
+        drop(self.watchdog.take());
+        let _ = self.child.terminate();
         if let Some(reader) = self.reader.take() {
             let _ = reader.join();
         }
@@ -313,6 +329,8 @@ struct RpcConnection<W> {
     snapshot: Arc<Mutex<CodexSnapshot>>,
     next_id: u64,
     account_generation: u64,
+    io_deadline: Option<Deadline>,
+    operation: Option<Arc<Mutex<()>>>,
 }
 
 impl<W: Write> RpcConnection<W> {
@@ -331,16 +349,35 @@ impl<W: Write> RpcConnection<W> {
                 snapshot,
                 next_id: 1,
                 account_generation: 0,
+                io_deadline: None,
+                operation: None,
             },
             stream.reader,
         )
     }
 
     fn notify(&mut self, method: &str, params: Value) -> Result<(), BridgeFailure> {
+        if method != "initialized" {
+            return Err(BridgeFailure::ProtocolMismatch);
+        }
+        let _deadline = RequestDeadline::arm(&self.io_deadline, RPC_TIMEOUT);
         let frame = serde_json::to_vec(&json!({ "method": method, "params": params }))
             .map_err(|_| BridgeFailure::ProtocolMismatch)?;
+        self.write_frame(&frame)
+    }
+
+    fn write_frame(&mut self, frame: &[u8]) -> Result<(), BridgeFailure> {
+        let _operation = self
+            .operation
+            .as_ref()
+            .map(|lock| lock.lock())
+            .transpose()
+            .map_err(|_| BridgeFailure::Interrupted)?;
+        if self.cancel.load(Ordering::SeqCst) {
+            return Err(BridgeFailure::Interrupted);
+        }
         self.writer
-            .write_all(&frame)
+            .write_all(frame)
             .and_then(|_| self.writer.write_all(b"\n"))
             .and_then(|_| self.writer.flush())
             .map_err(|_| BridgeFailure::ProcessExited)
@@ -356,6 +393,13 @@ impl<W: Write> RpcConnection<W> {
         params: Option<Value>,
         timeout: Duration,
     ) -> Result<Value, BridgeFailure> {
+        if !matches!(
+            method,
+            "initialize" | "account/read" | "account/rateLimits/read" | "account/usage/read"
+        ) {
+            return Err(BridgeFailure::ProtocolMismatch);
+        }
+        let _write_deadline = RequestDeadline::arm(&self.io_deadline, timeout);
         let id = self.next_id;
         self.next_id = self.next_id.saturating_add(1);
         let mut request = json!({ "id": id, "method": method });
@@ -363,11 +407,7 @@ impl<W: Write> RpcConnection<W> {
             request["params"] = params;
         }
         let frame = serde_json::to_vec(&request).map_err(|_| BridgeFailure::ProtocolMismatch)?;
-        self.writer
-            .write_all(&frame)
-            .and_then(|_| self.writer.write_all(b"\n"))
-            .and_then(|_| self.writer.flush())
-            .map_err(|_| BridgeFailure::ProcessExited)?;
+        self.write_frame(&frame)?;
 
         let deadline = Instant::now() + timeout;
         loop {
@@ -530,6 +570,10 @@ impl Default for BridgeInner {
 pub(crate) struct CodexBridge {
     inner: Arc<Mutex<BridgeInner>>,
     snapshot: Arc<Mutex<CodexSnapshot>>,
+    consent: Arc<ConsentGate>,
+    stopping: Arc<AtomicBool>,
+    #[cfg(test)]
+    test_connection: Option<Arc<tests::TestConnection>>,
 }
 
 impl Default for CodexBridge {
@@ -537,6 +581,10 @@ impl Default for CodexBridge {
         Self {
             inner: Arc::new(Mutex::new(BridgeInner::default())),
             snapshot: Arc::new(Mutex::new(CodexSnapshot::disconnected())),
+            consent: Arc::new(ConsentGate::default()),
+            stopping: Arc::new(AtomicBool::new(false)),
+            #[cfg(test)]
+            test_connection: None,
         }
     }
 }
@@ -552,8 +600,15 @@ impl CodexBridge {
         lock_snapshot(&self.snapshot).clone()
     }
 
-    pub(crate) fn connect(&self) -> CodexSnapshot {
-        if !LIVE_CONNECTION_ENABLED {
+    fn connect(&self, confirm_native: impl FnOnce() -> bool) -> CodexSnapshot {
+        if self.stopping.load(Ordering::SeqCst) {
+            return self.status();
+        }
+        #[cfg(test)]
+        let enabled = LIVE_CONNECTION_ENABLED || self.test_connection.is_some();
+        #[cfg(not(test))]
+        let enabled = LIVE_CONNECTION_ENABLED;
+        if !enabled {
             let mut snapshot = lock_snapshot(&self.snapshot);
             snapshot.connection_status = ConnectionStatus::Incompatible;
             snapshot.data_status = DataStatus::Unknown;
@@ -564,9 +619,39 @@ impl CodexBridge {
             return snapshot.clone();
         }
 
+        let Some(attempt) = self.consent.begin() else {
+            let mut snapshot = self.status();
+            snapshot.diagnostic = Some("nativeConsentPending");
+            return snapshot;
+        };
+        #[cfg(test)]
+        let approved = self
+            .test_connection
+            .as_ref()
+            .map_or_else(confirm_native, |test| (test.confirm)());
+        #[cfg(not(test))]
+        let approved = confirm_native();
+        let Some(consent) = attempt.confirm(approved) else {
+            let mut snapshot = self.status();
+            snapshot.diagnostic = Some("nativeConsentCancelled");
+            return snapshot;
+        };
+        self.connect_approved(consent)
+    }
+
+    fn connect_approved(&self, consent: NativeConsent) -> CodexSnapshot {
         let mut state = self.lock();
+        if !consent.is_valid() || self.stopping.load(Ordering::SeqCst) {
+            return self.status();
+        }
         if state.session.is_some() {
             return lock_snapshot(&self.snapshot).clone();
+        }
+
+        #[cfg(test)]
+        if let Some(test) = &self.test_connection {
+            (test.launch)(consent.cancelled());
+            return self.status();
         }
 
         *lock_snapshot(&self.snapshot) = CodexSnapshot::disconnected();
@@ -581,8 +666,19 @@ impl CodexBridge {
             }
         };
 
-        match launch_and_initialize(&executable, Arc::clone(&self.snapshot)) {
+        match launch_and_initialize(
+            &executable,
+            Arc::clone(&self.snapshot),
+            consent.cancelled(),
+            consent.operation(),
+        ) {
             Ok((session, initial_account)) => {
+                if !consent.is_valid() {
+                    // Dropping the uncommitted session kills/reaps its tree.
+                    drop(session);
+                    *lock_snapshot(&self.snapshot) = CodexSnapshot::disconnected();
+                    return self.status();
+                }
                 let cancel = Arc::clone(&session.rpc.cancel);
                 let (request_tx, request_rx) = mpsc::channel();
                 let worker_cancel = Arc::clone(&cancel);
@@ -623,6 +719,9 @@ impl CodexBridge {
     }
 
     fn refresh_locked(&self, state: &mut BridgeInner) -> CodexSnapshot {
+        if self.stopping.load(Ordering::SeqCst) {
+            return self.status();
+        }
         if state
             .next_refresh_at
             .is_some_and(|next| Instant::now() < next)
@@ -668,27 +767,27 @@ impl CodexBridge {
     }
 
     pub(crate) fn disconnect(&self) -> CodexSnapshot {
-        let session = {
-            let mut state = self.lock();
-            state.next_refresh_at = None;
-            state.error_backoff = REFRESH_COOLDOWN;
-            *lock_snapshot(&self.snapshot) = CodexSnapshot::disconnected();
-            state.session.take()
-        };
-        if let Some(mut session) = session {
+        self.cancel_consent();
+        let mut state = self.lock();
+        state.next_refresh_at = None;
+        state.error_backoff = REFRESH_COOLDOWN;
+        if let Some(mut session) = state.session.take() {
             session.shutdown();
         }
+        // The worker can invalidate its snapshot while being joined. Publish
+        // disconnected only after it has stopped writing to the shared DTO,
+        // under the session lock so a newer Connect cannot be overwritten.
+        *lock_snapshot(&self.snapshot) = CodexSnapshot::disconnected();
         self.status()
     }
 
+    fn cancel_consent(&self) {
+        self.consent.cancel();
+    }
+
     pub(crate) fn shutdown(&self) {
-        let session = {
-            let mut state = self.lock();
-            state.session.take()
-        };
-        if let Some(mut session) = session {
-            session.shutdown();
-        }
+        self.stopping.store(true, Ordering::SeqCst);
+        self.disconnect();
     }
 }
 
@@ -775,24 +874,33 @@ fn fixed_config_args() -> Vec<&'static str> {
     ]
 }
 
-fn probe_codex_version(executable: &Path) -> Result<(), BridgeFailure> {
-    let mut command = Command::new(executable);
-    command
-        .args(fixed_config_args())
-        .arg("--strict-config")
-        .arg("--version")
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null());
-    #[cfg(windows)]
-    command.creation_flags(0x08000000); // CREATE_NO_WINDOW
+fn spawn_authorized(
+    executable: &Path,
+    args: &[&str],
+    input: InputMode,
+    cancel: &AtomicBool,
+    operation: &Mutex<()>,
+) -> Result<OwnedChild, BridgeFailure> {
+    let _operation = operation.lock().map_err(|_| BridgeFailure::Interrupted)?;
+    if cancel.load(Ordering::SeqCst) {
+        return Err(BridgeFailure::Interrupted);
+    }
+    OwnedChild::spawn(executable, args, input, OutputMode::Pipe)
+        .map_err(|_| BridgeFailure::StartupFailed)
+}
 
-    let mut child = OwnedChild::spawn(&mut command).map_err(|_| BridgeFailure::StartupFailed)?;
-    let stdout = child
-        .child
-        .stdout
-        .take()
-        .ok_or(BridgeFailure::StartupFailed)?;
+fn probe_codex_version(
+    executable: &Path,
+    cancel: &AtomicBool,
+    operation: &Mutex<()>,
+) -> Result<(), BridgeFailure> {
+    if cancel.load(Ordering::SeqCst) {
+        return Err(BridgeFailure::Interrupted);
+    }
+    let mut args = fixed_config_args();
+    args.extend(["--strict-config", "--version"]);
+    let mut child = spawn_authorized(executable, &args, InputMode::Null, cancel, operation)?;
+    let stdout = child.take_stdout().ok_or(BridgeFailure::StartupFailed)?;
     let (output_tx, output_rx) = mpsc::channel();
     let reader = thread::Builder::new()
         .name("quotafern-codex-version".to_owned())
@@ -806,11 +914,16 @@ fn probe_codex_version(executable: &Path) -> Result<(), BridgeFailure> {
 
     let deadline = Instant::now() + RPC_TIMEOUT;
     let status = loop {
+        if cancel.load(Ordering::SeqCst) {
+            let _ = child.terminate();
+            let _ = reader.join();
+            return Err(BridgeFailure::Interrupted);
+        }
         if let Some(status) = child.try_wait().map_err(|_| BridgeFailure::StartupFailed)? {
             break status;
         }
         if Instant::now() >= deadline {
-            child.terminate();
+            let _ = child.terminate();
             let _ = reader.join();
             return Err(BridgeFailure::TimedOut);
         }
@@ -841,34 +954,39 @@ fn check_supported_codex_version(output: &str) -> Result<(), BridgeFailure> {
 fn launch_and_initialize(
     executable: &Path,
     snapshot: Arc<Mutex<CodexSnapshot>>,
+    cancel: Arc<AtomicBool>,
+    operation: Arc<Mutex<()>>,
 ) -> Result<(AppServerSession, Option<AccountKind>), BridgeFailure> {
-    probe_codex_version(executable)?;
+    probe_codex_version(executable, &cancel, &operation)?;
+    if cancel.load(Ordering::SeqCst) {
+        return Err(BridgeFailure::Interrupted);
+    }
 
-    let mut command = Command::new(executable);
-    command
-        .args(fixed_config_args())
-        .arg("--strict-config")
-        .arg("app-server")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null());
-    #[cfg(windows)]
-    command.creation_flags(0x08000000); // CREATE_NO_WINDOW
-
-    let mut child = OwnedChild::spawn(&mut command).map_err(|_| BridgeFailure::StartupFailed)?;
-    let Some(stdin) = child.child.stdin.take() else {
+    let mut args = fixed_config_args();
+    args.extend(["--strict-config", "app-server"]);
+    let mut child = spawn_authorized(executable, &args, InputMode::Pipe, &cancel, &operation)?;
+    let Some(stdin) = child.take_stdin() else {
         return Err(BridgeFailure::StartupFailed);
     };
-    let Some(stdout) = child.child.stdout.take() else {
+    let Some(stdout) = child.take_stdout() else {
         return Err(BridgeFailure::StartupFailed);
     };
     let stream = start_frame_reader(stdout).map_err(|_| BridgeFailure::StartupFailed)?;
-    let cancel = Arc::new(AtomicBool::new(false));
-    let (rpc, reader) = RpcConnection::new(stdin, stream, cancel, Arc::clone(&snapshot));
+    let io_deadline = Arc::new(Mutex::new(None));
+    let watchdog = IoWatchdog::start(
+        child.terminate_handle(),
+        Arc::clone(&cancel),
+        Arc::clone(&io_deadline),
+    )
+    .map_err(|_| BridgeFailure::StartupFailed)?;
+    let (mut rpc, reader) = RpcConnection::new(stdin, stream, cancel, Arc::clone(&snapshot));
+    rpc.io_deadline = Some(io_deadline);
+    rpc.operation = Some(operation);
     let mut session = AppServerSession {
         child,
         rpc,
         reader: Some(reader),
+        watchdog: Some(watchdog),
     };
 
     session.rpc.request(
@@ -1341,157 +1459,7 @@ fn now_ms() -> Option<u64> {
     Some(milliseconds as u64)
 }
 
-struct OwnedChild {
-    child: Child,
-    #[cfg(windows)]
-    job: WindowsJob,
-}
-
-impl OwnedChild {
-    fn spawn(command: &mut Command) -> std::io::Result<Self> {
-        #[cfg(unix)]
-        {
-            use std::os::unix::process::CommandExt as _;
-            command.process_group(0);
-        }
-
-        let child = command.spawn()?;
-        #[cfg(windows)]
-        let (child, job) = {
-            let mut child = child;
-            let job = match WindowsJob::attach(child.id()) {
-                Ok(job) => job,
-                Err(error) => {
-                    terminate_child(&mut child);
-                    return Err(error);
-                }
-            };
-            (child, job)
-        };
-        Ok(Self {
-            child,
-            #[cfg(windows)]
-            job,
-        })
-    }
-
-    fn try_wait(&mut self) -> std::io::Result<Option<std::process::ExitStatus>> {
-        self.child.try_wait()
-    }
-
-    fn terminate(&mut self) {
-        #[cfg(unix)]
-        unsafe {
-            let _ = libc::kill(-(self.child.id() as i32), libc::SIGKILL);
-        }
-
-        #[cfg(windows)]
-        self.job.terminate();
-
-        terminate_child(&mut self.child);
-    }
-}
-
-impl Drop for OwnedChild {
-    fn drop(&mut self) {
-        self.terminate();
-    }
-}
-
-#[cfg(windows)]
-struct WindowsJob(windows_sys::Win32::Foundation::HANDLE);
-
-#[cfg(windows)]
-unsafe impl Send for WindowsJob {}
-
-#[cfg(windows)]
-impl WindowsJob {
-    fn attach(process_id: u32) -> std::io::Result<Self> {
-        use std::mem::{size_of, zeroed};
-        use std::ptr::null;
-        use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
-        use windows_sys::Win32::System::JobObjects::{
-            AssignProcessToJobObject, CreateJobObjectW, JobObjectExtendedLimitInformation,
-            SetInformationJobObject, TerminateJobObject, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
-            JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
-        };
-        use windows_sys::Win32::System::Threading::{
-            OpenProcess, PROCESS_SET_QUOTA, PROCESS_TERMINATE,
-        };
-
-        let job = unsafe { CreateJobObjectW(null(), null()) };
-        if job.is_null() {
-            return Err(std::io::Error::last_os_error());
-        }
-
-        let mut limits: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = unsafe { zeroed() };
-        limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-        let configured = unsafe {
-            SetInformationJobObject(
-                job,
-                JobObjectExtendedLimitInformation,
-                &mut limits as *mut _ as *mut _,
-                size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
-            )
-        };
-        if configured == 0 {
-            unsafe {
-                CloseHandle(job);
-            }
-            return Err(std::io::Error::last_os_error());
-        }
-
-        let process = unsafe { OpenProcess(PROCESS_SET_QUOTA | PROCESS_TERMINATE, 0, process_id) };
-        if process.is_null() {
-            unsafe {
-                TerminateJobObject(job, 1);
-                CloseHandle(job);
-            }
-            return Err(std::io::Error::last_os_error());
-        }
-        let assigned = unsafe { AssignProcessToJobObject(job, process) };
-        unsafe {
-            CloseHandle(process as HANDLE);
-        }
-        if assigned == 0 {
-            unsafe {
-                TerminateJobObject(job, 1);
-                CloseHandle(job);
-            }
-            return Err(std::io::Error::last_os_error());
-        }
-        Ok(Self(job))
-    }
-
-    fn terminate(&self) {
-        use windows_sys::Win32::System::JobObjects::TerminateJobObject;
-        unsafe {
-            let _ = TerminateJobObject(self.0, 1);
-        }
-    }
-}
-
-#[cfg(windows)]
-impl Drop for WindowsJob {
-    fn drop(&mut self) {
-        use windows_sys::Win32::Foundation::CloseHandle;
-        unsafe {
-            let _ = CloseHandle(self.0);
-        }
-    }
-}
-
-fn terminate_child(child: &mut Child) {
-    match child.try_wait() {
-        Ok(Some(_)) => {}
-        _ => {
-            let _ = child.kill();
-            let _ = child.wait();
-        }
-    }
-}
-
-fn ensure_main_window(window: &WebviewWindow) -> Result<(), String> {
+fn ensure_main_window<R: Runtime>(window: &WebviewWindow<R>) -> Result<(), String> {
     if window.label() == "main" {
         Ok(())
     } else {
@@ -1499,14 +1467,31 @@ fn ensure_main_window(window: &WebviewWindow) -> Result<(), String> {
     }
 }
 
+#[cfg(not(test))]
+fn confirm_native<R: Runtime>(window: &WebviewWindow<R>) -> bool {
+    // Fixed native-only disclosure and answer. Neither the checkbox nor any
+    // renderer payload can approve this interaction. Never runs on UI thread.
+    window.dialog()
+            .message("Start Codex monitoring for this app session?\n\nQuotafern will start your installed Codex app-server and read subscription quotas, credits, spending controls, earned resets and token activity. Codex owns your existing sign-in and may refresh tokens, save its authentication/runtime state and apply workspace policies.\n\nNo agent turns, purchases, reset redemption or login/logout will be requested. Disconnect stops monitoring and its child processes without signing out of Codex. Consent is not remembered after restart.")
+            .title("Quotafern — authorize Codex monitoring")
+            .parent(&window)
+            .buttons(MessageDialogButtons::OkCancelCustom("Start monitoring".into(), "Cancel".into()))
+            .blocking_show()
+}
+
+#[cfg(test)]
+fn confirm_native<R: Runtime>(_window: &WebviewWindow<R>) -> bool {
+    panic!("OS dialog interaction must be replaced by the test-only trusted presenter")
+}
+
 #[tauri::command]
-pub(crate) async fn codex_connect(
-    window: WebviewWindow,
+pub(crate) async fn codex_connect<R: Runtime>(
+    window: WebviewWindow<R>,
     bridge: State<'_, CodexBridge>,
 ) -> Result<CodexSnapshot, String> {
     ensure_main_window(&window)?;
     let bridge = bridge.inner().clone();
-    tauri::async_runtime::spawn_blocking(move || bridge.connect())
+    tauri::async_runtime::spawn_blocking(move || bridge.connect(|| confirm_native(&window)))
         .await
         .map_err(|_| "Codex connection operation failed".to_owned())
 }
@@ -1530,6 +1515,7 @@ pub(crate) async fn codex_disconnect(
 ) -> Result<CodexSnapshot, String> {
     ensure_main_window(&window)?;
     let bridge = bridge.inner().clone();
+    bridge.cancel_consent();
     tauri::async_runtime::spawn_blocking(move || bridge.disconnect())
         .await
         .map_err(|_| "Codex disconnect operation failed".to_owned())
@@ -1544,12 +1530,183 @@ pub(crate) fn codex_status(
     Ok(bridge.status())
 }
 
-#[cfg(windows)]
-use std::os::windows::process::CommandExt;
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // Compiled only into the Rust unit-test executable. Production has neither
+    // an injectable confirmation result nor an alternate launcher/gate switch.
+    pub(super) struct TestConnection {
+        pub(super) confirm: Box<dyn Fn() -> bool + Send + Sync>,
+        pub(super) launch: Box<dyn Fn(Arc<AtomicBool>) + Send + Sync>,
+    }
+
+    fn ipc_app(bridge: CodexBridge) -> tauri::App<tauri::test::MockRuntime> {
+        tauri::test::mock_builder()
+            .manage(bridge)
+            .invoke_handler(tauri::generate_handler![codex_connect])
+            .build(tauri::test::mock_context(tauri::test::noop_assets()))
+            .unwrap()
+    }
+
+    fn invoke_connect(window: &WebviewWindow<tauri::test::MockRuntime>, body: Value) -> Value {
+        tauri::test::get_ipc_response(
+            window,
+            tauri::webview::InvokeRequest {
+                cmd: "codex_connect".into(),
+                callback: tauri::ipc::CallbackFn(0),
+                error: tauri::ipc::CallbackFn(1),
+                url: "http://tauri.localhost".parse().unwrap(),
+                body: tauri::ipc::InvokeBody::Json(body),
+                headers: Default::default(),
+                invoke_key: tauri::test::INVOKE_KEY.into(),
+            },
+        )
+        .unwrap()
+        .deserialize::<Value>()
+        .unwrap()
+    }
+
+    fn mock_window(
+        app: &tauri::App<tauri::test::MockRuntime>,
+    ) -> WebviewWindow<tauri::test::MockRuntime> {
+        tauri::WebviewWindowBuilder::new(app, "main", Default::default())
+            .build()
+            .unwrap()
+    }
+
+    #[test]
+    fn direct_ipc_cannot_forge_native_consent_or_open_the_live_gate() {
+        let bridge = CodexBridge::default();
+        let app = ipc_app(bridge);
+        let window = mock_window(&app);
+        let result = invoke_connect(
+            &window,
+            json!({"approved":true,"consent":true,"session":"forged"}),
+        );
+        assert_eq!(result["diagnostic"], "startupPolicyUnverified");
+        assert_eq!(result["windows"], json!([]));
+    }
+
+    #[test]
+    fn direct_ipc_cancel_and_late_approval_start_no_process() {
+        use std::sync::atomic::AtomicUsize;
+        let launches = Arc::new(AtomicUsize::new(0));
+        let launched = Arc::clone(&launches);
+        let mut bridge = CodexBridge {
+            test_connection: Some(Arc::new(TestConnection {
+                confirm: Box::new(|| false),
+                launch: Box::new(move |_| {
+                    launched.fetch_add(1, Ordering::SeqCst);
+                }),
+            })),
+            ..CodexBridge::default()
+        };
+        let app = ipc_app(bridge.clone());
+        let window = mock_window(&app);
+        let result = invoke_connect(&window, json!({"approved":true}));
+        assert_eq!(result["diagnostic"], "nativeConsentCancelled");
+        assert_eq!(launches.load(Ordering::SeqCst), 0);
+        drop(app);
+
+        // Disconnect while the trusted native interaction is pending. Its late
+        // positive answer must be unusable, including through a direct invoke.
+        let (shown_tx, shown_rx) = mpsc::channel();
+        let (answer_tx, answer_rx) = mpsc::channel();
+        let answer_rx = Mutex::new(answer_rx);
+        let launched = Arc::clone(&launches);
+        bridge.test_connection = Some(Arc::new(TestConnection {
+            confirm: Box::new(move || {
+                shown_tx.send(()).unwrap();
+                answer_rx.lock().unwrap().recv().unwrap()
+            }),
+            launch: Box::new(move |_| {
+                launched.fetch_add(1, Ordering::SeqCst);
+            }),
+        }));
+        let app = ipc_app(bridge.clone());
+        let window = mock_window(&app);
+        let pending_window = window.clone();
+        let pending = thread::spawn(move || invoke_connect(&pending_window, json!({})));
+        shown_rx.recv_timeout(Duration::from_secs(3)).unwrap();
+        let concurrent = invoke_connect(&window, json!({"approved":true}));
+        assert_eq!(concurrent["diagnostic"], "nativeConsentPending");
+        bridge.disconnect();
+        answer_tx.send(true).unwrap();
+        assert_eq!(
+            pending.join().unwrap()["diagnostic"],
+            "nativeConsentCancelled"
+        );
+        assert_eq!(launches.load(Ordering::SeqCst), 0);
+        assert_eq!(
+            bridge.status().connection_status,
+            ConnectionStatus::Disconnected
+        );
+    }
+
+    #[test]
+    fn native_approval_precedes_fake_process_and_exit_cancels_startup() {
+        let (shown_tx, shown_rx) = mpsc::channel();
+        let (answer_tx, answer_rx) = mpsc::channel();
+        let answer_rx = Mutex::new(answer_rx);
+        let (started_tx, started_rx) = mpsc::channel();
+        let bridge = CodexBridge {
+            test_connection: Some(Arc::new(TestConnection {
+                confirm: Box::new(move || {
+                    shown_tx.send(()).unwrap();
+                    answer_rx.lock().unwrap().recv().unwrap()
+                }),
+                launch: Box::new(move |cancel| {
+                    let mut child = OwnedChild::spawn(
+                        &env::current_exe().unwrap(),
+                        &["--exact", "codex::tests::fake_consent_process", "--ignored"],
+                        InputMode::Null,
+                        OutputMode::Pipe,
+                    )
+                    .unwrap();
+                    started_tx.send(()).unwrap();
+                    let deadline = Instant::now() + Duration::from_secs(3);
+                    while !cancel.load(Ordering::SeqCst) && Instant::now() < deadline {
+                        thread::sleep(Duration::from_millis(5));
+                    }
+                    assert!(
+                        cancel.load(Ordering::SeqCst),
+                        "app exit must cancel startup"
+                    );
+                    let _ = child.terminate();
+                    assert!(child.try_wait().unwrap().is_some());
+                }),
+            })),
+            ..CodexBridge::default()
+        };
+        let app = ipc_app(bridge.clone());
+        let window = mock_window(&app);
+        let pending_window = window.clone();
+        let pending =
+            thread::spawn(move || invoke_connect(&pending_window, json!({"approved":true})));
+        shown_rx.recv_timeout(Duration::from_secs(3)).unwrap();
+        assert!(started_rx.try_recv().is_err());
+        answer_tx.send(true).unwrap();
+        started_rx.recv_timeout(Duration::from_secs(3)).unwrap();
+        // shutdown invalidates authorization before waiting for the bridge lock.
+        bridge.shutdown();
+        pending.join().unwrap();
+        assert_eq!(
+            bridge.status().connection_status,
+            ConnectionStatus::Disconnected
+        );
+        assert!(bridge.consent.begin().unwrap().confirm(false).is_none());
+        assert_eq!(
+            invoke_connect(&window, json!({"approved":true}))["connectionStatus"],
+            "disconnected"
+        );
+    }
+
+    #[test]
+    #[ignore = "isolated fake subprocess entry, invoked only by consent tests"]
+    fn fake_consent_process() {
+        thread::sleep(Duration::from_secs(30));
+    }
     use std::io::Cursor;
 
     #[test]
@@ -1831,9 +1988,25 @@ mod tests {
             Arc::new(Mutex::new(CodexSnapshot::disconnected())),
         );
         // A disconnected frame source is an immediate process-exit result.
+        for method in [
+            "turn/start",
+            "account/login/start",
+            "account/logout",
+            "account/earnedResets/redeem",
+        ] {
+            assert_eq!(
+                rpc.request(method, None),
+                Err(BridgeFailure::ProtocolMismatch)
+            );
+        }
+        assert_eq!(
+            rpc.notify("turn/start", json!({})),
+            Err(BridgeFailure::ProtocolMismatch)
+        );
+        assert!(rpc.writer.is_empty(), "forbidden methods write no bytes");
         drop(frames_tx);
         assert!(matches!(
-            rpc.request_with_timeout("x", None, Duration::from_millis(10)),
+            rpc.request_with_timeout("account/read", None, Duration::from_millis(10)),
             Err(BridgeFailure::ProcessExited)
         ));
         let _ = reader.join();
@@ -1852,7 +2025,7 @@ mod tests {
         );
         cancel.store(true, Ordering::Relaxed);
         assert!(matches!(
-            rpc.request_with_timeout("x", None, Duration::from_millis(10)),
+            rpc.request_with_timeout("account/read", None, Duration::from_millis(10)),
             Err(BridgeFailure::Interrupted)
         ));
         let _ = reader.join();
@@ -1871,7 +2044,7 @@ mod tests {
         );
         cancel.store(false, Ordering::Relaxed);
         assert!(matches!(
-            rpc.request_with_timeout("x", None, Duration::from_millis(10)),
+            rpc.request_with_timeout("account/read", None, Duration::from_millis(10)),
             Err(BridgeFailure::TimedOut)
         ));
         let _ = reader.join();
@@ -1988,14 +2161,10 @@ mod tests {
     #[test]
     fn terminate_child_kills_and_reaps_a_fake_process() {
         let executable = env::current_exe().expect("test executable");
-        let mut child = Command::new(executable)
-            .arg("--list")
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .expect("fake process");
-        terminate_child(&mut child);
+        let mut child =
+            OwnedChild::spawn(&executable, &["--list"], InputMode::Null, OutputMode::Pipe)
+                .expect("fake process");
+        child.terminate().expect("kill and reap");
         assert!(child.try_wait().expect("reaped status").is_some());
     }
 
@@ -2013,7 +2182,7 @@ mod tests {
     #[test]
     fn live_connect_stays_closed_until_startup_policy_is_verified() {
         let bridge = CodexBridge::default();
-        let snapshot = bridge.connect();
+        let snapshot = bridge.connect(|| panic!("closed startup gate must not ask for consent"));
         assert_eq!(snapshot.connection_status, ConnectionStatus::Incompatible);
         assert_eq!(snapshot.data_status, DataStatus::Unknown);
         assert_eq!(snapshot.diagnostic, Some("startupPolicyUnverified"));

@@ -24,7 +24,7 @@ Research and status date: 2026-10-24. This roadmap covers the local-first Tauri 
 - Malformed or excessive child output exhausts memory or corrupts state. Use bounded frames and queue, strict response correlation and schemas, fixed allowlists, deadlines, and synthetic adversarial protocol tests.
 - Account changes or failed refreshes display another account’s or stale quotas as current. Track account generation; invalidate on account changes; distinguish current, stale, unknown, and error; never fall back to demo data.
 - Startup restores saved Remote Control or performs other background activity. Keep the native and renderer gates closed until a documented startup policy controls those effects. Fixed telemetry/plugin flags alone are not sufficient evidence.
-- A child or descendant survives disconnect or exit. Contain and reap the process tree; verify behavior on each target OS. Windows process containment currently attaches a Job Object after process creation, leaving a spawn-to-assignment race to resolve before live approval.
+- A child or descendant survives disconnect or exit. Contain and reap the process tree; verify behavior on each target OS. Windows process creation now associates the private job atomically while suspended; failure/descendant/cleanup regressions and native platform acceptance are tracked separately.
 - A malicious local process or compromised OS reads or substitutes executables and credentials. Do not claim protection against local administrator/malware compromise; use safe executable resolution, strict invocation, integrity/signing strategy, and clear user disclosure.
 - A vulnerable or compromised dependency changes runtime/build behavior. Review dependency changes, CI permissions, secrets exposure, build artifacts, and release provenance.
 
@@ -52,16 +52,19 @@ The documentation gate is satisfied for this F3 foundation. It does not authoriz
 - The dormant launch uses a native executable rather than a shell shim, fixed arguments, `--strict-config`, a pinned CLI version, stdio JSONL, and no renderer-provided command/path/RPC input.
 - RPC methods are allowlisted to initialization and account/quota reads. Account reads use `refreshToken: false`; no turns, login/logout, reset consumption, purchase, or inference request is implemented.
 - Frame size and queue are bounded, requests have deadlines and correlation checks, malformed/unknown values remain unavailable, and diagnostics are static categories. Raw RPC bodies and auth fields do not cross IPC or enter logs.
-- Unix process-group and Windows Job Object containment, child termination, and synthetic process/protocol tests are present in the foundation. Windows assignment happens after spawn, so descendant containment is not yet race-free.
+- Unix process-group and Windows Job Object containment, child termination, and synthetic process/protocol tests are present in the foundation. Windows uses suspended `CreateProcessW` plus an atomic job-list attribute, without a post-spawn assignment window. An out-of-band watchdog bounds blocked protocol writes through tree termination.
 
 ### Acceptance before live enablement
 
 - Resolve a documented Codex app-server startup policy that prevents unintended listeners, remote-control restoration, and background provider activity, or keep the gate closed.
 - Eliminate and test the Windows spawn-to-job assignment gap; verify process-tree cleanup and reader-thread shutdown on Windows, macOS, and Linux under failure, timeout, disconnect, and app exit.
+- Independent review confirmed a separate Unix forced-exit blocker: process-group cleanup needs a running parent. `SIGKILL`/forced termination bypasses Drop and RunEvent hooks, so the Codex child may survive. A supported parent-death/supervisor strategy and runtime evidence are required before claiming Linux/macOS forced-exit cleanup. The global live gate stays closed; graceful CI fixture tests do not close this condition.
 - Exercise bounded frame saturation, malformed/oversized frames, RPC mismatches, account changes during startup/refresh, stale/auth invalidation, and static diagnostic redaction with synthetic fixtures.
 - Verify the consent screen describes Codex-managed token refresh/state writes and that no account read happens before explicit consent.
-- The current checkbox is frontend state, while the registered native connect command is directly invokable from the main WebView. Do not describe that checkbox as a native authorization boundary. Before any live enablement, make the native connection lifecycle require a recorded, current-session consent action and test that a direct connect invocation without that action starts no process or account read. Keep the hard startup gate until this is resolved.
+- Implemented: the checkbox remains frontend UX; the directly invokable native command requires its own fixed OS confirmation and private single-attempt guard. Direct-IPC tests cover forged payloads, cancellation, concurrent Connect, late approval after Disconnect, and app-exit invalidation with fake processes. Production retains no runtime test injection, remembered authorization, or consent-setting IPC. Native OS dialog interaction still requires separate platform acceptance, and the startup gate remains closed.
 - If SIWC is ever implemented: public authorization contract first, PKCE S256/state/nonce validation, exact issuer/audience/resource/client checks, granted-scope validation, serialized rotating-token refresh/revocation, app-owned OS-protected secret storage, and zero secret exposure to WebView/IPC/logs. Do not route credentials through the pinned internal-only `chatgptAuthTokens` method.
+
+See [the detailed startup investigation](f3-startup-security-investigation.md) and [current gate validation](f3-validation.md) for the supported/manual alternative and exact evidence. SEC-02 remains partial until native platform acceptance and all live startup requirements are satisfied.
 
 ## SEC-03 — Dependency, supply chain, and local data
 

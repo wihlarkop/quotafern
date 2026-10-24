@@ -152,11 +152,16 @@ fn tray_icon() -> Image<'static> {
 }
 
 pub fn run() {
-    let app = tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .manage(CodexBridge::default())
         .manage(LastTrayAnchor::default())
         .manage(TrayIconHandle::default())
-        .manage(WindowFocusHistory::default())
+        .manage(WindowFocusHistory::default());
+    // Rust-only native confirmation. No renderer capability. Headless unit
+    // tests install only their compile-time trusted presenter, never OS dialogs.
+    #[cfg(not(test))]
+    let builder = builder.plugin(tauri_plugin_dialog::init());
+    let app = builder
         // Prevent duplicate processes and duplicate tray icons. A repeated
         // launch brings the existing, single popup back into view.
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
