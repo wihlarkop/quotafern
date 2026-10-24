@@ -1,8 +1,20 @@
 # UX-01 · Soft Native design exploration
 
-Date: 25 October 2026. **Design artifacts only. Owner selection pending.**
+Date: 25 October 2026. **Design artifacts only. Owner-selected direction: Hybrid A + B. Production implementation not approved.**
 
 Three comparable Quotafern directions are available in a working, isolated browser prototype. Nothing here enables monitoring or implements UX-02 / ACC-04. All identities, statuses, balances, activity and timestamps are invented. No live provider was contacted.
+
+## Owner design decision — 25 October 2026
+
+**Selected for future UX-02 / ACC-04: Hybrid A + B.** Recorded with explicit owner consent in [PR #7 conversation](https://github.com/wihlarkop/quotafern/pull/7#issuecomment-6388525976).
+
+- **Adopt from A:** gentle Soft Native surface/elevation, calm whitespace, Graphite & Jade character and clearly separated provider/account groups.
+- **Adopt from B:** compact header and filtering rhythm for the default 380px tray popup; prioritize one clear context selector and reveal provider/account/connection refinements only when useful. Avoid stacking redundant selectors by default.
+- **Keep independently:** Light/Dark/Follow System; both Graphite & Jade and Zinc & Signal as user-selectable palettes; detailed per-account quotas, reset times, credits, spending, 84-day activity, unknown/stale/explicit demo states and keyboard/accessibility requirements.
+- **Retain C as exploration evidence, not the primary selected structure.** Its useful patterns may only be considered after focused review, not automatically mixed into the chosen hybrid.
+- **Multi-account contract:** use stable ACC-01 account/connection/source identities, editable account and key aliases, isolated selection and data freshness, no combined quota percentages or double-counted verified shared billing sources.
+
+**Approval boundary:** this is a selection of design direction only. It does **not** approve merging PR #7, starting production UX-02/ACC-04 implementation, native login/monitoring, changing CSP/IPC, accessing credentials, release or deployment. A separate explicit merge approval and an implementation Draft PR with their own validation/acceptance are required. Codex F4 startup/Remote Control and Unix process cleanup blockers remain deferred. Existing Windows owner F3 acceptance does not imply native acceptance of future UX changes; macOS/Linux native GUI tests remain NOT RUN until devices are available.
 
 ## Review the designs
 
@@ -101,9 +113,9 @@ The judgments below are design review, supported by rendered captures and measur
 | Native desktop feel       | Most relaxed utility feel    | Familiar existing shell       | Most instrument-like                       | Browser visual judgment only; OS acceptance pending          |
 | Maintainability           | Simple vertical flow         | Closest to current components | More layout-specific rules                 | No new production dependency needed for any direction        |
 
-**Recommendation for owner consideration:** A's surfaces and account grouping, with B's compact filter/header rhythm at bounded popup heights. This would keep the calm direction while addressing the measured scroll cost. C's aligned numbers are a useful alternate when density matters most, but should not be mixed indiscriminately into A. The preview keeps the three original alternatives intact so the owner can assess the trade-offs.
+**Historical exploration recommendation (now owner-selected):** A's surfaces and account grouping, with B's compact filter/header rhythm at bounded popup heights. This keeps the calm direction while addressing the measured scroll cost. C's aligned numbers remain an alternate when density matters most. The preview retains all three original alternatives as design evidence.
 
-**This recommendation is not approval.** The owner must select A, B, C or a named hybrid before UX-02 begins. Production components, persistence, provider adapters and native behavior would require their own implementation and acceptance work.
+**Owner selection is recorded below.** The selection approves the visual direction only; actual UX-02 production work, persistence, provider adapters and native behavior require separate implementation and acceptance review.
 
 ## Implementation boundary and architecture mapping
 
