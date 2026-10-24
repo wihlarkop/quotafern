@@ -16,13 +16,17 @@
   import { Tabs } from "bits-ui";
   import { onMount } from "svelte";
 
+  import { createDemoMonitoring } from "./lib/activity";
   import {
     ageCodexSnapshot,
     CODEX_CONNECTION_AVAILABLE,
     codexMessage,
     disconnectedCodexSnapshot,
+    unavailableCodexMonitoring,
+    type CodexMonitoring,
     type LiveCodexSnapshot,
   } from "./lib/codex";
+  import CodexDetails from "./lib/components/CodexDetails.svelte";
   import { Button } from "./lib/components/ui/button";
   import {
     classifyRemainingPercent,
@@ -81,9 +85,28 @@
   let snapshotNow = $state(Date.now());
   let snapshot = $derived(createDemoSnapshot(scenario, snapshotNow));
   let demoPreview = $state(false);
+  let demoMonitoring = $state<CodexMonitoring | null>(null);
+  let showCodexDetails = $state(false);
   let codexSnapshot = $state<LiveCodexSnapshot>(disconnectedCodexSnapshot());
   let liveNowMs = $state(Date.now());
   let agedCodexSnapshot = $derived(ageCodexSnapshot(codexSnapshot, liveNowMs));
+  let demoCodexProvider = $derived(snapshot.providers.find((provider) => provider.id === "codex"));
+  let demoDetailWindows = $derived(
+    (demoCodexProvider?.windows ?? []).map((window) => {
+      const resetAtMs = window.resetAt === null ? null : Date.parse(window.resetAt);
+      return {
+        id: window.id,
+        name: window.name,
+        remainingPercent: window.remainingPercent,
+        resetAtMs: resetAtMs !== null && Number.isFinite(resetAtMs) ? resetAtMs : null,
+        windowDurationMins: null,
+      };
+    }),
+  );
+  let demoQuotaDataStatus = $derived(demoCodexProvider?.dataStatus ?? "unknown");
+  let demoQuotaFetchedAtMs = $derived(
+    demoCodexProvider?.fetchedAt ? Date.parse(demoCodexProvider.fetchedAt) : null,
+  );
   let preferences = $state<Preferences>(readPreferences());
   let systemPrefersDark = $state(false);
   let resolvedTheme = $derived(
@@ -108,6 +131,19 @@
   function setCodexSnapshot(value: LiveCodexSnapshot) {
     codexSnapshot = value;
     liveNowMs = Date.now();
+  }
+
+  function markCodexSnapshotStaleAfterFailedRequest() {
+    const activity = codexSnapshot.monitoring.activity;
+    codexSnapshot = {
+      ...codexSnapshot,
+      dataStatus: codexSnapshot.dataStatus === "current" ? "stale" : "error",
+      diagnostic: "nativeRequestFailed",
+      monitoring: {
+        ...codexSnapshot.monitoring,
+        activity: activity.state === "current" ? { ...activity, state: "stale" } : activity,
+      },
+    };
   }
 
   async function connectCodex() {
@@ -158,11 +194,7 @@
     } catch {
       if (requestVersion === codexRequestVersion) {
         refreshCooldownUntilMs = Date.now() + 30_000;
-        codexSnapshot = {
-          ...codexSnapshot,
-          dataStatus: codexSnapshot.windows.length > 0 ? "stale" : "error",
-          diagnostic: "nativeRequestFailed",
-        };
+        markCodexSnapshotStaleAfterFailedRequest();
         codexNotice = "Codex couldn’t refresh usage limits. Try again after the short cooldown.";
       }
     } finally {
@@ -184,6 +216,7 @@
       return true;
     } catch {
       if (requestVersion === codexRequestVersion) {
+        markCodexSnapshotStaleAfterFailedRequest();
         codexNotice = "Quotafern couldn’t stop monitoring. Try Disconnect again.";
       }
       return false;
@@ -219,11 +252,7 @@
     } catch {
       // A failed IPC check cannot establish freshness. Keep only stale last-known values.
       if (requestVersion === codexRequestVersion && !demoPreview) {
-        codexSnapshot = {
-          ...codexSnapshot,
-          dataStatus: codexSnapshot.windows.length > 0 ? "stale" : "error",
-          diagnostic: "nativeRequestFailed",
-        };
+        markCodexSnapshotStaleAfterFailedRequest();
       }
     } finally {
       codexPolling = false;
@@ -237,7 +266,14 @@
       const stopped = await disconnectCodex();
       if (!stopped) return;
     }
+    if (enabled) {
+      snapshotNow = Date.now();
+      demoMonitoring = createDemoMonitoring(snapshotNow);
+    } else {
+      demoMonitoring = null;
+    }
     demoPreview = enabled;
+    showCodexDetails = false;
     connectConsent = false;
     refreshMessage = "";
     localRefreshLabel = "";
@@ -564,320 +600,351 @@
   </Tabs.List>
 
   <Tabs.Content class="view-content" value="overview">
-    {#if demoPreview}
+    {#if showCodexDetails}
       <div class="view-heading">
         <div>
-          <h1>Usage overview</h1>
-          <p>
-            {snapshot.providers.length === 0
-              ? "No synthetic CLI profiles"
-              : "Three synthetic CLI profiles"}
-          </p>
+          <h1>Codex Details</h1>
+          <p>Quota, credits and Activity</p>
         </div>
-        <Button
-          class="refresh-button"
-          variant="outline"
-          size="sm"
-          onclick={refreshDemo}
-          disabled={isRefreshing}
-          aria-label={isRefreshing ? "Refreshing demo sample" : "Refresh local demo sample"}
-          aria-busy={isRefreshing}
-        >
-          <RefreshCw
-            size={14}
-            strokeWidth={2}
-            class={isRefreshing ? "spin" : ""}
-            aria-hidden="true"
-          />
-          <span>{isRefreshing ? "Refreshing" : "Refresh"}</span>
-        </Button>
+        <Button variant="outline" size="sm" onclick={() => (showCodexDetails = false)}>Back</Button>
       </div>
-
-      {#if snapshot.providers.some((provider) => provider.dataStatus === "stale")}
-        <div class="state-banner stale-banner" role="status">
-          <Clock3 size={15} strokeWidth={2} aria-hidden="true" />
-          <span>Stale demo sample · captured {formatFetchedAt(snapshot.providers[0])}</span>
-        </div>
-      {:else if scenario === "auth"}
-        <div class="state-banner auth-banner" role="status">
-          <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
-          <span>Sign-in required in this synthetic scenario</span>
-        </div>
-      {:else if scenario === "error"}
-        <div class="state-banner error-banner" role="status">
-          <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
-          <span>Sample unavailable · simulated error</span>
-        </div>
-      {/if}
-
-      {#if refreshMessage}
-        <div class="inline-notice refresh-notice" role="status" aria-live="polite">
-          {refreshMessage}
-        </div>
-      {/if}
-
-      {#if snapshot.providers.length > 0}
-        <section class="provider-list" aria-label="Synthetic provider usage">
-          {#each snapshot.providers as provider (provider.id)}
-            <article class="provider-row">
-              <div class="provider-topline">
-                <div class="provider-identity">
-                  <span class="provider-icon" aria-hidden="true">
-                    {#if provider.id === "codex"}
-                      <Command size={16} strokeWidth={1.8} />
-                    {:else if provider.id === "claude-code"}
-                      <Code2 size={16} strokeWidth={1.8} />
-                    {:else}
-                      <Sparkles size={16} strokeWidth={1.8} />
-                    {/if}
-                  </span>
-                  <div class="provider-name-wrap">
-                    <h2>{provider.name}</h2>
-                    <span>{provider.tool} · {provider.accountId}</span>
-                  </div>
-                </div>
-                <span class="demo-profile-label">Demo only</span>
-              </div>
-              <div class="window-grid" role="group" aria-label={`${provider.name} quota windows`}>
-                {#each provider.windows as window (window.id)}
-                  {@const band = bandClass(provider, window)}
-                  <section class="quota-window" aria-label={`${window.name} quota window`}>
-                    <div class="window-heading">
-                      <span>{window.name}</span><span
-                        class="status-pill"
-                        class:normal={band === "normal"}
-                        class:low={band === "low"}
-                        class:critical={band === "critical"}
-                        class:unknown={band === "unknown"}>{bandLabel(provider, window)}</span
-                      >
-                    </div>
-                    <div class="window-value-row">
-                      <strong class="remaining-value" class:unknown-value={band === "unknown"}
-                        >{formatRemainingPercent(window.remainingPercent)}</strong
-                      ><span class="window-reset">Reset {formatResetAt(window.resetAt)}</span>
-                    </div>
-                    {#if window.remainingPercent !== null && band !== "unknown" && (provider.dataStatus === "current" || provider.dataStatus === "stale")}
-                      <div
-                        class="usage-meter"
-                        role="meter"
-                        aria-label={`${provider.name} ${window.name} remaining quota`}
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        aria-valuenow={window.remainingPercent}
-                        aria-valuetext={`${formatRemainingPercent(window.remainingPercent)} remaining`}
-                        class:meter-normal={band === "normal"}
-                        class:meter-low={band === "low"}
-                        class:meter-critical={band === "critical"}
-                      >
-                        <span style={`--meter-value: ${window.remainingPercent}%`}></span>
-                      </div>
-                    {/if}
-                  </section>
-                {/each}
-              </div>
-            </article>
-          {/each}
-        </section>
-      {:else}
-        <section class="empty-state" aria-labelledby="empty-title">
-          <span class="empty-icon" aria-hidden="true"
-            ><UsersRound size={20} strokeWidth={1.8} /></span
-          >
-          <h2 id="empty-title">No demo accounts yet</h2>
-          <p>
-            This scenario has no sample profiles. Choose another fixture in Settings to preview
-            usage states.
-          </p>
-          <Button variant="link" class="text-action" onclick={() => (activeTab = "settings")}
-            >Open demo settings <span aria-hidden="true">→</span></Button
-          >
-        </section>
-      {/if}
-
-      <div class="source-note">
-        <span class="note-dot" aria-hidden="true"></span><span
-          >Demo sample only · no provider connected</span
-        >
-      </div>
-      {#if localRefreshLabel}
-        <p class="refresh-caption">Last preview refresh: {localRefreshLabel}</p>
-      {/if}
+      <CodexDetails
+        source={demoPreview ? "synthetic" : "live"}
+        monitoring={demoPreview
+          ? (demoMonitoring ?? unavailableCodexMonitoring())
+          : agedCodexSnapshot.monitoring}
+        windows={demoPreview ? demoDetailWindows : agedCodexSnapshot.windows}
+        dataStatus={demoPreview ? demoQuotaDataStatus : agedCodexSnapshot.dataStatus}
+        fetchedAtMs={demoPreview ? demoQuotaFetchedAtMs : agedCodexSnapshot.fetchedAtMs}
+        connectionStatus={demoPreview ? "disconnected" : agedCodexSnapshot.connectionStatus}
+        nowMs={liveNowMs}
+      />
     {:else}
-      <div class="view-heading">
-        <div>
-          <h1>Usage overview</h1>
-          <p>Codex subscription limits</p>
-        </div>
-        {#if agedCodexSnapshot.connectionStatus === "connected" && isTauri()}
+      {#if demoPreview}
+        <div class="view-heading">
+          <div>
+            <h1>Usage overview</h1>
+            <p>
+              {snapshot.providers.length === 0
+                ? "No synthetic CLI profiles"
+                : "Three synthetic CLI profiles"}
+            </p>
+          </div>
           <Button
             class="refresh-button"
             variant="outline"
             size="sm"
-            onclick={refreshCodex}
-            disabled={codexBusy || refreshCooldownSeconds > 0}
-            aria-label={codexBusy
-              ? "Refreshing Codex usage limits"
-              : refreshCooldownSeconds > 0
-                ? `Refresh Codex usage limits in ${refreshCooldownSeconds} seconds`
-                : "Refresh Codex usage limits"}
-            aria-busy={codexBusy}
-            data-testid="refresh-codex"
+            onclick={refreshDemo}
+            disabled={isRefreshing}
+            aria-label={isRefreshing ? "Refreshing demo sample" : "Refresh local demo sample"}
+            aria-busy={isRefreshing}
           >
             <RefreshCw
               size={14}
               strokeWidth={2}
-              class={codexBusy ? "spin" : ""}
+              class={isRefreshing ? "spin" : ""}
               aria-hidden="true"
             />
-            <span>
-              {codexBusy
-                ? "Refreshing"
-                : refreshCooldownSeconds > 0
-                  ? `Refresh in ${refreshCooldownSeconds}s`
-                  : "Refresh"}
-            </span>
+            <span>{isRefreshing ? "Refreshing" : "Refresh"}</span>
           </Button>
-        {/if}
-      </div>
-
-      {#if codexNotice}
-        <div class="inline-notice codex-notice" role="status" aria-live="polite">
-          {codexNotice}
         </div>
-      {/if}
 
-      {#if agedCodexSnapshot.connectionStatus === "disconnected"}
-        <section class="codex-empty-state" aria-labelledby="codex-empty-title">
-          <span class="empty-icon" aria-hidden="true"><Command size={20} strokeWidth={1.8} /></span>
-          <h2 id="codex-empty-title">
-            {CODEX_CONNECTION_AVAILABLE
-              ? "No Codex session connected"
-              : "Live Codex connection unavailable"}
-          </h2>
-          <p>
-            {CODEX_CONNECTION_AVAILABLE
-              ? "Connect from Accounts to read subscription limits from your existing Codex session. Quotafern never sends agent turns."
-              : "Live connection is disabled in this build. Review Accounts for the reason, or turn on Demo preview in Settings."}
-          </p>
-          <Button
-            variant="link"
-            class="text-action"
-            onclick={() => (activeTab = "accounts")}
-            data-testid="open-codex-account"
-          >
-            Review connection details <span aria-hidden="true">→</span>
-          </Button>
-        </section>
-      {:else if agedCodexSnapshot.connectionStatus !== "connected"}
-        <div class="state-banner codex-state-banner" role="status">
-          <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
-          <span>{codexMessage(agedCodexSnapshot)}</span>
-        </div>
-        <p class="codex-next-step">
-          Review the Codex connection in Accounts. Quotafern does not fall back to demo data.
-        </p>
-      {:else}
-        {#if agedCodexSnapshot.dataStatus === "stale"}
+        {#if snapshot.providers.some((provider) => provider.dataStatus === "stale")}
           <div class="state-banner stale-banner" role="status">
             <Clock3 size={15} strokeWidth={2} aria-hidden="true" />
-            <span>Showing the last successful read · refresh to check current limits.</span>
+            <span>Stale demo sample · captured {formatFetchedAt(snapshot.providers[0])}</span>
           </div>
-        {:else if agedCodexSnapshot.dataStatus === "error"}
+        {:else if scenario === "auth"}
+          <div class="state-banner auth-banner" role="status">
+            <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
+            <span>Sign-in required in this synthetic scenario</span>
+          </div>
+        {:else if scenario === "error"}
           <div class="state-banner error-banner" role="status">
+            <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
+            <span>Sample unavailable · simulated error</span>
+          </div>
+        {/if}
+
+        {#if refreshMessage}
+          <div class="inline-notice refresh-notice" role="status" aria-live="polite">
+            {refreshMessage}
+          </div>
+        {/if}
+
+        {#if snapshot.providers.length > 0}
+          <section class="provider-list" aria-label="Synthetic provider usage">
+            {#each snapshot.providers as provider (provider.id)}
+              <article class="provider-row">
+                <div class="provider-topline">
+                  <div class="provider-identity">
+                    <span class="provider-icon" aria-hidden="true">
+                      {#if provider.id === "codex"}
+                        <Command size={16} strokeWidth={1.8} />
+                      {:else if provider.id === "claude-code"}
+                        <Code2 size={16} strokeWidth={1.8} />
+                      {:else}
+                        <Sparkles size={16} strokeWidth={1.8} />
+                      {/if}
+                    </span>
+                    <div class="provider-name-wrap">
+                      <h2>{provider.name}</h2>
+                      <span>{provider.tool} · {provider.accountId}</span>
+                    </div>
+                  </div>
+                  <span class="demo-profile-label">Demo only</span>
+                </div>
+                <div class="window-grid" role="group" aria-label={`${provider.name} quota windows`}>
+                  {#each provider.windows as window (window.id)}
+                    {@const band = bandClass(provider, window)}
+                    <section class="quota-window" aria-label={`${window.name} quota window`}>
+                      <div class="window-heading">
+                        <span>{window.name}</span><span
+                          class="status-pill"
+                          class:normal={band === "normal"}
+                          class:low={band === "low"}
+                          class:critical={band === "critical"}
+                          class:unknown={band === "unknown"}>{bandLabel(provider, window)}</span
+                        >
+                      </div>
+                      <div class="window-value-row">
+                        <strong class="remaining-value" class:unknown-value={band === "unknown"}
+                          >{formatRemainingPercent(window.remainingPercent)}</strong
+                        ><span class="window-reset">Reset {formatResetAt(window.resetAt)}</span>
+                      </div>
+                      {#if window.remainingPercent !== null && band !== "unknown" && (provider.dataStatus === "current" || provider.dataStatus === "stale")}
+                        <div
+                          class="usage-meter"
+                          role="meter"
+                          aria-label={`${provider.name} ${window.name} remaining quota`}
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-valuenow={window.remainingPercent}
+                          aria-valuetext={`${formatRemainingPercent(window.remainingPercent)} remaining`}
+                          class:meter-normal={band === "normal"}
+                          class:meter-low={band === "low"}
+                          class:meter-critical={band === "critical"}
+                        >
+                          <span style={`--meter-value: ${window.remainingPercent}%`}></span>
+                        </div>
+                      {/if}
+                    </section>
+                  {/each}
+                </div>
+              </article>
+            {/each}
+          </section>
+        {:else}
+          <section class="empty-state" aria-labelledby="empty-title">
+            <span class="empty-icon" aria-hidden="true"
+              ><UsersRound size={20} strokeWidth={1.8} /></span
+            >
+            <h2 id="empty-title">No demo accounts yet</h2>
+            <p>
+              This scenario has no sample profiles. Choose another fixture in Settings to preview
+              usage states.
+            </p>
+            <Button variant="link" class="text-action" onclick={() => (activeTab = "settings")}
+              >Open demo settings <span aria-hidden="true">→</span></Button
+            >
+          </section>
+        {/if}
+
+        <div class="source-note">
+          <span class="note-dot" aria-hidden="true"></span><span
+            >Demo sample only · no provider connected</span
+          >
+        </div>
+        {#if localRefreshLabel}
+          <p class="refresh-caption">Last preview refresh: {localRefreshLabel}</p>
+        {/if}
+      {:else}
+        <div class="view-heading">
+          <div>
+            <h1>Usage overview</h1>
+            <p>Codex subscription limits</p>
+          </div>
+          {#if agedCodexSnapshot.connectionStatus === "connected" && isTauri()}
+            <Button
+              class="refresh-button"
+              variant="outline"
+              size="sm"
+              onclick={refreshCodex}
+              disabled={codexBusy || refreshCooldownSeconds > 0}
+              aria-label={codexBusy
+                ? "Refreshing Codex usage limits"
+                : refreshCooldownSeconds > 0
+                  ? `Refresh Codex usage limits in ${refreshCooldownSeconds} seconds`
+                  : "Refresh Codex usage limits"}
+              aria-busy={codexBusy}
+              data-testid="refresh-codex"
+            >
+              <RefreshCw
+                size={14}
+                strokeWidth={2}
+                class={codexBusy ? "spin" : ""}
+                aria-hidden="true"
+              />
+              <span>
+                {codexBusy
+                  ? "Refreshing"
+                  : refreshCooldownSeconds > 0
+                    ? `Refresh in ${refreshCooldownSeconds}s`
+                    : "Refresh"}
+              </span>
+            </Button>
+          {/if}
+        </div>
+
+        {#if codexNotice}
+          <div class="inline-notice codex-notice" role="status" aria-live="polite">
+            {codexNotice}
+          </div>
+        {/if}
+
+        {#if agedCodexSnapshot.connectionStatus === "disconnected"}
+          <section class="codex-empty-state" aria-labelledby="codex-empty-title">
+            <span class="empty-icon" aria-hidden="true"
+              ><Command size={20} strokeWidth={1.8} /></span
+            >
+            <h2 id="codex-empty-title">
+              {CODEX_CONNECTION_AVAILABLE
+                ? "No Codex session connected"
+                : "Live Codex connection unavailable"}
+            </h2>
+            <p>
+              {CODEX_CONNECTION_AVAILABLE
+                ? "Connect from Accounts to read subscription limits from your existing Codex session. Quotafern never sends agent turns."
+                : "Live connection is disabled in this build. Review Accounts for the reason, or turn on Demo preview in Settings."}
+            </p>
+            <Button
+              variant="link"
+              class="text-action"
+              onclick={() => (activeTab = "accounts")}
+              data-testid="open-codex-account"
+            >
+              Review connection details <span aria-hidden="true">→</span>
+            </Button>
+          </section>
+        {:else if agedCodexSnapshot.connectionStatus !== "connected"}
+          <div class="state-banner codex-state-banner" role="status">
             <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
             <span>{codexMessage(agedCodexSnapshot)}</span>
           </div>
-        {:else if agedCodexSnapshot.dataStatus === "unknown"}
-          <div class="state-banner codex-state-banner" role="status">
-            <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
-            <span>Codex did not report current usage limits. No percentages are inferred.</span>
+          <p class="codex-next-step">
+            Review the Codex connection in Accounts. Quotafern does not fall back to demo data.
+          </p>
+        {:else}
+          {#if agedCodexSnapshot.dataStatus === "stale"}
+            <div class="state-banner stale-banner" role="status">
+              <Clock3 size={15} strokeWidth={2} aria-hidden="true" />
+              <span>Showing the last successful read · refresh to check current limits.</span>
+            </div>
+          {:else if agedCodexSnapshot.dataStatus === "error"}
+            <div class="state-banner error-banner" role="status">
+              <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
+              <span>{codexMessage(agedCodexSnapshot)}</span>
+            </div>
+          {:else if agedCodexSnapshot.dataStatus === "unknown"}
+            <div class="state-banner codex-state-banner" role="status">
+              <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
+              <span>Codex did not report current usage limits. No percentages are inferred.</span>
+            </div>
+          {/if}
+
+          <section class="provider-list codex-live-list" aria-label="Codex subscription usage">
+            <article class="provider-row">
+              <div class="provider-topline">
+                <div class="provider-identity">
+                  <span class="provider-icon" aria-hidden="true">
+                    <Command size={16} strokeWidth={1.8} />
+                  </span>
+                  <div class="provider-name-wrap">
+                    <h2>Codex</h2>
+                    <span>Live subscription limits · local Codex session</span>
+                  </div>
+                </div>
+                <span
+                  class="demo-profile-label codex-data-label"
+                  class:stale={agedCodexSnapshot.dataStatus === "stale"}
+                >
+                  {agedCodexSnapshot.dataStatus === "current"
+                    ? "Current"
+                    : agedCodexSnapshot.dataStatus === "stale"
+                      ? "Stale"
+                      : agedCodexSnapshot.dataStatus === "error"
+                        ? "Unavailable"
+                        : "Unknown"}
+                </span>
+              </div>
+              <p class="codex-last-read">
+                Last successful read · {formatLiveReadAt(agedCodexSnapshot.fetchedAtMs)}
+              </p>
+              {#if agedCodexSnapshot.windows.length > 0}
+                <div class="window-grid" role="group" aria-label="Codex quota windows">
+                  {#each agedCodexSnapshot.windows as window (window.id)}
+                    {@const band = codexBandClass(window)}
+                    <section class="quota-window" aria-label={`${window.name} quota window`}>
+                      <div class="window-heading">
+                        <span>{window.name}</span>
+                        <span
+                          class="status-pill"
+                          class:normal={band === "normal"}
+                          class:low={band === "low"}
+                          class:critical={band === "critical"}
+                          class:unknown={band === "unknown"}
+                        >
+                          {codexBandLabel(window)}
+                        </span>
+                      </div>
+                      <div class="window-value-row">
+                        <strong class="remaining-value" class:unknown-value={band === "unknown"}>
+                          {codexRemainingLabel(window)}
+                        </strong>
+                        <span class="window-reset">Reset {formatResetAtMs(window.resetAtMs)}</span>
+                      </div>
+                      <div class="codex-window-meta">
+                        {formatWindowDuration(window.windowDurationMins)}
+                      </div>
+                      {#if window.remainingPercent !== null && band !== "unknown" && (agedCodexSnapshot.dataStatus === "current" || agedCodexSnapshot.dataStatus === "stale")}
+                        <div
+                          class="usage-meter"
+                          role="meter"
+                          aria-label={`Codex ${window.name} remaining quota`}
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-valuenow={window.remainingPercent}
+                          aria-valuetext={`${formatRemainingPercent(window.remainingPercent)} remaining`}
+                          class:meter-normal={band === "normal"}
+                          class:meter-low={band === "low"}
+                          class:meter-critical={band === "critical"}
+                        >
+                          <span style={`--meter-value: ${window.remainingPercent}%`}></span>
+                        </div>
+                      {/if}
+                    </section>
+                  {/each}
+                </div>
+              {:else}
+                <p class="codex-no-windows">No quota windows were reported in the last read.</p>
+              {/if}
+            </article>
+          </section>
+
+          <div class="source-note live-source-note">
+            <span class="note-dot" aria-hidden="true"></span>
+            <span>Live Codex data · no credentials stored by Quotafern</span>
           </div>
         {/if}
-
-        <section class="provider-list codex-live-list" aria-label="Codex subscription usage">
-          <article class="provider-row">
-            <div class="provider-topline">
-              <div class="provider-identity">
-                <span class="provider-icon" aria-hidden="true">
-                  <Command size={16} strokeWidth={1.8} />
-                </span>
-                <div class="provider-name-wrap">
-                  <h2>Codex</h2>
-                  <span>Live subscription limits · local Codex session</span>
-                </div>
-              </div>
-              <span
-                class="demo-profile-label codex-data-label"
-                class:stale={agedCodexSnapshot.dataStatus === "stale"}
-              >
-                {agedCodexSnapshot.dataStatus === "current"
-                  ? "Current"
-                  : agedCodexSnapshot.dataStatus === "stale"
-                    ? "Stale"
-                    : agedCodexSnapshot.dataStatus === "error"
-                      ? "Unavailable"
-                      : "Unknown"}
-              </span>
-            </div>
-            <p class="codex-last-read">
-              Last successful read · {formatLiveReadAt(agedCodexSnapshot.fetchedAtMs)}
-            </p>
-            {#if agedCodexSnapshot.windows.length > 0}
-              <div class="window-grid" role="group" aria-label="Codex quota windows">
-                {#each agedCodexSnapshot.windows as window (window.id)}
-                  {@const band = codexBandClass(window)}
-                  <section class="quota-window" aria-label={`${window.name} quota window`}>
-                    <div class="window-heading">
-                      <span>{window.name}</span>
-                      <span
-                        class="status-pill"
-                        class:normal={band === "normal"}
-                        class:low={band === "low"}
-                        class:critical={band === "critical"}
-                        class:unknown={band === "unknown"}
-                      >
-                        {codexBandLabel(window)}
-                      </span>
-                    </div>
-                    <div class="window-value-row">
-                      <strong class="remaining-value" class:unknown-value={band === "unknown"}>
-                        {codexRemainingLabel(window)}
-                      </strong>
-                      <span class="window-reset">Reset {formatResetAtMs(window.resetAtMs)}</span>
-                    </div>
-                    <div class="codex-window-meta">
-                      {formatWindowDuration(window.windowDurationMins)}
-                    </div>
-                    {#if window.remainingPercent !== null && band !== "unknown" && (agedCodexSnapshot.dataStatus === "current" || agedCodexSnapshot.dataStatus === "stale")}
-                      <div
-                        class="usage-meter"
-                        role="meter"
-                        aria-label={`Codex ${window.name} remaining quota`}
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        aria-valuenow={window.remainingPercent}
-                        aria-valuetext={`${formatRemainingPercent(window.remainingPercent)} remaining`}
-                        class:meter-normal={band === "normal"}
-                        class:meter-low={band === "low"}
-                        class:meter-critical={band === "critical"}
-                      >
-                        <span style={`--meter-value: ${window.remainingPercent}%`}></span>
-                      </div>
-                    {/if}
-                  </section>
-                {/each}
-              </div>
-            {:else}
-              <p class="codex-no-windows">No quota windows were reported in the last read.</p>
-            {/if}
-          </article>
-        </section>
-
-        <div class="source-note live-source-note">
-          <span class="note-dot" aria-hidden="true"></span>
-          <span>Live Codex data · no credentials stored by Quotafern</span>
-        </div>
       {/if}
+      <Button
+        variant="outline"
+        class="codex-details-link"
+        onclick={() => (showCodexDetails = true)}
+        data-testid="open-codex-details"
+      >
+        Codex Details · Activity <span aria-hidden="true">→</span>
+      </Button>
     {/if}
   </Tabs.Content>
 
@@ -1062,13 +1129,30 @@
       <section class="account-explainer codex-limits-explainer">
         <h2>What Quotafern reads</h2>
         <p>
-          Only the quota window names, durations, remaining percentages, reset times, and read
-          timestamp returned by Codex. Appearance preferences are the only values saved in browser
-          storage.
+          Validated quota windows, optional credit/spending/reset metadata and daily token activity
+          returned by Codex. No inference, purchasing or reset redemption. Only appearance
+          preferences are saved in browser storage.
         </p>
         <Button variant="link" class="text-action" onclick={() => (activeTab = "overview")}
           >View usage <span aria-hidden="true">→</span></Button
         >
+      </section>
+      <section class="provider-catalog" aria-label="Planned providers">
+        <h2>Provider catalog</h2>
+        <div class="account-row">
+          <span class="provider-icon" aria-hidden="true"><Code2 size={16} /></span>
+          <div class="account-copy">
+            <strong>Claude Code</strong><span>Adapter not implemented</span>
+          </div>
+          <span class="system-chip">Coming Soon</span>
+        </div>
+        <div class="account-row">
+          <span class="provider-icon" aria-hidden="true"><Sparkles size={16} /></span>
+          <div class="account-copy">
+            <strong>Gemini CLI</strong><span>Adapter not implemented</span>
+          </div>
+          <span class="system-chip">Coming Soon</span>
+        </div>
       </section>
     {/if}
   </Tabs.Content>

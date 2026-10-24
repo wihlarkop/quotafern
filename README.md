@@ -10,6 +10,10 @@ Once a separately reviewed change enables it, the intended flow is Accounts → 
 
 For credential-free examples, enable **Demo preview** in Settings. Every synthetic view is labeled Demo and stays separate from live state; release builds use the healthy demo fixture, and development offers all eight scenarios. Failed live requests never use demo values. [F3 validation](docs/f3-validation.md) separates mock evidence, UI acceptance, and authenticated behavior.
 
+Codex Details groups optional credits, spending controls, earned resets and Activity. The activity calendar distinguishes known zero from unavailable dates and never estimates money from tokens. These features are mock-validated while live connection is gated; a single Plus account is sufficient for later owner acceptance, but compatibility with that actual account remains unverified. Claude Code and Gemini CLI are **Coming Soon**, without login controls.
+
+Sign in with ChatGPT is a future preference, not a functional login option in this build. Its published identity/inference scopes do not explicitly establish existing Codex monitoring access. [Authentication decision](docs/chatgpt-auth-decision.md) and [security roadmap](docs/security-roadmap.md) record the evidence and remaining gates.
+
 The local fern icon is provisional artwork. Desktop icon sizes are checked in under `src-tauri/icons/`; no remote assets are loaded.
 
 ## F2 behavior
@@ -62,3 +66,5 @@ F1 has no unit-test suite. As product features are added, include the regression
 - [F2 validation and native acceptance checklist](docs/f2-validation.md)
 - [F3 validation and launch-policy blocker](docs/f3-validation.md)
 - [Codex integration research](docs/codex-integration.md)
+- [Sign in with ChatGPT authorization decision](docs/chatgpt-auth-decision.md)
+- [Security roadmap](docs/security-roadmap.md)

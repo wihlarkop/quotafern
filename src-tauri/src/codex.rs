@@ -11,6 +11,9 @@ use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tauri::{State, WebviewWindow};
 
+mod monitoring;
+use monitoring::{apply_activity_result, apply_quota_monitoring, CodexMonitoring};
+
 const MAX_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_QUEUED_FRAMES: usize = 8;
 const MAX_STDOUT_BYTES: usize = 4096;
@@ -68,6 +71,7 @@ pub(crate) struct CodexSnapshot {
     windows: Vec<QuotaWindow>,
     fetched_at_ms: Option<u64>,
     diagnostic: Option<&'static str>,
+    monitoring: CodexMonitoring,
 }
 
 impl CodexSnapshot {
@@ -81,6 +85,7 @@ impl CodexSnapshot {
             windows: Vec::new(),
             fetched_at_ms: None,
             diagnostic: None,
+            monitoring: CodexMonitoring::unavailable(),
         }
     }
 
@@ -91,11 +96,13 @@ impl CodexSnapshot {
             DataStatus::Stale
         };
         self.diagnostic = Some(diagnostic);
+        self.monitoring.activity.mark_stale(diagnostic);
     }
 
     fn invalidate_account(&mut self) {
         self.windows.clear();
         self.fetched_at_ms = None;
+        self.monitoring = CodexMonitoring::unavailable();
         self.data_status = DataStatus::Unknown;
         self.diagnostic = Some("accountChanged");
     }
@@ -232,8 +239,64 @@ impl AppServerSession {
             self.rpc.account_generation,
             &self.rpc.snapshot,
         )?;
-        apply_rate_limit_result(&self.rpc.snapshot, &response)
+        apply_rate_limit_result(&self.rpc.snapshot, &response)?;
+        self.refresh_activity(expected_generation)
     }
+
+    fn refresh_activity(&mut self, expected_generation: u64) -> Result<(), BridgeFailure> {
+        let response = self.rpc.request("account/usage/read", None);
+        let idle_result = self.rpc.poll_idle();
+        validate_account_generation(
+            expected_generation,
+            self.rpc.account_generation,
+            &self.rpc.snapshot,
+        )?;
+        idle_result?;
+        apply_optional_activity_response(&self.rpc.snapshot, response)
+    }
+}
+
+fn apply_optional_activity_response(
+    snapshot: &Arc<Mutex<CodexSnapshot>>,
+    response: Result<Value, BridgeFailure>,
+) -> Result<(), BridgeFailure> {
+    match response {
+        Ok(response) => {
+            let fetched_at_ms = now_ms();
+            apply_activity_result(
+                &mut lock_snapshot(snapshot).monitoring,
+                &response,
+                fetched_at_ms,
+            );
+            Ok(())
+        }
+        Err(BridgeFailure::UnsupportedMethod) => {
+            lock_snapshot(snapshot).monitoring.activity =
+                monitoring::unavailable_activity("activityUnsupported");
+            Ok(())
+        }
+        Err(error) if is_optional_activity_failure_fatal(error) => Err(error),
+        Err(error) => {
+            monitoring::mark_activity_failure(
+                &mut lock_snapshot(snapshot).monitoring,
+                error.diagnostic(),
+            );
+            Ok(())
+        }
+    }
+}
+
+fn is_optional_activity_failure_fatal(error: BridgeFailure) -> bool {
+    matches!(
+        error,
+        BridgeFailure::TimedOut
+            | BridgeFailure::MalformedFrame
+            | BridgeFailure::OversizedFrame
+            | BridgeFailure::FrameQueueOverflow
+            | BridgeFailure::ProcessExited
+            | BridgeFailure::Interrupted
+            | BridgeFailure::ProtocolMismatch
+    )
 }
 
 impl Drop for AppServerSession {
@@ -418,7 +481,7 @@ impl ProcessSession {
             .send(WorkerRequest::Refresh(reply_tx))
             .map_err(|_| BridgeFailure::ProcessExited)?;
         reply_rx
-            .recv_timeout(RPC_TIMEOUT.saturating_mul(2) + Duration::from_secs(1))
+            .recv_timeout(RPC_TIMEOUT.saturating_mul(3) + Duration::from_secs(1))
             .map_err(|error| match error {
                 RecvTimeoutError::Timeout => BridgeFailure::TimedOut,
                 RecvTimeoutError::Disconnected => BridgeFailure::ProcessExited,
@@ -496,6 +559,7 @@ impl CodexBridge {
             snapshot.data_status = DataStatus::Unknown;
             snapshot.windows.clear();
             snapshot.fetched_at_ms = None;
+            snapshot.monitoring = CodexMonitoring::unavailable();
             snapshot.diagnostic = Some("startupPolicyUnverified");
             return snapshot.clone();
         }
@@ -640,6 +704,7 @@ fn apply_failure(snapshot: &mut CodexSnapshot, error: BridgeFailure) {
             snapshot.windows.clear();
             snapshot.fetched_at_ms = None;
             snapshot.data_status = DataStatus::Unknown;
+            snapshot.monitoring = CodexMonitoring::unavailable();
         }
         _ => snapshot.mark_stale(error.diagnostic()),
     }
@@ -1039,6 +1104,7 @@ fn refresh_account(
             let mut snapshot = lock_snapshot(&session.rpc.snapshot);
             snapshot.windows.clear();
             snapshot.fetched_at_ms = None;
+            snapshot.monitoring = CodexMonitoring::unavailable();
             snapshot.data_status = DataStatus::Unknown;
             snapshot.connection_status = ConnectionStatus::AuthRequired;
             snapshot.diagnostic = Some(BridgeFailure::AuthenticationRequired.diagnostic());
@@ -1113,6 +1179,7 @@ fn apply_rate_limit_result(
         .iter()
         .any(|window| window.remaining_percent.is_some());
     let mut snapshot = lock_snapshot(snapshot);
+    let monitoring_invalid = apply_quota_monitoring(&mut snapshot.monitoring, response);
     snapshot.windows = windows;
     snapshot.fetched_at_ms = Some(fetched_at_ms);
     snapshot.data_status = if has_valid_value && !bucket_overflow {
@@ -1125,6 +1192,8 @@ fn apply_rate_limit_result(
         Some("tooManyQuotaBuckets")
     } else if invalid_shape || invalid_percentage {
         Some("invalidQuotaValue")
+    } else if monitoring_invalid {
+        Some("invalidMonitoringValue")
     } else {
         None
     };
@@ -1133,7 +1202,10 @@ fn apply_rate_limit_result(
 
 fn normalize_rate_limits(result: &Value, _fetched_at_ms: u64) -> Vec<QuotaWindow> {
     let mut windows = Vec::new();
-    if let Some(by_limit_id) = result.get("rateLimitsByLimitId") {
+    if let Some(by_limit_id) = result
+        .get("rateLimitsByLimitId")
+        .filter(|value| !value.is_null())
+    {
         if let Some(buckets) = by_limit_id.as_object() {
             for (index, (key, bucket)) in buckets.iter().take(MAX_BUCKETS).enumerate() {
                 append_bucket_windows(&mut windows, bucket, index + 1, key == "codex");
@@ -1150,7 +1222,10 @@ fn normalize_rate_limits(result: &Value, _fetched_at_ms: u64) -> Vec<QuotaWindow
 }
 
 fn rate_limit_bucket_count(result: &Value) -> usize {
-    match result.get("rateLimitsByLimitId") {
+    match result
+        .get("rateLimitsByLimitId")
+        .filter(|value| !value.is_null())
+    {
         Some(by_limit_id) => by_limit_id.as_object().map_or(0, serde_json::Map::len),
         None => usize::from(result.get("rateLimits").is_some()),
     }
@@ -1170,7 +1245,10 @@ fn has_invalid_rate_limit_shape(result: &Value) -> bool {
         }
         false
     };
-    match result.get("rateLimitsByLimitId") {
+    match result
+        .get("rateLimitsByLimitId")
+        .filter(|value| !value.is_null())
+    {
         Some(by_limit_id) => by_limit_id
             .as_object()
             .is_none_or(|buckets| buckets.values().any(bucket_is_invalid)),
@@ -1192,7 +1270,10 @@ fn has_invalid_used_percent(result: &Value) -> bool {
                 })
         })
     };
-    match result.get("rateLimitsByLimitId") {
+    match result
+        .get("rateLimitsByLimitId")
+        .filter(|value| !value.is_null())
+    {
         Some(by_limit_id) => by_limit_id
             .as_object()
             .is_some_and(|buckets| buckets.values().any(has_invalid_bucket)),
@@ -1522,6 +1603,26 @@ mod tests {
     }
 
     #[test]
+    fn nullable_multibucket_view_preserves_the_documented_legacy_snapshot() {
+        let response = json!({
+            "rateLimitsByLimitId": null,
+            "rateLimits": {
+                "primary": { "usedPercent": 25, "resetsAt": null },
+                "secondary": null,
+                "credits": { "hasCredits": true, "unlimited": false, "balance": "42.5" }
+            }
+        });
+        let snapshot = Arc::new(Mutex::new(CodexSnapshot::disconnected()));
+        apply_rate_limit_result(&snapshot, &response).expect("nullable map uses legacy view");
+        let snapshot = lock_snapshot(&snapshot);
+        assert_eq!(snapshot.windows[0].remaining_percent, Some(75.0));
+        assert_eq!(snapshot.data_status, DataStatus::Current);
+        assert_eq!(snapshot.diagnostic, None);
+        let dto = serde_json::to_value(&snapshot.monitoring).expect("safe monitoring");
+        assert_eq!(dto["buckets"][0]["credits"]["balance"], "42.5");
+    }
+
+    #[test]
     fn used_percent_conversion_covers_boundaries_and_invalid_values() {
         for (used, expected) in [
             (0.0, Some(100.0)),
@@ -1585,6 +1686,15 @@ mod tests {
             window_duration_mins: None,
         });
         snapshot.fetched_at_ms = Some(123);
+        apply_quota_monitoring(
+            &mut snapshot.monitoring,
+            &json!({"rateLimits":{"credits":{"balance":"5"}}}),
+        );
+        apply_activity_result(
+            &mut snapshot.monitoring,
+            &json!({"summary":{"lifetimeTokens":5}}),
+            Some(123),
+        );
         let shared = Arc::new(Mutex::new(snapshot));
 
         handle_notification(
@@ -1612,6 +1722,12 @@ mod tests {
         assert!(snapshot.windows.is_empty());
         assert_eq!(snapshot.fetched_at_ms, None);
         assert_eq!(snapshot.data_status, DataStatus::Unknown);
+        assert!(snapshot.monitoring.buckets.is_empty());
+        assert_eq!(
+            snapshot.monitoring.activity.state,
+            monitoring::ActivityState::Unavailable
+        );
+        assert_eq!(snapshot.monitoring.activity.fetched_at_ms, None);
     }
 
     #[test]
@@ -1804,6 +1920,51 @@ mod tests {
     }
 
     #[test]
+    fn unsupported_optional_activity_keeps_quota_data_connected() {
+        let input =
+            b"{\"id\":1,\"error\":{\"code\":-32601,\"message\":\"method not found\"}}\n".to_vec();
+        let stream = start_frame_reader(Cursor::new(input)).expect("fake optional-method error");
+        let snapshot = Arc::new(Mutex::new(CodexSnapshot::disconnected()));
+        {
+            let mut current = lock_snapshot(&snapshot);
+            current.connection_status = ConnectionStatus::Connected;
+            current.data_status = DataStatus::Current;
+            current.fetched_at_ms = Some(10);
+            current.windows.push(QuotaWindow {
+                id: "codex-primary".to_owned(),
+                name: "Codex · primary".to_owned(),
+                remaining_percent: Some(40.0),
+                reset_at_ms: None,
+                window_duration_mins: None,
+            });
+        }
+        let (mut rpc, reader) = RpcConnection::new(
+            Vec::new(),
+            stream,
+            Arc::new(AtomicBool::new(false)),
+            Arc::clone(&snapshot),
+        );
+        let response = rpc.request("account/usage/read", None);
+        assert_eq!(response, Err(BridgeFailure::UnsupportedMethod));
+        apply_optional_activity_response(&snapshot, response)
+            .expect("unsupported optional activity is non-fatal");
+        let status = lock_snapshot(&snapshot);
+        assert_eq!(status.connection_status, ConnectionStatus::Connected);
+        assert_eq!(status.data_status, DataStatus::Current);
+        assert_eq!(status.windows[0].remaining_percent, Some(40.0));
+        assert_eq!(
+            status.monitoring.activity.state,
+            monitoring::ActivityState::Unavailable
+        );
+        assert_eq!(
+            status.monitoring.activity.diagnostic,
+            Some("activityUnsupported")
+        );
+        drop(status);
+        let _ = reader.join();
+    }
+
+    #[test]
     fn frame_queue_saturation_fails_closed_without_unbounded_buffering() {
         let input = (0..=MAX_QUEUED_FRAMES)
             .map(|_| "{\"method\":\"account/rateLimits/updated\"}\n")
@@ -1953,6 +2114,7 @@ mod tests {
                 "diagnostic",
                 "displayLabel",
                 "fetchedAtMs",
+                "monitoring",
                 "providerId",
                 "source",
                 "windows"

@@ -15,6 +15,7 @@ import {
   formatRemainingPercent,
   type DemoScenario,
 } from "../src/lib/quota";
+import { runActivityRegression } from "./activity-regression";
 
 type JsonObject = Record<string, unknown>;
 
@@ -449,6 +450,7 @@ await check("live source starts disconnected and never creates demo fallback", (
       "windows",
       "fetchedAtMs",
       "diagnostic",
+      "monitoring",
     ],
     "live snapshot",
   );
@@ -457,6 +459,14 @@ await check("live source starts disconnected and never creates demo fallback", (
   equal(snapshot.connectionStatus, "disconnected", "initial consent state");
   equal(snapshot.windows.length, 0, "no fabricated quota");
   equal(snapshot.fetchedAtMs, null, "no fabricated fetch");
+  equal(
+    snapshot.monitoring.activity.state,
+    "unavailable",
+    "activity unavailable without connection",
+  );
+  equal(snapshot.monitoring.activity.dailyBuckets, null, "no fabricated activity");
+  equal(snapshot.monitoring.buckets.length, 0, "no fabricated credit balances");
+  equal(snapshot.monitoring.earnedResets, null, "no fabricated earned resets");
   for (const state of [
     "error",
     "auth-required",
@@ -536,6 +546,23 @@ await check("live freshness ages with no requests and failed data stays stale", 
     );
   }
   assert(codexMessage(stale).includes("stale"), "stale message visible");
+  const activityOnly: LiveCodexSnapshot = {
+    ...current,
+    dataStatus: "unknown",
+    monitoring: {
+      ...current.monitoring,
+      activity: { ...current.monitoring.activity, state: "current", fetchedAtMs: fixedNowMs },
+    },
+  };
+  equal(
+    ageCodexSnapshot(activityOnly, fixedNowMs + CODEX_FRESHNESS_MS).monitoring.activity.state,
+    "stale",
+    "activity ages independently of unknown quota",
+  );
+});
+
+await check("Codex activity calendar and summary regression", () => {
+  assertionCount += runActivityRegression();
 });
 
 console.log(

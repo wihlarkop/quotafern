@@ -1,3 +1,67 @@
+export interface CodexActivity {
+  state: "unavailable" | "current" | "stale" | "error";
+  summary: {
+    lifetimeTokens: number | null;
+    peakDailyTokens: number | null;
+    currentStreakDays: number | null;
+    longestStreakDays: number | null;
+    longestRunningTurnSec: number | null;
+  };
+  dailyBuckets: { date: string; tokens: number | null }[] | null;
+  fetchedAtMs: number | null;
+  diagnostic: string | null;
+}
+
+export interface CodexMonitoring {
+  buckets: {
+    label: string;
+    credits: {
+      hasCredits: boolean | null;
+      unlimited: boolean | null;
+      balance: string | null;
+      unit: "credits";
+    } | null;
+    spending: {
+      limit: string | null;
+      used: string | null;
+      remainingPercent: number | null;
+      resetAtMs: number | null;
+      unit: null;
+    } | null;
+  }[];
+  earnedResets: {
+    availableCount: number | null;
+    details:
+      | {
+          status: "available" | "redeeming" | "redeemed" | "unknown";
+          grantedAtMs: number | null;
+          expiresAtMs: number | null;
+        }[]
+      | null;
+  } | null;
+  activity: CodexActivity;
+}
+
+export function unavailableCodexMonitoring(): CodexMonitoring {
+  return {
+    buckets: [],
+    earnedResets: null,
+    activity: {
+      state: "unavailable",
+      summary: {
+        lifetimeTokens: null,
+        peakDailyTokens: null,
+        currentStreakDays: null,
+        longestStreakDays: null,
+        longestRunningTurnSec: null,
+      },
+      dailyBuckets: null,
+      fetchedAtMs: null,
+      diagnostic: null,
+    },
+  };
+}
+
 /** Sanitized native presentation contract. No account identity or raw protocol fields. */
 export interface LiveCodexSnapshot {
   source: "live";
@@ -21,6 +85,7 @@ export interface LiveCodexSnapshot {
   }[];
   fetchedAtMs: number | null;
   diagnostic: string | null;
+  monitoring: CodexMonitoring;
 }
 
 export const CODEX_FRESHNESS_MS = 5 * 60_000;
@@ -38,6 +103,7 @@ export function disconnectedCodexSnapshot(): LiveCodexSnapshot {
     windows: [],
     fetchedAtMs: null,
     diagnostic: null,
+    monitoring: unavailableCodexMonitoring(),
   };
 }
 
@@ -46,16 +112,19 @@ export function ageCodexSnapshot(
   snapshot: LiveCodexSnapshot,
   nowMs: number = Date.now(),
 ): LiveCodexSnapshot {
-  if (
-    snapshot.dataStatus === "current" &&
-    (snapshot.fetchedAtMs === null ||
-      !Number.isFinite(snapshot.fetchedAtMs) ||
-      snapshot.fetchedAtMs > nowMs ||
-      nowMs - snapshot.fetchedAtMs >= CODEX_FRESHNESS_MS)
-  ) {
-    return { ...snapshot, dataStatus: "stale" };
-  }
-  return snapshot;
+  const expired = (at: number | null) =>
+    at === null || !Number.isFinite(at) || at > nowMs || nowMs - at >= CODEX_FRESHNESS_MS;
+  const quotaStale = snapshot.dataStatus === "current" && expired(snapshot.fetchedAtMs);
+  const activity = snapshot.monitoring.activity;
+  const activityStale = activity.state === "current" && expired(activity.fetchedAtMs);
+  if (!quotaStale && !activityStale) return snapshot;
+  return {
+    ...snapshot,
+    dataStatus: quotaStale ? "stale" : snapshot.dataStatus,
+    monitoring: activityStale
+      ? { ...snapshot.monitoring, activity: { ...activity, state: "stale" } }
+      : snapshot.monitoring,
+  };
 }
 
 export function codexMessage(snapshot: LiveCodexSnapshot): string {
