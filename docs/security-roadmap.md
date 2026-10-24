@@ -106,3 +106,7 @@ The repository uses committed Bun and Cargo lockfiles. CI uses frozen Bun instal
 - Maintain incident steps for disabling a compromised integration, revoking Quotafern-owned SIWC sessions through the documented revocation endpoint, clearing app-owned secrets, and advising the user how to review/revoke the app in ChatGPT settings. Never instruct the user to share credentials.
 
 No SEC-03 through SEC-05 milestone is claimed complete. Passing synthetic tests or CI does not resolve the live startup/auth gate or constitute native OS acceptance.
+
+## ACC-01 account isolation foundation
+
+The [ACC-01 architecture and security analysis](acc-01-architecture.md) adds pure TypeScript ownership, aliases, metadata migration, selection and removal-barrier contracts with synthetic regressions. It is not connected to the native bridge, production UI or localStorage. It introduces no credential field, provider operation, new permission or CSP change; both Codex live gates remain false. Local aliases never authorize monitoring or establish shared billing. TypeScript cleanup acknowledgements are testable coordination contracts, not trusted proof of native cleanup. A future native coordinator must enforce account/connection generations and cleanup before removal, independently of renderer claims. SEC-01/SEC-02 and F4 startup/Unix forced-parent termination blockers remain open; app-owned secret storage and provider-specific multi-login grants require separate review.

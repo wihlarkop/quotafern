@@ -57,7 +57,7 @@ The same account-management design applies to every supported provider. Specific
 - Support long and duplicate aliases without hiding keyboard-accessible actions.
 - Keep authenticated details and raw API key fragments out of display by default.
 
-The underlying provider, account, connection, and quota-source identity design belongs to ACC-01 in `docs/provider-connections-roadmap.md`. No production multi-account UI should be connected to live accounts before that model passes security review.
+The underlying provider, account, connection, and quota-source identity design belongs to [ACC-01 architecture](acc-01-architecture.md). Its [multi-account UX contract](acc-01-ux-contract.md) specifies fields, selection, rename/removal, independent states, responsive behavior and accessibility for ACC-04/UX-02. ACC-01 adds no production screen redesign or live integration. No production multi-account UI should be connected to live accounts before that model passes security review.
 
 ## UX-01: Design exploration
 

@@ -1,5 +1,7 @@
 # Architecture
 
+ACC-01 adds an isolated, unwired [multi-account foundation](acc-01-architecture.md) and [future UX contract](acc-01-ux-contract.md). Its pure metadata codec and synthetic lifecycle/view contracts do not change the historical F1–F3 runtime described below. Application persistence remains appearance/palette only; F3 remains single-session and live-disabled.
+
 Quotafern keeps the desktop lifecycle in the Tauri host and quota presentation in Svelte. F3 adds a Codex bridge foundation and consent UI; production connection is disabled pending a documented safe app-server startup policy. The F1/F2 sections below record the foundation; the F3 section supersedes their provider-only restrictions.
 
 ## Responsibilities

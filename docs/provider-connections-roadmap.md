@@ -32,7 +32,7 @@ OpenCode is a coding client that can use multiple upstream providers, not necess
 
 ## ACC-01: Shared multi-account data model
 
-Status: Planned. Must be designed before implementing a second provider adapter.
+Status: ACC-01 additive foundation implemented; integration and account-management UI remain planned. See [architecture and migration](acc-01-architecture.md), [future UX contract](acc-01-ux-contract.md) and [validation](acc-01-validation.md). The module is not wired into the F3 runtime or storage, and does not authorize a second adapter.
 
 Use these independent concepts:
 
