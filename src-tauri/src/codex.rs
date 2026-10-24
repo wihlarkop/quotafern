@@ -1550,7 +1550,8 @@ mod tests {
             ])
             // Use the same generated app manifest/capabilities as production.
             // An empty mock_context permits local app commands without ACLs.
-            .build(tauri::generate_context!())
+            // Test mode skips a second macOS Info.plist symbol, not the ACL.
+            .build(tauri::generate_context!(test = true))
             .unwrap()
     }
 
