@@ -71,7 +71,8 @@
 
   let activeTab = $state("overview");
   let scenario = $state<DemoScenario>("healthy");
-  let snapshot = $derived(createDemoSnapshot(scenario));
+  let snapshotNow = $state(Date.now());
+  let snapshot = $derived(createDemoSnapshot(scenario, snapshotNow));
   let preferences = $state<Preferences>(readPreferences());
   let systemPrefersDark = $state(false);
   let resolvedTheme = $derived(
@@ -121,9 +122,11 @@
       // The explicit light theme remains the safe fallback when matchMedia is unavailable.
     }
     window.addEventListener("storage", handleStorage);
+    window.addEventListener("keydown", handleEscape);
     return () => {
       mediaQuery?.removeEventListener("change", handleSystemTheme);
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("keydown", handleEscape);
     };
   });
 
@@ -185,6 +188,7 @@
     isRefreshing = true;
     refreshMessage = "Refreshing the local sample…";
     await new Promise((resolve) => window.setTimeout(resolve, 560));
+    snapshotNow = Date.now();
     localRefreshLabel = "just now · locally";
     if (scenario === "auth") {
       refreshMessage = "This fixture simulates sign-in needed. No sign-in was attempted.";
@@ -214,11 +218,36 @@
       try {
         await invoke("hide_popup");
       } catch {
-        closeMessage = "Couldn’t hide this popup. Try opening it again from the tray.";
+        closeMessage = "The tray command couldn’t hide this popup. Use the tray menu to hide it.";
       }
       return;
     }
-    closeMessage = "This browser preview can’t hide its window. Use the browser’s close control.";
+    closeMessage =
+      "This browser preview can’t hide its window. Close the browser tab to dismiss it.";
+  }
+
+  function handleEscape(event: KeyboardEvent) {
+    const activeElement = document.activeElement;
+    const hasOpenDialog = document.querySelector('dialog[open], [role="dialog"]');
+
+    if (
+      event.key !== "Escape" ||
+      event.defaultPrevented ||
+      event.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      hasOpenDialog ||
+      activeElement instanceof HTMLSelectElement ||
+      activeElement instanceof HTMLTextAreaElement ||
+      (activeElement instanceof HTMLInputElement &&
+        !["radio", "checkbox"].includes(activeElement.type)) ||
+      (activeElement instanceof HTMLElement && activeElement.isContentEditable)
+    )
+      return;
+
+    event.preventDefault();
+    void closePopup();
   }
 </script>
 
@@ -270,7 +299,11 @@
     <div class="view-heading">
       <div>
         <h1>Usage overview</h1>
-        <p>Three synthetic CLI profiles</p>
+        <p>
+          {snapshot.providers.length === 0
+            ? "No synthetic CLI profiles"
+            : "Three synthetic CLI profiles"}
+        </p>
       </div>
       <Button
         class="refresh-button"
@@ -278,7 +311,8 @@
         size="sm"
         onclick={refreshDemo}
         disabled={isRefreshing}
-        aria-label="Refresh local demo sample"
+        aria-label={isRefreshing ? "Refreshing demo sample" : "Refresh local demo sample"}
+        aria-busy={isRefreshing}
       >
         <RefreshCw
           size={14}
@@ -293,7 +327,7 @@
     {#if snapshot.providers.some((provider) => provider.dataStatus === "stale")}
       <div class="state-banner stale-banner" role="status">
         <Clock3 size={15} strokeWidth={2} aria-hidden="true" />
-        <span>Offline / stale sample · captured {formatFetchedAt(snapshot.providers[0])}</span>
+        <span>Stale demo sample · captured {formatFetchedAt(snapshot.providers[0])}</span>
       </div>
     {:else if scenario === "auth"}
       <div class="state-banner auth-banner" role="status">
@@ -335,7 +369,7 @@
               </div>
               <span class="demo-profile-label">Demo only</span>
             </div>
-            <div class="window-grid" aria-label={`${provider.name} quota windows`}>
+            <div class="window-grid" role="group" aria-label={`${provider.name} quota windows`}>
               {#each provider.windows as window (window.id)}
                 {@const band = bandClass(provider, window)}
                 <section class="quota-window" aria-label={`${window.name} quota window`}>
@@ -361,6 +395,7 @@
                       aria-valuemin="0"
                       aria-valuemax="100"
                       aria-valuenow={window.remainingPercent}
+                      aria-valuetext={`${formatRemainingPercent(window.remainingPercent)} remaining`}
                       class:meter-normal={band === "normal"}
                       class:meter-low={band === "low"}
                       class:meter-critical={band === "critical"}
@@ -391,7 +426,7 @@
 
     <div class="source-note">
       <span class="note-dot" aria-hidden="true"></span><span
-        >Illustrative data only · no provider is connected</span
+        >Demo sample only · no provider connected</span
       >
     </div>
     {#if localRefreshLabel}
@@ -407,9 +442,9 @@
       </div>
     </div>
 
-    <div class="account-list" aria-label="Synthetic demo profiles">
+    <div class="account-list" role="list" aria-label="Synthetic demo profiles">
       {#each snapshot.providers as provider (provider.id)}
-        <div class="account-row">
+        <div class="account-row" role="listitem">
           <span class="provider-icon" aria-hidden="true">
             {#if provider.id === "codex"}<Command size={16} strokeWidth={1.8} />
             {:else if provider.id === "claude-code"}<Code2 size={16} strokeWidth={1.8} />
@@ -480,7 +515,7 @@
           <span><Moon size={14} aria-hidden="true" />Dark</span>
         </label>
       </div>
-      <div class="palette-options" aria-label="Color palette">
+      <div class="palette-options" role="group" aria-label="Color palette">
         <button
           class="palette-option"
           type="button"
@@ -546,7 +581,7 @@
   </Tabs.Content>
 
   <footer class="popup-footer">
-    <span><span class="footer-dot" aria-hidden="true"></span>Demo data · local preview</span>
+    <span><span class="footer-dot" aria-hidden="true"></span>Demo data · not connected</span>
     {#if activeTab !== "settings"}
       <Button
         variant="ghost"

@@ -182,8 +182,9 @@ await check("all fixtures keep the safe snapshot schema and expected states", ()
       JSON.stringify(createDemoSnapshot(scenario, fixedNowMs)),
       `${scenario} fixed-time output must be identical`,
     );
-    exactKeys(snapshot, ["scenario", "providers"], `${scenario} snapshot`);
+    exactKeys(snapshot, ["scenario", "source", "providers"], `${scenario} snapshot`);
     equal(snapshot.scenario, scenario, `${scenario} fixture identity`);
+    equal(snapshot.source, "synthetic", `${scenario} source identity`);
 
     const providers = list(snapshot.providers, `${scenario} providers`);
     const expectedProviderCount = scenario === "empty" ? 0 : 3;
@@ -421,4 +422,4 @@ await check(
 console.log(
   `Regression summary: ${passedGroups} passed, ${failedGroups} failed; ${assertionCount} assertions.`,
 );
-if (failedGroups > 0) throw new Error("F1 regression checks failed");
+if (failedGroups > 0) throw new Error("Quotafern regression checks failed");

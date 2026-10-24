@@ -38,7 +38,7 @@ jobs:
       - name: Build frontend
         run: bun run build
 
-      - name: Run F1 regression
+      - name: Run snapshot and security regression
         run: bun run regression
 
   desktop:
@@ -95,6 +95,9 @@ jobs:
 
       - name: Check Rust package
         run: bun run check:rust
+
+      - name: Run popup placement regression
+        run: bun run regression:rust
 
       - name: Compile desktop app without bundling
         run: bun run build:desktop --no-bundle

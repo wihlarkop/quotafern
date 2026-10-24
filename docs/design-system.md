@@ -1,6 +1,6 @@
 # Design system
 
-The F1 interface is a compact desktop popup built with Svelte 5, Tailwind CSS 4, local shadcn-svelte components, Bits UI primitives, and Lucide icons.
+The interface is a compact desktop popup built with Svelte 5, Tailwind CSS 4, local shadcn-svelte components, Bits UI primitives, and Lucide icons. F2 preserves its established visual direction while improving readability and keyboard behavior.
 
 ## Theme model
 
@@ -24,5 +24,9 @@ Oxfmt enables Svelte formatting with `"svelte": true` and uses the installed Sve
 - Keep controls keyboard accessible, pair color-coded states with readable text, and respect reduced-motion preferences.
 
 ## Native shell relationship
+
+F2 uses one scrolling content region with persistent navigation and footer. Supporting labels have a readable 11px floor, while provider names and remaining values retain stronger hierarchy. Long identifiers expose their full text accessibly; narrow widths wrap quota metadata. Review at 320, 380, and 420 logical pixels and short heights; browser viewport checks do not establish Windows DPI acceptance.
+
+Escape uses the same restricted native hide action as Close. Inner controls retain first refusal of Escape; blur does not dismiss the popup. Reduced-motion preferences suppress nonessential transitions.
 
 The interface is the visible content of the single `main` Tauri window. Native window close and tray lifecycle are owned by Rust. The renderer's only F1 native command is `hide_popup`; UI components should not gain broader host capabilities for convenience.
