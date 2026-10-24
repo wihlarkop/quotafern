@@ -1,150 +1,130 @@
-# Quotafern provider connections roadmap
+# Provider Connections and Multi-Account Roadmap
 
-**Status:** Planned / research-backed design note only — 2026-10-24.
+Status: Planned. Documentation only. Owner-approved product direction.
 
-**Dependency:** Codex F3 **live-disabled foundation was squash-merged** in PR #3 at `4bdf1fe4344bfb6ac93f47a1ac89710b866bb49c` after Windows owner acceptance 30/30 and exact-HEAD CI 4/4. Its **live Codex gate remains disabled**; safe startup and Unix forced-exit issues remain deferred F4 blockers. Do not implement other provider adapters before their own documented read-only/security gates. This document does not authorize a live provider connection, account-login workflow, token access, background polling, deployment or merge.
+Quotafern follows a local-first, consent-first connection model for every supported provider. The standard onboarding flow is Detect locally, Connect with explicit consent, optionally Remember connection, and Disconnect. This roadmap does not enable any connection or credential access.
 
-## Product principle: effortless, explicit, provider-specific
+## Provider coverage
 
-The common Quotafern UX pattern is **Detect locally → Connect with informed consent → Optional Remember connection → Easy Disconnect**.
+Every provider adapter must be designed for more than one account, workspace, or authorized connection. The same architectural contract applies to Codex, Claude Code, Gemini CLI, GitHub Copilot, OpenCode-connected services, OpenRouter, and future subscription or API providers.
 
-The provider's official "Sign in with X" and the authorization Quotafern requires to **read subscription quota** are **different things**. Never assume identity-login scopes, agent-inference permissions, API billing, or another CLI's existing tokens automatically grant permission to read remaining subscription allowances.
+Support in the account model does not imply that each provider already offers a supported read-only monitoring API or multi-login capability. Providers without documented and authorized monitoring access remain Coming Soon.
 
-**Detection** must remain passive and non-sensitive. Discover a plausible supported local executable/install without launching authenticated operations, opening credentials, refreshing a token, accessing remote services, or claiming the user is logged in. Explain the difference between "installed", "session detected through a specifically reviewed mechanism", and "connected/monitoring". No fake connection status based on presence of a directory.
+### Codex
 
-**First connection** requires explicit consent for the actual mechanism and side effects, enforced natively by the Rust host; an ordinary Svelte checkbox is not an authorization boundary. Only a documented, scoped read-only monitoring path may be enabled.
+Codex CLI supports ChatGPT account sign-in. F3's live-disabled foundation was squash-merged in PR #3 at `4bdf1fe4344bfb6ac93f47a1ac89710b866bb49c`. The bridge is still single-session, and live startup remains blocked. Do not read or copy Codex credentials, change a user's CLI login, or bypass the startup gate to implement multiple accounts.
 
-**Remember connection** is opt-in, revocable and off by default. Persist only the minimum non-sensitive preference after a separate consent/security review. Never persist raw credentials, silently resume unauthorized activity, or bypass a provider's expired/revoked permissions. Auto-reconnect is a future feature, not part of the gated F3 build.
+### Claude Code
 
-**Disconnect** terminates Quotafern-owned monitoring/child processes and clears in-memory monitoring state without logging the user out of the original provider CLI or changing that application's accounts. Tell users clearly if Quotafern owns separate OAuth credentials and revocation differs.
+Claude Code has its own Claude account login. Anthropic places restrictions on third-party use of subscription OAuth credentials. Quotafern must not extract Claude Code tokens or imitate the provider's OAuth client. A compliant, documented read-only quota path must exist before implementation.
 
-**Honest states:** Coming Soon, not installed, installed/not connected, connecting, connected, stale, auth required, unsupported auth type, unavailable/error. No demo-to-live fallback. Unsupported providers do not get fake usage meters, login buttons or background credential discovery.
+### Gemini CLI
 
-## Provider-by-provider authorization decisions
+Gemini CLI supports Sign in with Google and the interactive `/stats model` command. Neither proves a stable headless read-only quota API. Investigate documented machine-readable quota access and provider permission before implementation.
 
-| Provider | Provider-owned sign-in is documented | Preferred future Quotafern monitoring path | Important authorization caveat | Current state |
-| --- | --- | --- | --- | --- |
-| **Codex** | ChatGPT-backed Codex CLI login | Official Codex app-server account/rate-limits/usage contract using a user-approved existing local session if safe | SIWC identity/inference permissions do not establish a read-only quota grant; F3 has startup/Remote Control, native consent, and child-containment blockers | **F3 foundation merged; live disabled** |
-| **Claude Code** | Claude account login for subscription-backed Claude Code, distinct from Anthropic Console/API-key use | Research **documented read-only, provider-permitted** status/quota export through supported Claude Code surfaces | Anthropic restricts use of Claude subscription OAuth credentials in third-party tools; do **not** extract/reuse Claude Code tokens, pose as official Claude Code, or offer an unofficial Claude subscription OAuth flow | **Coming Soon; authorization research gate** |
-| **Gemini CLI** | Official **Sign in with Google** in Gemini CLI; Google AI Pro/Ultra and personal/organization modes differ | Research supported local quota/status reporting (Gemini CLI `/stats model`), or separately authorized Google quota API/scopes if documented | Google account identity OAuth is not itself permission to read Gemini CLI subscription limits. Avoid hidden internal Code Assist endpoints and automated agent turns just to fetch stats | **Coming Soon; documented non-interactive read method unverified** |
-| **GitHub Copilot** | Official Copilot CLI browser/device OAuth; `gh` CLI fallback | Evaluate **documented GitHub billing/usage REST API** for eligible personal accounts, org/enterprise paths only when explicitly supported | GitHub identity does not itself grant Copilot usage scopes; personal billing and org-billed seats differ. Inspect granted token permissions; no broad repo/org permissions merely for billing visibility | **Future candidate; entitlement and scope research** |
+### GitHub Copilot
 
-### Critical Claude boundary
+GitHub provides official sign-in and billing/usage APIs. Personal, organization, and enterprise account entitlements and API scopes differ. Quotafern must request only supported minimum permissions and never assume GitHub identity login is permission to read Copilot quota.
 
-Anthropic's published help states subscription OAuth is intended for Anthropic's own applications and places restrictions on third-party software tools using subscription plan authentication. Do not clone Claude Code's OAuth login or use Claude Code's cached auth tokens against private endpoints. Installing Claude Code does not grant Quotafern the right to read its credential store. A potential *read-only status integration* must be researched against current supported product terms and an authorized documented interface; if no compliant method exists, keep **Coming Soon** with an honest explanation rather than an unofficial workaround.
+### OpenCode and API providers
 
-### Gemini boundary
+OpenCode is a coding client that can use multiple upstream providers, not necessarily a single billing provider. Two API keys might belong to one shared billing wallet. Distinguish upstream provider, user account or workspace, credential, and authoritative billing source. Never count a shared balance twice or mistake API metering for subscription quotas.
 
-The official Gemini CLI supports Google sign-in and the interactive `/stats model` command for usage and quotas. That is a user-facing feature, not proof of a stable machine-readable API safe for background monitoring. Research an official structured read-only interface, subprocess startup behavior, token ownership, exact data meaning/reset semantics, and permission scopes before implementation. Do not run CLI prompts or inference for a quota check. Keep API-key usage/cost separate from Gemini Code Assist subscription quotas.
+## ACC-01: Shared multi-account data model
 
-### Copilot boundary
+Status: Planned. Must be designed before implementing a second provider adapter.
 
-Copilot CLI can authenticate via official OAuth, token-based flows, or an existing `gh` login. However, GitHub's documented billing usage endpoints have different eligibility and scopes for personally billed subscriptions versus organization/enterprise seats. Build the adapter around **an authorized quota/billing API**, not a generic GitHub login badge. Review least-privilege OAuth or a provider-supported local token broker; do not copy `gh` tokens indiscriminately. If only billed consumption is available, do not invent remaining quota/reset data.
+Use these independent concepts:
 
-## ACC-01–04 — Multi-account and multi-credential for ALL providers (planned)
+- Provider: integration type, such as Codex or OpenRouter.
+- Account: a logical user account, workspace, or billing owner.
+- Connection: one authorized local session, OAuth grant, or Quotafern-owned API key.
+- Quota source: the authoritative subscription window, billing pool, credit balance, or activity stream.
+- Local account ID: stable and opaque, never based on credential content.
+- Local connection ID: stable and opaque, independent of its display label.
+- Account alias: user-editable name for each account.
+- Connection alias: user-editable name for each session or API key.
 
-**Owner-approved product requirement:** every Quotafern provider integration must be designed to handle **multiple accounts and multiple authorized connections per provider**, including optional multiple API keys where a provider supports key-based access. Every connected account **and each connection/key** can have a user-editable **name / alias** (for example: `Codex · Personal`, `Codex · Work`, `OpenRouter · Key A`, `OpenRouter · Client B`). These aliases are Quotafern-local labels, not external account names. Renaming them must **not** change provider accounts, credentials, keys, billing identity or quotas. This requirement applies uniformly to **Codex, Claude Code, Gemini CLI, GitHub Copilot, API providers, and future adapters**.
+Allow names such as `Codex - Personal`, `Codex - Work`, `OpenRouter - Key A`, and `OpenRouter - Project B`. Aliases are local labels, not a claim about authenticated external identity. Renaming an account or connection must not change the provider account, credentials, login state, consent, quota, or billing mapping.
 
-**Technical honesty:** shared architecture supporting many connections does not assert that every provider currently permits multiple simultaneously authenticated sessions, offers a sanctioned quota API, or permits third-party subscription token reuse. Provider adapters stay Coming Soon / Unsupported until read-only authorization and source semantics are verified. The Codex F3 live-disabled foundation currently supports one native bridge/session; multi-account is future work, not delivered in F3.
+Allow duplicate names without merging identities. Where external identity is not verified through a documented authorized read, show an unknown identity rather than guessing it.
 
-### Canonical data ownership and identity
+Migration from the F3 single bridge and single snapshot must be explicitly designed and tested. Do not alter its disabled production gate just to introduce this model.
 
-```text
-Provider (0..N supported adapters)
-  └── Account / Workspace / Billing owner (0..N)
-       ├── Stable local opaque account ID
-       ├── Editable account display name / alias
-       ├── Connection / Credential (0..N)
-       │    ├── Stable local opaque connection ID
-       │    ├── Editable connection display name / alias
-       │    ├── Authorized mechanism: local session, provider OAuth, app-owned API key
-       │    └── Independent consent, reconnect choice, status and expiry
-       └── Quota / Billing Source (0..N)
-            ├── Subscription windows and resets
-            ├── API requests, metering and spending (distinct from subscription quota)
-            ├── Credits and reset entitlements (distinct from spend)
-            └── Activity buckets and freshness
-```
+## ACC-02: Independent account connections
 
-- **Identity is not a display name.** Alias collisions are allowed and handled with local stable IDs and provider grouping; editing a name must not disconnect or remap an account. Never use raw tokens, API key fragments, email addresses or session secrets as IDs. Provider identity may only be bound after a documented, authorized read; before then, show unverified or unknown.
-- **Key ≠ account ≠ billing source.** Two OpenRouter keys, for example, could charge the same upstream wallet, or different workspaces. Model and display that relationship only if verified by the provider; never assume separate balances or aggregate them twice. OpenCode is a coding client that may use different upstream providers, not necessarily a billing provider of its own.
-- **Multiple Codex logins:** support independent user-named profiles conceptually, but do not copy Codex auth files, switch another CLI's active login behind the user's back, or create multi-session support by sharing mutable credentials. Validate whether official isolation per profile is documented and safe before implementing actual concurrency.
-- **Isolation:** each connection maintains its own permission, status, cooldown, error, last-read timestamp and selected account identity. Refresh, logout/change, Disconnect, Remove or failure of connection A must not mutate B's state or silently replace B's usage.
-- **Persistence:** aliases and non-sensitive display preferences are local-first, persist after Quotafern restart, remain editable, and can be deleted. Treat aliases as user data, minimize stored fields, avoid logging names unnecessarily, and never store raw API keys in renderer/localStorage. Quotafern-owned secrets require independently approved OS-protected storage with clear revocation and deletion; external CLI secret stores remain untouched.
-- **Manage lifecycle:** Add account / Add connection or key / Rename account / Rename connection / Disconnect / Remove connection / Delete Quotafern-owned key must have distinct, transparent consequences. Disabling Remember or removing an account must revoke Quotafern's consent association; never auto-reconnect removed entries.
-- **Aggregation and filtering:** support `All Accounts` / `Provider` / `Account` / `Connection`; show user alias, provider, source kind, updated-at and actual status. No summing percentages, mixing currency/credits/tokens, assuming units, or double-counting shared billing. Keep per-account subscription limits and reset clocks visible independently.
+Status: Planned, following ACC-01 and an approved provider-specific security gate.
 
-### Staged milestones and acceptance
+- Permit at least two separately named accounts for a provider when official authorization supports it.
+- Manage status, consent, error, cooldown, token expiry, freshness, and disconnect independently.
+- Prevent account A's login change, error, refresh, or removal from affecting account B.
+- Offer optional Remember connection per connection only after native consent and security acceptance.
+- Keep automatic reconnect off by default and revoke it when a connection is removed.
+- Do not copy external CLI tokens or silently switch another application's active account.
 
-- **ACC-01 — Model and migration (first):** define provider/account/connection/quota-source DTOs, stable IDs, editable aliases, explicit unknown identity, and safe migration from the F3 single `CodexBridge`/snapshot model. Provide a mock-validated, no-secret migration plan and tests for duplicate labels, missing identities, two sessions and two keys. Do not silently change F3 production behavior.
-- **ACC-02 — Multi-account provider acceptance:** implement 2+ user-named accounts under the first provider with a **documented safe multi-profile/authorization mechanism**; isolate freshness/error/revocation and Disconnect, with permission-safe native acceptance. No real multi-Codex-account access before live Codex is separately approved.
-- **ACC-03 — Multi-key and shared billing:** app-owned key consent/storage if needed, distinct per-key usage where authorized, verified shared billing-source grouping and no-double-counting tests. Never extract existing third-party CLI secrets.
-- **ACC-04 — Soft Native account UX:** coordinate with `docs/ui-ux-roadmap.md`: grouped provider/account cards, per-account and per-key editable names, quick rename, Add account/connection, All Accounts filter, truthful state labels, keyboard navigation and 320–420px layouts. Secure review and owner visual approval before implementation.
+## ACC-03: Multiple API keys and shared billing
 
-**Exit criteria:** two separately named accounts for one supported provider and two separately named credentials/connections for one supported API provider can coexist without conflating identity, quota, billing, state, or consent; renames survive restart and never affect authentication; shared billing cannot be double-counted; unsupported providers never display fictitious connections.
+Status: Planned, following ACC-01 and an approved app-owned secret storage design.
 
-## Proposed end-user connection UX (not implemented)
+- Permit multiple independently named keys per API provider where the provider permits it.
+- Never store raw API keys in the renderer, localStorage, logs, or source control.
+- Use OS-protected storage only for secrets Quotafern is expressly authorized to own.
+- Respect each provider's published quota, API metering, credits, and billing distinctions.
+- Associate multiple keys with one billing source only if confirmed by documented provider data.
+- Never add percentages or different currencies and never double-count a shared wallet.
+- Differentiate Disconnect, Remove connection, Delete owned credential, and provider logout.
 
-### Detected supported installation
+## ACC-04: Account management and Soft Native UX
 
-**Provider: Codex/Gemini/etc. — Installed**
+Status: Planned. Coordinate with `docs/ui-ux-roadmap.md`.
 
-"An existing provider installation was detected. Quotafern can connect to monitor quota, but won't read your session until you approve."
+- Group accounts by provider and show each independently named account and connection.
+- Include Rename account and Rename connection actions, including API key aliases.
+- Provide Add account, Add connection, Disconnect, and Remove with clear consequences.
+- Support All Accounts, Provider, Account, and Connection filters.
+- Show per-account status, last successful refresh, source kind, reset and quota independently.
+- Keep unknown, stale, disconnected, and Coming Soon visibly different from live data.
+- Test duplicate and long aliases, keyboard navigation, and 320-420px popup widths.
 
-Action: **Connect existing session** — only where supported, legally/technically acceptable, and permitted by the user's explicit consent.
+## Consent, authorization, and safe persistence
 
-Optional opt-in: **Remember this connection**, available only after separate security acceptance.
+Detection is passive and never reads credentials or starts authenticated operations. Installed does not mean logged in. Connected requires an actual permitted monitoring read rather than a successful generic identity login.
 
-### No supported existing session
+A native Rust-controlled consent decision is required before first connection. Every adapter must use a documented read-only path with appropriately scoped permission. Identity scopes such as Sign in with ChatGPT or Sign in with Google are not automatically quota scopes.
 
-Use a truthful action based on documented provider capabilities:
-- **Open provider's own sign-in instructions/app**, if local login is officially supported; Quotafern does not imitate or intercept it.
-- **Sign in with Google/GitHub/ChatGPT**, only where Quotafern has a valid supported third-party OAuth client, correct public scope/authorization contract for *monitoring*, PKCE, issuer/audience/state validation, and safe credential custody.
-- **Coming Soon**, when monitoring authorization or safe quota access is unavailable.
+Aliases and non-sensitive user preferences may persist locally after an explicit design review. Quotafern-owned secrets require independently reviewed OS-protected storage; never enumerate or copy other applications' secret stores.
 
-Never display a functional-looking OAuth button that cannot retrieve permitted quota data. Identity-only sign-in may be offered separately only for an independent, useful identity feature—not to imply quota connection.
+A failed provider must not display a synthetic live fallback. Unknown values are not zero. Credit units, API usage, subscription limits, and reset entitlements remain distinct.
 
-### Connection lifecycle requirements
+## Security and evidence gates
 
-- First-run explicit native consent with provider, requested data, background activity, credential ownership and optional session effects.
-- Successful quota read determines Connected; executable detection or browser login alone does not.
-- Per-provider state machine and independent errors/freshness.
-- One provider failure cannot replace another provider's data or show synthetic fallback.
-- Refresh with reasonable cooldown/backoff; no background login/poll without opt-in.
-- Correct distinction: subscription quota vs API-key metering vs billing/credits vs activity tokens vs rate-limit reset entitlements.
-- Disconnect and delete cached non-secret state, with Quotafern never forcing CLI logout.
-- Support missing executable, unsupported account type, revoked/expired session, changed account, offline, unknown quota units and provider version changes.
+- SEC-A: Provider terms, permitted monitoring method, scopes, and startup side effects.
+- SEC-B: Native consent, bounded allowlisted IPC, and no renderer access to secrets.
+- SEC-C: Process containment, cancellation, credential handling, and OS-specific cleanup.
+- SEC-D: Data correctness, shared billing identity, timestamps, unknown states, and retention.
+- SEC-E: Synthetic tests, independent review, hosted CI, and real native acceptance when available.
 
-## Security gates per provider
+Windows owner F3 native acceptance passed 30/30. macOS and Linux native interaction remain NOT RUN because devices are not yet available. CI compilation alone does not prove native interactions.
 
-1. **SEC-A — Terms and documented capability**: current provider permission/terms, machine-readable quota method, official client registration where required, minimum scopes, version compatibility, and audit of startup/network side effects.
-2. **SEC-B — Trust boundaries**: native consent enforcement, no secrets in Svelte/IPC/logs, host-owned allowlisted operations, no generic subprocess/RPC or arbitrary HTTP bridge, no access to other CLIs' credential stores.
-3. **SEC-C — Process/auth hardening**: per-OS process containment, cancellation/timeout, no orphaned child processes, PKCE/state/nonce/issuer/resource/granted-scopes when Quotafern owns OAuth, OS-protected Quotafern-owned secret storage, revocation/logout semantics.
-4. **SEC-D — Data correctness**: validated source schema, unknown versus zero, stale timestamps, currency/unit honesty, no invented limits or reset times, no synthetic fallback, data minimization and retention/deletion.
-5. **SEC-E — Evidence**: fake-provider deterministic regression and security tests, final-HEAD cross-platform CI, real native/manual consent/cleanup acceptance, owner-authorized live test without sharing credentials; untested configurations remain NOT RUN.
+Codex live startup policy and Unix forced-parent termination remain F4 blockers. Do not use undocumented Codex switches or access a real ChatGPT Plus account before separate review and owner approval.
 
-Apply the main `docs/security-roadmap.md` SEC-01–SEC-05 milestones from the F3 branch when integrated. No adapter may pass product acceptance by compilation alone.
+## Delivery order
 
-## Sequencing and scope
+- Preserve F3 as a merged, live-disabled foundation.
+- Design ACC-01 shared account, connection, alias, and quota-source boundaries.
+- Research provider-specific official authorization and supported quota APIs.
+- Build ACC-02 multi-account support for the first eligible provider.
+- Build ACC-03 multiple keys and verified shared billing without double counting.
+- Coordinate ACC-04 account UI with UX-01 Soft Native exploration.
+- Validate security and real native behavior independently before any live release.
 
-- **Now: F3 foundation merged, F4 live Codex deferred** — preserve both disabled gates; retain startup policy, Unix forced-exit and Plus acceptance as later work. Cross-platform native macOS/Linux interaction remains NOT RUN until devices are available.
-- **Provider-01 Research** — after F3 acceptance, verify publicly documented authentication and quota data access for **Gemini CLI**, **Claude Code**, and **GitHub Copilot**. Identify those that actually have viable read-only interfaces. No account access required.
-- **ACC-01 architecture before a second adapter** — specify the universal multi-account/connection/credential/quota-source model, editable aliases and no-double-counting semantics; no live access.
-- **Provider-02 UX spec** — create a consistent connection component/state design with provider-specific auth labels, truthful Coming Soon, consent and Remember controls. Coordinate after approved UX-01 direction in the separate Soft Native roadmap.
-- **Provider-03 First additional integration** — choose by **official authorization quality, read-only quota data, and testability**, not by brand popularity. Gemini may be a promising candidate because official `/stats model` surfaces quotas, but a safe structured API still needs proof. Claude must remain deferred if subscription-token restrictions cannot be satisfied.
-- **Provider-04 Others** — integrate later, separately, with standalone security and real-OS acceptance.
+No additional paid accounts are required for model, UI, or mock security tests. Do not merge or release new implementation without owner approval.
 
-**No additional paid subscriptions needed now.** Use synthetic/mocked adapter fixtures for other providers. When a real account is necessary, ask the owner to initiate an explicit account-local acceptance only after the security and authorization gates pass.
+## References
 
-## Official references (reviewed 2026-10-24)
-
-- Anthropic Claude login/third-party subscription limitations: https://support.claude.com/en/articles/13189465-log-in-to-your-claude-account
-- Claude Code Pro/Max sign-in and subscription/API distinction: https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan
-- Gemini CLI sign-in: https://geminicli.com/docs/get-started/authentication/
-- Gemini CLI usage/limits: https://geminicli.com/docs/resources/quota-and-pricing/
-- GitHub Copilot CLI authentication: https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/authenticate-copilot-cli
-- GitHub billing usage API personal/org/enterprise distinction: https://docs.github.com/en/rest/billing/usage
-- Codex F3 auth decision: `docs/chatgpt-auth-decision.md` (currently on Draft PR #3; not on main).
-- Planned Soft Native design exploration: `docs/ui-ux-roadmap.md` (currently on Draft PR #4; not on main).
-
-No live provider requests, credential inspection, or auth changes were made as part of this roadmap.
+- Codex auth: https://developers.openai.com/codex/auth
+- Claude Code plans: https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan
+- Gemini CLI auth: https://geminicli.com/docs/get-started/authentication/
+- Gemini usage: https://geminicli.com/docs/resources/quota-and-pricing/
+- GitHub Copilot login: https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/authenticate-copilot-cli
+- GitHub usage billing API: https://docs.github.com/en/rest/billing/usage
