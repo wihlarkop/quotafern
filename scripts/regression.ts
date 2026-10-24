@@ -15,6 +15,7 @@ import {
   formatRemainingPercent,
   type DemoScenario,
 } from "../src/lib/quota";
+import { runAccountsRegression } from "./accounts-regression";
 import { runActivityRegression } from "./activity-regression";
 
 type JsonObject = Record<string, unknown>;
@@ -563,6 +564,10 @@ await check("live freshness ages with no requests and failed data stays stale", 
 
 await check("Codex activity calendar and summary regression", () => {
   assertionCount += runActivityRegression();
+});
+
+await check("ACC-01 account architecture, metadata, ownership and selection", () => {
+  assertionCount += runAccountsRegression();
 });
 
 console.log(
