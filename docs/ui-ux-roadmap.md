@@ -1,115 +1,108 @@
-# Quotafern UI/UX roadmap — Soft Native
+# Quotafern UI and UX Roadmap: Soft Native
 
-**Status:** Planned / documentation only. **Implementation must wait until the Codex F3 integration and its security gates have been reviewed and accepted.**
+Status: Planned. This document describes future design work, not implemented features.
 
-This note records the owner's approved design direction. It does **not** declare F3 complete, authorize live provider access, request a new dependency, or replace the current design system.
+F3 was squash-merged at `4bdf1fe4344bfb6ac93f47a1ac89710b866bb49c` after 30/30 Windows owner acceptance and 4/4 exact-HEAD CI. Its Codex live gate remains disabled. Do not treat this roadmap as permission to activate monitoring, change credentials, or release.
 
-## Product design goal
+## Design direction
 
-Quotafern is a compact, tray-first, local-first AI **subscription quota** monitor. The user should understand remaining quota, its next reset, and whether credit/activity data is available within a few seconds of opening the popup.
+Quotafern is a small local-first, tray-first desktop utility. A user should immediately understand remaining quotas, reset times, freshness, and which account the numbers belong to.
 
-Target: **calm, smooth, premium, and comfortable to read**, rather than decorative, animation-heavy, or a literal copy of macOS. Keep a consistent visual identity across **Windows, macOS, and Linux**, while respecting each OS's native tray, focus, window, and accessibility conventions.
+Aim for a calm, quick and readable interface rather than a literal macOS clone.
 
-**Reference mix (principles, not assets or pixel-for-pixel copies):**
-- **Things 3:** calm hierarchy, whitespace, uncluttered content.
-- **Raycast:** precise navigation, focus/keyboard feedback, compact controls.
-- **Ice / macOS menu-bar utilities:** restrained native utility feel and understandable menu/tray behavior.
+- Things 3 inspires whitespace, visual hierarchy, and comfortable typography.
+- Raycast inspires efficient keyboard and interaction feedback.
+- Ice inspires restrained native menu-bar utility behavior.
 
-Preserve Quotafern's identity and established stack. The objective is refinement, not rebranding or a framework migration.
+Keep one consistent visual identity across Windows, macOS, and Linux, while following each platform's tray, focus, sizing, and window conventions.
 
-## Non-negotiable design and engineering invariants
+## Design invariants
 
-- **Appearance:** Follow System / Light / Dark.
-- **Palette:** Graphite & Jade (primary) and Zinc & Signal (alternative). Palette and appearance remain independent user preferences.
-- **Quota state semantics:** normal (>25% remaining), low (10–25%), critical (<10%), unknown. Brand accent is not a substitute for status color. Never display unknown as 0%.
-- **Data honesty:** distinguish live, synthetic demo, stale, missing, not connected, and Coming Soon; never fall back to convincing mock usage when a provider fails.
-- **Layout:** tray-first 380px target; review 320px, 380px, 420px widths and short-height window states. One intentional content scroll region and usable Settings/details.
-- **Accessibility:** keyboard navigation, focus visibility, accessible names, status text beyond color alone, reasonable contrast, readable supporting text (currently 11px minimum), tooltip/keyboard detail for activity heatmap, reduced-motion support.
-- **Stack:** Tauri 2/Rust, Svelte 5/TypeScript/Vite, Bun-only, Oxc-first, existing Tailwind/Bits UI/shadcn-svelte/Lucide components. No TDD or artificial coverage targets; regression and security checks remain mandatory.
-- **Security:** do not widen IPC permissions, CSP, credential visibility, external network access, or authentication behavior to achieve a visual effect. Reference the separate SEC-01–05 security roadmap on the F3 branch.
+- Appearance choices remain System, Light, and Dark.
+- Graphite & Jade remains the primary palette.
+- Zinc & Signal remains an alternative palette.
+- Palette and appearance stay independent preferences.
+- Do not confuse missing quota data with zero remaining.
+- Keep quota status text independent of accent colors.
+- Show live, synthetic demo, stale, missing, disconnected, and Coming Soon honestly.
+- Review popup widths of 320, 380, and 420 logical pixels and short-height layouts.
+- Preserve keyboard focus, reduced-motion support, accessible labels, and readable text.
+- Preserve Tauri 2, Svelte 5, Bun, Oxc and current semantic components.
+- No additional runtime, network permission, or credential access for cosmetic effects.
 
-## Visual direction: Soft Native
+## Soft Native visual ingredients
 
-**Soft surfaces:** subtle outlines and elevation, light shadows, restrained color washes, coherent corner radii. Avoid excessive nested cards, heavy borders, forced glassmorphism, and bright gradients.
+Soft surfaces use restrained corner radii, subtle borders, light shadows, and little visual noise.
 
-**Calm typography:** system font stack and clear information hierarchy. Provider identity and remaining percentage should dominate; quota window, reset, last refresh, unit, and availability should remain legible. Align tabular numbers to reduce jitter.
+Calm typography emphasizes the provider, selected account, remaining percent, reset time, and data freshness. Align numeric values to prevent visible jitter.
 
-**Subtle motion:** quick, purposeful feedback for selection, tab transitions, hover/press, loading, and panel expansion. No long animations or layout jumps; disable nonessential motion for OS reduced-motion preferences.
+Subtle motion uses short intentional feedback, not long decorative animation. Respect system reduced motion and prevent sudden layout shifts.
 
-**Native feel:** popup should appear and respond predictably, without compromising validated close-to-hide, Escape, Show/Hide/Quit, single-instance, tray focus, monitor clamping, or taskbar behavior. Implement OS-specific window behavior only where reliably supported.
+Native feel means reliable first launch, tray click, Show and Hide, Quit, Escape, close-to-hide, single instance, and sensible window placement.
 
-**Information hierarchy:** Overview answers "how much is left?", "when does it reset?", and "is it current?" Details expose separate Quota, Credits/Spending, and Activity sections. Credits must not be conflated with usage tokens or reset-credit entitlements. Keep the GitHub-style activity heatmap out of the crowded primary Overview.
+The Overview stays compact. Codex Details may expose credits, spending, earned resets, and the 84-day Activity heatmap without crowding the primary view.
 
-## Multi-account UX requirement (cross-reference ACC-01–04)
+## ACC-04: Multi-account and named connection UX
 
-All future supported providers must expose a **multi-account and multi-connection collection**, with **user-editable names for each connected account and each connection / API key**. An app using two Codex accounts, two API keys or multiple other provider accounts should be understandable at a glance. This is a **post-F3 design requirement**, not permission to activate additional sessions or bypass provider terms.
+The same account-management design applies to every supported provider. Specific providers only become connectable after their own documented authorization and quota access have been accepted.
 
-- **Accounts:** visually group by provider, then by account/workspace, then by connection/key. Support Add account, Add connection, **Rename account**, **Rename connection**, Disconnect and Remove as distinct actions; design editable alias states, empty/duplicate labels and safe confirmation for destructive operations.
-- **Overview:** provider/account filter including **All Accounts**; show each named account's quota limits/reset times independently with source and freshness. Do not collapse multiple sessions into one visually misleading quota meter or double-count shared billing.
-- **Labels:** user-defined names ("Codex · Personal", "Codex · Work", "OpenRouter · Key A") are local display labels and do not prove an external identity; show truthful connecting, disconnected, stale, unknown, auth-needed and unsupported states. Keep actual secret values, key fragments and sensitive provider identity hidden by default.
-- **Compact layout:** validate grouped account lists and renamed long aliases at 320/380/420px; preserve keyboard focus order, selection, screen-reader names, reduced motion and scroll behavior. Avoid making optional auto-reconnect look pre-approved.
-- **Timing:** design/acceptance are staged in `docs/provider-connections-roadmap.md` ACC-01–04, coordinated with UX-01 exploration and only implemented after owner sign-off.
+- Group provider, account or workspace, and individual session or API key connections.
+- Let users rename each connected account and each connection or API key alias.
+- Show independent connection status and freshness for all accounts.
+- Provide Add account, Add connection, Rename, Disconnect, and Remove actions.
+- Offer All Accounts, Provider, Account, and Connection filters.
+- Never display two accounts as if they share one subscription quota.
+- Never count a shared billing wallet twice.
+- Clearly distinguish user-defined aliases from verified provider identity.
+- Support long and duplicate aliases without hiding keyboard-accessible actions.
+- Keep authenticated details and raw API key fragments out of display by default.
 
-## Candidate visual explorations (not yet selected)
+The underlying provider, account, connection, and quota-source identity design belongs to ACC-01 in `docs/provider-connections-roadmap.md`. No production multi-account UI should be connected to live accounts before that model passes security review.
 
-Create lightweight, comparable variants **after F3**:
-1. **Soft Native / Graphite & Jade:** softer background/elevation, calm whitespace, jade accent, high legibility.
-2. **Refined Graphite & Jade:** retain current structure and density with improved rhythm, tokens, and small details.
-3. **Refined Zinc & Signal:** test the alternative palette with the exact same component semantics and interaction model.
+## UX-01: Design exploration
 
-Explore both **light and dark** for each viable variant, including empty/disconnected/error, low/critical, optional credits, Coming Soon provider cards, and 84-day activity heatmap. Prefer side-by-side screenshots before selecting a direction. The owner's approval of a visual direction is required before replacing current styling.
+Status: Planned. No production visual changes.
 
-Native materials (macOS vibrancy or other platform effects, Windows Mica, potential Liquid Glass) are **optional separate experiments**, not prerequisites. First achieve the desired smoothness with existing CSS/components. Consider platform support, CPU/GPU costs, blur fallbacks, readability, signing, and security before enabling any native material, transparent window, or frameless title bar.
+Compare these alternatives in light and dark:
 
-## Delivery sequence and acceptance gates
+- Soft Native with Graphite & Jade: warm subtle surfaces and quiet jade accent.
+- Refined Graphite & Jade: improve spacing and rhythm without changing basic structure.
+- Refined Zinc & Signal: preserve state semantics with an alternate palette.
 
-### Dependency: finish F3 Codex integration and security review
+Explore Overview, Accounts, Settings, Codex Details, Coming Soon, errors, disconnected, stale and synthetic demo states. Include multiple named accounts and multiple named keys at 320, 380, and 420 pixels.
 
-**Status: F3 foundation MERGED / live Codex BLOCKED as of 2026-10-25.** PR #3 was squash-merged as a mock-validated foundation after Windows 30/30 acceptance and exact-HEAD CI 4/4; its live connection remains disabled. Do not start UX implementation or infer that a working Plus connection has been accepted. Track genuine auth/startup/consent/process-containment blockers independently.
+Produce before-and-after screenshots, explain component and token differences, evaluate accessibility, and request owner approval before selecting one direction.
 
-### UX-01 — Design exploration and selection
+## UX-02: Implementation
 
-**Status: PLANNED.** No production visual changes.
+Status: Planned, dependent on UX-01 approval and any required ACC-01 model work.
 
-- Audit current Overview, Accounts, Settings and Codex Details, both palettes, light/dark/system, and empty/error/stale/live/demo states; add exploratory cases for multiple accounts/connections and user-editable account/key aliases.
-- Compare three visual directions at 320/380/420px, plus short-height Settings and Codex Details.
-- Produce annotated before/after layouts and light/dark screenshots; explain spacing, type hierarchy, color token, interaction, and platform differences.
-- Assess readability, keyboard focus, heatmap cell sizing, tooltip access, and credits semantics.
-- Record tradeoffs, recommended variant, and **owner design approval**.
+Refine semantic tokens, spacing, typography, borders, elevation, component layout, scrolling, and small feedback transitions.
 
-**Exit gate:** an agreed direction with reference screenshots, semantic token proposals, and no unreviewed platform or security changes.
+Preserve native security and provider logic. Do not invent connected accounts or widen permissions for visual effects. Keep theme and palette preferences independent.
 
-### UX-02 — UI polish implementation
+Validate snapshots, responsive layouts, keyboard operation, and reduced-motion behavior. Keep any account-management UI consistent with ACC-01 through ACC-04.
 
-**Status: PLANNED; depends on UX-01 approval.**
+## UX-03: Native acceptance and performance
 
-- Refine existing tokens, typography, spacing, surface/border/elevation system, component layout, and deliberate scrolling.
-- Preserve Graphite & Jade and Zinc & Signal across independent light/dark/system modes.
-- Implement subtle feedback and predictable, low-jitter state changes; respect reduced motion.
-- Polish Codex quota/credits/activity and Coming Soon presentation, with authentic unknown/stale and accessibility semantics. Implement account grouping/rename views only when ACC-01 identity model is approved; do not invent active accounts.
-- Keep Rust provider/auth logic and native permissions unchanged unless a separately reviewed issue demands it.
-- Avoid new frameworks and cosmetic dependency growth.
+Status: Planned after UX-02.
 
-**Exit gate:** focused frontend/regression checks, accessibility and responsive checks, screenshots against UX-01 targets; no layout/data/security regressions.
+Verify tray, keyboard, focus, resize, monitor placement, display scaling, short-height scrolling, and startup behavior on available systems.
 
-### UX-03 — Cross-platform native feel and performance acceptance
+Measure popup latency, idle CPU and memory, and layout stability rather than inventing numeric targets.
 
-**Status: PLANNED; after UX-02, preferably before broad release.**
+macOS vibrancy, Windows Mica, other native materials, transparent windows, and custom title bars are optional experiments only. Review fallback behavior and platform security before adoption.
 
-- Exercise tray opening/focus/toggle, Escape/X, menus and Quit separately on available Windows, macOS, and Linux desktops.
-- Review taskbar/monitor-edge placement, DPI/scaling, monitor changes, keyboard, assistive focus, system theme updates, and reduced-motion settings.
-- Inspect cold/warm popup latency, idle CPU/RAM, transition smoothness, and unexpected layout shifts; record measured baselines rather than inventing targets.
-- Evaluate optional native effects only as opt-in experiments with clean fallbacks.
-- Separate **PASS through actual OS interaction**, static check PASS, BLOCKED, and NOT RUN; hosted CI compilation is not proof of interactive native acceptance.
+Windows F3 non-credential native acceptance passed 30/30. Native macOS and Linux interactions remain NOT RUN until test devices are available. CI compilation is not a substitute for native interaction tests.
 
-**Exit gate:** evidence-backed platform acceptance and documented remaining release limitations; no merge/release without owner approval.
+## Completion criteria
 
-## Definition of done for the visual refresh
+Quotafern should open promptly, make every account and connection identifiable by its editable name, keep each subscription quota and reset independent, clearly label unknown or stale values, and show activity without layout jumps. It must remain usable with both palettes and system light/dark appearance without weakening native security.
 
-A user can open Quotafern, read Codex subscription quota and next reset immediately, distinguish credits from activity, inspect the accessible heatmap, and close/restore the popup reliably. The design feels calm in light/dark and both palettes; retains readable typography at compact widths; avoids false data, layout jumps, and excessive motion; and does not weaken provider security or cross-platform tray behavior.
+## Coordination and release restrictions
 
-## Coordination notes
+Keep this roadmap separate from F4 live Codex startup and process-security blockers. Provider login and multi-account support follow `docs/provider-connections-roadmap.md`.
 
-- Keep this roadmap separate from the merged F3 foundation and deferred live-connection F4 security work; do not change authorization or credentials for cosmetic work.
-- When Codex F3 is accepted, return to this roadmap for UX-01 exploration.
-- Retain the validated stack and design tokens; the roadmap is a **future design backlog**, not a request for immediate implementation.
+The next architectural step is ACC-01 before the second provider adapter. UX-01 can explore visual directions independently but implementation must not assume an unapproved identity model.
+
+No merge of future UI implementation, provider enablement, or release without owner approval.
