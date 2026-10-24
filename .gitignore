@@ -16,6 +16,31 @@ target
 # rustc will dump stack traces when hitting an internal compiler error to PWD
 rustc-ice-*.txt
 
+# Bun / Vite / Svelte generated output
+/node_modules/
+/dist/
+/.svelte-kit/
+/.vite/
+/src-tauri/gen/
+/.impeccable/review/
+
+# Local caches, scratch evidence and credentials (never application fixtures)
+/.tmp/
+/.cache/
+/.secrets/
+*.pem
+*.key
+credentials.local.*
+
+# Local environment files; keep the checked-in example template
+.env*
+!.env.example
+
+# Local OS and tool output
+.DS_Store
+Thumbs.db
+*.log
+
 # RustRover
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
