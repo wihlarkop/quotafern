@@ -1,9 +1,9 @@
 # F1 validation — 2026-10-24
 
 Implementation branch: `codex/f1-foundation`, based on initial main `bcdb5a5ed77cab644bfae898c2f793c8c6d62994`.
-This is an evidence record, not owner approval or cross-platform manual acceptance.
+This is an evidence record. At the time the hardening record below was written, Windows tray acceptance was not fully accepted because the automated tray gate remained blocked; the later owner-reported Windows manual acceptance is appended after that historical record. This is not cross-platform manual acceptance.
 
-Hardening implementation HEAD: `e97b2c19d2b06a93df14a2d1ecf13d93d4efebfa`. This pins the regression code and the Windows runtime candidate; the documentation-only follow-up has its own delivery SHA. The exact final PR head, workflow run, and post-push results are recorded in the [Draft PR description](https://github.com/wihlarkop/quotafern/pull/1). F1 is **not fully accepted** while the Windows tray gate below remains blocked.
+Hardening implementation HEAD: `e97b2c19d2b06a93df14a2d1ecf13d93d4efebfa`. This pins the regression code and the Windows runtime candidate; the documentation-only follow-up has its own delivery SHA. The exact final PR head, workflow run, and post-push results are recorded in the [Draft PR description](https://github.com/wihlarkop/quotafern/pull/1). At that hardening revision, F1 was **not fully accepted** while the Windows tray gate below remained blocked.
 
 ## Local automated checks
 
@@ -96,6 +96,21 @@ The previously pending foundation [run 40041741023](https://github.com/wihlarkop
 
 The new implementation triggered [run 40043046025](https://github.com/wihlarkop/quotafern/actions/runs/40043046025) at `e97b2c19d2b06a93df14a2d1ecf13d93d4efebfa`. Frontend quality, including the committed regression command, passed; desktop jobs were still running when this record was prepared. The documentation follow-up triggers another final-head run.
 
-Final-head CI results are published at the [current PR check results](https://github.com/wihlarkop/quotafern/pull/1/checks): **Frontend quality**, **Desktop checks (windows-latest)**, **Desktop checks (macos-latest)**, and **Desktop checks (ubuntu-22.04)**. The post-push PR description and handoff pin the final delivery SHA/run and report each actual result. Pending jobs are not counted as passes, and no earlier run substitutes for the final head. CI compilation does not close the blocked manual tray gate or establish macOS/Linux native interaction.
+Final-head CI results are published at the [current PR check results](https://github.com/wihlarkop/quotafern/pull/1/checks): **Frontend quality**, **Desktop checks (windows-latest)**, **Desktop checks (macos-latest)**, and **Desktop checks (ubuntu-22.04)**. The post-push PR description and handoff pin the final delivery SHA/run and report each actual result. Pending jobs are not counted as passes, and no earlier run substitutes for the final head. CI compilation did not close the then-blocked manual tray gate or establish macOS/Linux native interaction.
 
 F2 should close platform tray/display/accessibility acceptance and refine the read-only snapshot boundary. Real provider adapters, credentials/OAuth, refresh, widget, updater, account switching, and comprehensive unit suites remain separately scoped.
+
+## Subsequent owner-reported Windows manual acceptance — 2026-10-24
+
+The owner reported a manual pass on implementation HEAD `3b3c05c12adc53b4d9543b0bee6f5b2cc2a0f516` for these eight Windows tray checks:
+
+1. **PASS (owner-reported):** Exactly one persistent Quotafern tray icon is present.
+2. **PASS (owner-reported):** Tray-menu Hide hides the popup.
+3. **PASS (owner-reported):** Tray-menu Show opens the popup.
+4. **PASS (owner-reported):** The title-bar X hides the popup while the process stays alive.
+5. **PASS (owner-reported):** Tray-menu Show restores the popup after title-bar close.
+6. **PASS (owner-reported):** Tray-menu Quit terminates the process.
+7. **PASS (owner-reported):** The tray icon disappears after Quit.
+8. **PASS (owner-reported):** Relaunching does not create duplicate persistent hosts or tray icons.
+
+This later owner report supplements the earlier automation record; it does not change what the automated harness could observe at the time. macOS and Linux native interaction remain NOT RUN. Live operating-system theme changes were not independently accepted, multi-monitor and DPI behavior were not fully accepted, and packaging/signing were excluded.

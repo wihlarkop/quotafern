@@ -1,12 +1,14 @@
 # Security boundaries
 
-## F1 runtime
+## F1/F2 runtime
 
 F1 has no provider integration. The app does not read credentials from environment variables, local CLI configuration, credential files, OS keychains, or other apps' credential stores. It does not otherwise access credentials, make provider HTTP requests, perform OAuth or token refresh, synchronize account data, or send telemetry.
 
 F1 snapshots are synthetic and visibly labeled as demo in development and release builds alike. Development can switch demo scenarios; release uses the healthy sample. No provider integration exists, so mock values are not a fallback from missing or unavailable live data. Appearance mode and palette are the only F1 values persisted in `localStorage`.
 
 ## Tauri boundary
+
+F2 changes native click/placement handling and frontend presentation only. It adds no renderer command, permission, capability, CSP source, native dependency, or provider client. The snapshot root is explicitly tagged `source: "synthetic"`; this tag does not authorize future live data. Native geometry remains inside the host and is not exposed as renderer IPC.
 
 - Grant the `hide_popup` command permission only to the `main` window (`allow-hide-popup`). Keep capabilities scoped to that window.
 - Keep the release Content Security Policy limited to bundled content and Tauri IPC. Development may additionally allow the Vite server at `127.0.0.1:1420` and its HMR WebSocket; do not carry those development allowances into release policy.

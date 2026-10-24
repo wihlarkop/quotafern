@@ -4,9 +4,10 @@ Quotafern helps people check remaining AI subscription quotas from a compact sys
 
 The local fern icon is provisional artwork. Desktop icon sizes are checked in under `src-tauri/icons/`; no remote assets are loaded.
 
-## F1 behavior
+## F2 behavior
 
-- The `main` window opens visibly and centered at 380 × 660 on first launch. It can be resized to 320–420 pixels wide and at least 480 pixels high. Closing it hides it; the tray menu provides **Show**, **Hide**, and **Quit**. Showing it again reuses its window position rather than anchoring it to the tray icon.
+- The `main` window opens visibly at 380 × 660 on first launch, near the tray when native geometry is available and safely clamped otherwise. It can be resized to 320–420 logical pixels wide and a configured minimum of 480 pixels high; smaller work areas temporarily relax those limits. Close and Escape hide it. The tray menu provides **Show Quotafern**, **Hide Quotafern**, and **Quit**.
+- On Windows/macOS, primary tray click opens, focuses, or toggles the popup; secondary click opens its menu. Native tray geometry positions the popup near the icon when available, with work-area clamping and a safe fallback. Losing focus leaves Settings and account inspection open.
 - A second launch routes to the already-running app. On Linux, use the tray context menu; left-click tray events are not supported by the current Linux tray integration.
 - All F1 quota data are synthetic and visibly labeled as demo, including in release builds. Development can switch demo scenarios; release uses the healthy sample. There is no provider integration and no implicit mock fallback.
 - Appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) are separate, non-sensitive preferences stored in `localStorage`.
@@ -30,6 +31,7 @@ bun run fmt
 bun run fmt:check
 bun run check
 bun run regression
+bun run regression:rust
 bun run check:rust
 bun run lint:rust
 bun run fmt:rust
@@ -41,10 +43,12 @@ Commit both `bun.lock` and `Cargo.lock`. CI uses Bun 1.4.4 and stable Rust. Its 
 
 F1 has no unit-test suite. As product features are added, include the regression, integration, and security checks needed for those features; a successful compile is not behavioral acceptance. Keep controls keyboard accessible, pair color-coded states with readable text, and respect reduced-motion preferences.
 
-`bun run regression` runs the committed, deterministic F1 smoke assertions against synthetic snapshots and native security configuration. It needs no credentials, network, or test framework and runs in the Frontend quality CI job.
+`bun run regression` runs the committed, deterministic smoke assertions against synthetic snapshots and native security configuration. It needs no credentials, network, or test framework and runs in the Frontend quality CI job. `bun run regression:rust` adds focused popup-placement checks using Rust's built-in runner in each desktop CI job; these calculations do not establish native tray interaction acceptance.
 
 ## Project notes
 
 - [Architecture](docs/architecture.md)
 - [Design system](docs/design-system.md)
 - [Security boundaries](docs/security.md)
+- [F1 validation and owner acceptance](docs/f1-validation.md)
+- [F2 validation and native acceptance checklist](docs/f2-validation.md)

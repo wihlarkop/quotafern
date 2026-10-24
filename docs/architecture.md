@@ -1,6 +1,6 @@
 # Architecture
 
-Quotafern keeps the desktop lifecycle in the Tauri host and the quota presentation in the Svelte frontend. F1 deliberately stops before provider integration.
+Quotafern keeps the desktop lifecycle in the Tauri host and the quota presentation in the Svelte frontend. F2 improves native tray behavior; provider integration remains out of scope.
 
 ## Responsibilities
 
@@ -14,13 +14,19 @@ The TypeScript quota snapshot shape is a frontend contract, not a second Rust do
 
 ## Window and tray lifecycle
 
-The app opens one centered `main` popup at 380 × 660 so it is visible on first launch. It is resizable from 320 to 420 pixels wide, with a minimum height of 480 pixels. A window close request hides that window. The tray menu offers Show, Hide, and Quit; a second launch routes to the existing process/window. Show reuses the window's native position and does not anchor the popup to the tray icon. Linux users access the tray actions through its context menu because left-click tray events are unsupported there.
+The app configures one visible, centered `main` popup at 380 × 660. Startup places it near the tray if usable native geometry is available, otherwise clamps the configured position. It is resizable from 320 to 420 logical pixels wide, with a configured minimum height of 480 logical pixels. Constraints temporarily shrink to fit smaller work areas and restore when space permits. Close hides it; a second launch restores the existing process/window. The tray menu preserves Show Quotafern, Hide Quotafern, and Quit.
+
+On Windows and macOS, primary tray clicks open a hidden popup, focus an unfocused popup, and toggle a focused popup. Secondary click opens the native menu. A consumed, 250ms focus-loss allowance applies only while the pointer remains over the tray icon and the popup was focused there; leaving the icon clears it. This handles native blur/click ordering but rapid keyboard focus switching while hovering the icon still needs OS acceptance. Linux preserves the context-menu path because tray click events vary by desktop environment. No privileged desktop hooks or global shortcuts are installed.
+
+Losing focus leaves the popup open deliberately: native menus, account inspection, and Settings must remain predictable. Escape dismisses through the existing restricted `hide_popup` command, unless an inner control consumed it or a dialog/select owns it. Browser preview explains that native dismissal is unavailable. Explicit close/Hide and the tray restore path remain available.
+
+Rust owns positioning. Native tray-event geometry selects the anchor monitor and popup side where supported. Physical coordinates account for HiDPI and negative monitor origins; placement is clamped to the monitor work area and rechecked on startup, restoration, movement, resize, and scale events. Native frame dimensions are subtracted before resizing the client area. Minimized and zero-sized geometry is ignored. Without an OS event, a display reconfiguration is reconciled on the next restore rather than continuously polled. When geometry is unavailable, restoration clamps the current position to the nearest connected monitor. Exact icon anchoring is not promised on Linux. Actual platform acceptance is recorded separately in `docs/f2-validation.md`.
 
 The renderer may invoke only the minimal `hide_popup` command, granted to `main`. Native tray and lifecycle handling remains in the Rust host.
 
 ## Data and state
 
-All F1 quota snapshots are synthetic and visibly marked as demo, including in production builds. Development can switch demo scenarios; release uses the healthy sample. No provider integration exists, so mock data are not a fallback from unavailable live data. The selected appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) are independent, non-sensitive local preferences.
+All snapshots are synthetic and visibly marked as demo, including in production builds. The root `source: "synthetic"` discriminant is mandatory even for an empty snapshot. Development can switch demo scenarios; release uses the healthy sample. `fetchedAt` and `dataStatus` describe sample freshness independently of connection state. Null quota/reset values mean unavailable; zero remains valid. Future live data requires a separately reviewed source contract with normalized fields and must never call the demo factory on failure. Appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) remain independent, non-sensitive local preferences.
 
 Unit suites are deferred from this foundation slice. Feature work should add the behavior-specific regression, integration, and security checks needed at its boundaries.
 

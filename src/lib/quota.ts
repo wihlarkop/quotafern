@@ -33,8 +33,15 @@ export interface ProviderSnapshot {
   windows: QuotaWindowSnapshot[];
 }
 
-/** Frontend-only presentation shape. It is not a native snapshot or a live provider contract. */
+/**
+ * Frontend-only, sanitized presentation shape. The source discriminant prevents a
+ * sample being mistaken for live data. A future live source requires its own
+ * explicit contract; it must never fall back to createDemoSnapshot on failure.
+ * fetchedAt/dataStatus describe sample freshness, not a provider connection.
+ * null remainingPercent/resetAt mean unavailable, never zero or a guessed reset.
+ */
 export interface QuotaSnapshot {
+  readonly source: "synthetic";
   scenario: DemoScenario;
   providers: ProviderSnapshot[];
 }
@@ -141,6 +148,7 @@ export function createDemoSnapshot(
           : "current";
 
   return {
+    source: "synthetic",
     scenario,
     providers: PROVIDERS.slice(0, values.length).map((provider, index) => ({
       ...provider,
