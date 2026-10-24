@@ -32,6 +32,24 @@ The library test executable initially failed before its harness with `STATUS_ENT
 
 The unchanged Bun regression covers 11 groups / 675 assertions, including quota/demo contracts, exact capabilities/CSP, stale presentation and Activity. The existing nine popup/focus Rust regressions remain. Browser acceptance from the prior addendum remains historical; only consent copy changes in this follow-up. Windows native dialog/tray interaction and real authenticated app-server behavior remain **NOT RUN**. No real credentials, local Codex auth/configuration file, keychain record, login/logout, inference or authenticated request was accessed.
 
+## Direct-IPC harness CI repair
+
+The exact `7c8b90d021b6d3d7e4b55e53f0d0e00c997960b7` [hosted run 40100172021](https://github.com/wihlarkop/quotafern/actions/runs/40100172021) passed Frontend quality and Windows desktop, but both macOS and Linux failed the same three direct-IPC consent tests: 45 passed, 3 failed, 1 ignored on each Unix job. Their error was `codex_connect not allowed. Plugin not found`; desktop compilation was skipped after regression failed. This supersedes the earlier handoff's pending CI status.
+
+The cause was test configuration, before native command dispatch. In locked Tauri 2.12.5, `mock_context(noop_assets())` has an empty `RuntimeAuthority` and no app ACL manifest. The harness also hard-coded `http://tauri.localhost`, the Windows local-protocol mapping. macOS/Linux use `tauri://localhost`; the old HTTP URL was remote there. `Webview::on_message` requires ACL authorization for remote requests, and `RuntimeAuthority::resolve_access_message` reported the missing `__app-acl__` manifest as “Plugin not found”. On Windows the same URL was local, so Tauri's no-app-manifest compatibility path skipped app-command ACL enforcement, giving a false-positive security test pass.
+
+The production `build.rs` command manifest, generated `acl-manifests.json`, `capabilities.json`, and `lib.rs` invoke handler all contained `codex_connect` and the four correctly named explicit Codex permissions. Production already builds with `generate_context!()`; no production command registration or native dialog plugin was missing. The rejection was reproduced locally on Windows by temporarily giving the old empty-context harness a remote origin, obtaining the exact same error. That diagnostic mutation is not retained and is not a macOS runtime claim.
+
+The repaired test builder uses `generate_context!()` with `MockRuntime`, loading the actual generated app manifest and `main-capability`; request origins follow the target platform. Original consent tests still require successful IPC dispatch and their trusted native presenter result. A new negative control registers a harmless test-only command without granting it any permission, and verifies it is rejected. It also verifies other windows, an untrusted HTTPS origin and the opposite platform's local-looking origin fail ACL authorization before any consent callback or process launch. A permitted main/local request then reaches the presenter and is cancelled despite a forged renderer approval field.
+
+All Rust changes are inside the existing `#[cfg(test)]` module. Production commands, capability/permission files, CSP, dependency lockfiles, `native-regression` feature/build-manifest handling and test-only presenter substitutions are unchanged. No wildcard capability, remote URL grant, generic shell/filesystem/network access or authorization bypass is introduced. Startup and Unix forced-parent termination remain **BLOCKED**; native dialog acceptance, real Codex compatibility and authenticated quota are **NOT RUN**.
+
+The final repair HEAD and all four completed hosted job results are recorded in the Draft PR handoff. The failed run above is retained as diagnostic evidence, never reported as CI PASS.
+
+Focused independent review of this repair found no actionable code/security findings. It confirmed that the diff is limited to the test module and these validation notes, the generated ACL is loaded without new grants, and denied requests never reach the consent callback. This was source review, separate from the lead's regression execution and hosted platform results.
+
+Repair validation on Windows passed frozen Bun install, Oxlint/Oxfmt, Svelte check/build (0 errors/warnings), 11 Bun regression groups / 675 assertions, Rust format/check/Clippy, and 55 Rust tests with 0 failures / 4 subprocess fixture entry points ignored at the top level. The new ACL regression adds one test to the prior count. Normal `bun run build:desktop --no-bundle --debug` also passed without selecting `native-regression`, verifying production compilation remains separate from the headless test manifest/presenter setup. Hosted macOS/Linux execution and all four job conclusions must be verified on the exact repair HEAD before CI PASS is claimed.
+
 ## Follow-up local checks
 
 | Check | Result |

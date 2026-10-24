@@ -1544,27 +1544,52 @@ mod tests {
     fn ipc_app(bridge: CodexBridge) -> tauri::App<tauri::test::MockRuntime> {
         tauri::test::mock_builder()
             .manage(bridge)
-            .invoke_handler(tauri::generate_handler![codex_connect])
-            .build(tauri::test::mock_context(tauri::test::noop_assets()))
+            .invoke_handler(tauri::generate_handler![
+                codex_connect,
+                ipc_ungranted_command
+            ])
+            // Use the same generated app manifest/capabilities as production.
+            // An empty mock_context permits local app commands without ACLs.
+            .build(tauri::generate_context!())
             .unwrap()
     }
 
-    fn invoke_connect(window: &WebviewWindow<tauri::test::MockRuntime>, body: Value) -> Value {
+    #[tauri::command]
+    fn ipc_ungranted_command() -> &'static str {
+        "must never be reachable without a permission"
+    }
+
+    fn local_ipc_origin() -> &'static str {
+        if cfg!(windows) {
+            "http://tauri.localhost"
+        } else {
+            "tauri://localhost"
+        }
+    }
+
+    fn invoke_ipc(
+        window: &WebviewWindow<tauri::test::MockRuntime>,
+        command: &str,
+        origin: &str,
+        body: Value,
+    ) -> Result<Value, Value> {
         tauri::test::get_ipc_response(
             window,
             tauri::webview::InvokeRequest {
-                cmd: "codex_connect".into(),
+                cmd: command.into(),
                 callback: tauri::ipc::CallbackFn(0),
                 error: tauri::ipc::CallbackFn(1),
-                url: "http://tauri.localhost".parse().unwrap(),
+                url: origin.parse().unwrap(),
                 body: tauri::ipc::InvokeBody::Json(body),
                 headers: Default::default(),
                 invoke_key: tauri::test::INVOKE_KEY.into(),
             },
         )
-        .unwrap()
-        .deserialize::<Value>()
-        .unwrap()
+        .map(|response| response.deserialize::<Value>().unwrap())
+    }
+
+    fn invoke_connect(window: &WebviewWindow<tauri::test::MockRuntime>, body: Value) -> Value {
+        invoke_ipc(window, "codex_connect", local_ipc_origin(), body).unwrap()
     }
 
     fn mock_window(
@@ -1573,6 +1598,72 @@ mod tests {
         tauri::WebviewWindowBuilder::new(app, "main", Default::default())
             .build()
             .unwrap()
+    }
+
+    #[test]
+    fn ipc_acl_denies_remote_origins_other_windows_and_ungranted_commands() {
+        use std::sync::atomic::AtomicUsize;
+        let confirmations = Arc::new(AtomicUsize::new(0));
+        let confirmed = Arc::clone(&confirmations);
+        let bridge = CodexBridge {
+            test_connection: Some(Arc::new(TestConnection {
+                confirm: Box::new(move || {
+                    confirmed.fetch_add(1, Ordering::SeqCst);
+                    false
+                }),
+                launch: Box::new(|_| panic!("denied requests must not launch a process")),
+            })),
+            ..CodexBridge::default()
+        };
+        let app = ipc_app(bridge);
+        let main = mock_window(&app);
+        let other = tauri::WebviewWindowBuilder::new(&app, "other", Default::default())
+            .build()
+            .unwrap();
+
+        let wrong_platform_origin = if cfg!(windows) {
+            "tauri://localhost"
+        } else {
+            "http://tauri.localhost"
+        };
+        for origin in [wrong_platform_origin, "https://quotafern-untrusted.invalid"] {
+            let denial = invoke_ipc(&main, "codex_connect", origin, json!({"approved": true}))
+                .expect_err("remote content must fail IPC authorization");
+            let message = denial.as_str().unwrap();
+            assert!(message.contains("codex_connect not allowed"));
+            assert!(message.contains(origin));
+            assert!(message.contains("main-capability"));
+            assert!(message.contains("allow-codex-connect"));
+        }
+
+        let denial = invoke_ipc(
+            &other,
+            "codex_connect",
+            local_ipc_origin(),
+            json!({"approved": true}),
+        )
+        .expect_err("another window must fail ACL before the native handler");
+        assert!(denial.as_str().unwrap().contains("not allowed on window"));
+
+        // This handler is registered only for the test, with no permission.
+        // If the app ACL is accidentally omitted, Windows allows this call and
+        // the negative control fails instead of giving a false security pass.
+        let denial = invoke_ipc(
+            &main,
+            "ipc_ungranted_command",
+            local_ipc_origin(),
+            json!({}),
+        )
+        .expect_err("a registered command without a permission must fail ACL");
+        assert!(denial
+            .as_str()
+            .unwrap()
+            .contains("ipc_ungranted_command not allowed"));
+        assert_eq!(confirmations.load(Ordering::SeqCst), 0);
+
+        let allowed = invoke_connect(&main, json!({"approved": true}));
+        assert_eq!(allowed["diagnostic"], "nativeConsentCancelled");
+        assert_eq!(confirmations.load(Ordering::SeqCst), 1);
     }
 
     #[test]
