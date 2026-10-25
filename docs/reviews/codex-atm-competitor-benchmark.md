@@ -127,6 +127,10 @@ No automatic fallback from A to B that presents B as live. Never use demo to mas
 
 **Implementation readiness gate:** This document is research and **does not tell Codex to write code**. Before issuing any implementation prompt, close the remaining candidate-specific **privacy model, account attribution and local-source contract** with synthetic fixtures and independent review. If account identity cannot be authenticated without credentials, explicitly release a **single unverified local source** view rather than promising per-personal-account quota. Production live Codex monitoring remains **NO-GO** regardless of whether this passive lane becomes acceptable.
 
+## Implementation-independent contract
+
+The proposed **manual opt-in local observation** lane is specified in [CODEX-LOCAL-01](../specs/codex-local-observed-contract.md), including per-source provenance, verified account attribution restrictions, reset boundary handling, filesystem containment and synthetic acceptance. This document does not authorize any implementation or source-file access.
+
 ## Sources
 
 - [Versioned Codex research exit](codex-research-exit-01.md)
