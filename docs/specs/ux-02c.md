@@ -24,11 +24,11 @@ These are genuine compiled Svelte captures at 380 × 660. The capture helper che
 
 | Accounts                                                   | Overview                                                   | Details                                                  |
 | ---------------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
-| ![Production Accounts](screenshots/after-accounts-380.png) | ![Production Overview](screenshots/after-overview-380.png) | ![Production Details](screenshots/after-details-380.png) |
+| *Screenshot removed from current repository* | *Screenshot removed from current repository* | *Screenshot removed from current repository* |
 
-Direct connection navigation: ![Production Work connection Details](screenshots/production-connection-details-380.png)
+Direct connection navigation: *Screenshot removed from current repository*
 
-[Validation and reproduction](validation.md) · [Focused review and dispositions](review.md) · [Implementation plan](plan.md).
+[Validation and reproduction](../validation/ux-02c.md) · [Focused review and dispositions](../reviews/ux-02c.md) · [Implementation plan](../plans/ux-02c.md).
 
 ## Deferred contracts
 

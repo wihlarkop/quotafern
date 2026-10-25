@@ -10,15 +10,15 @@ Before images are actual baseline Svelte components served by Vite at 380 × 660
 
 | Screen       | Before                                                          | Production after                                                      |
 | ------------ | --------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Overview     | ![Before Overview](screenshots/before-overview-380.png)         | ![Account-first Overview](screenshots/after-overview-380.png)         |
-| Accounts     | ![Before Accounts](screenshots/before-accounts-380.png)         | ![Provider and account hierarchy](screenshots/after-accounts-380.png) |
-| Disconnected | ![Before disconnected](screenshots/before-disconnected-380.png) | ![Production disconnected](screenshots/after-disconnected-380.png)    |
+| Overview     | *Screenshot removed from current repository*         | *Screenshot removed from current repository*         |
+| Accounts     | *Screenshot removed from current repository*         | *Screenshot removed from current repository* |
+| Disconnected | *Screenshot removed from current repository* | *Screenshot removed from current repository*    |
 
-![Production Codex Details with account ownership](screenshots/after-details-380.png)
+*Screenshot removed from current repository*
 
-![Production Activity, scrolled within the bounded popup](screenshots/after-activity-380.png)
+*Screenshot removed from current repository*
 
-Full-content production captures temporarily expand only the browser popup height and scrolling for documentation; normal acceptance uses the unchanged bounded shell. No data or component markup is replaced: [Accounts](screenshots/after-accounts-full-380.png), [Overview](screenshots/after-overview-full-380.png), [Details](screenshots/after-details-full-380.png). These captures do not imply a taller native window.
+Full-content production captures temporarily expand only the browser popup height and scrolling for documentation; normal acceptance uses the unchanged bounded shell. No data or component markup is replaced: Accounts (archived visual removed), Overview (archived visual removed), Details (archived visual removed). These captures do not imply a taller native window.
 
 ## Ownership mapping
 
@@ -39,7 +39,7 @@ Only the existing appearance and palette keys persist. The fixture, selection, a
 
 The development-only scenario selector also covers one account, two Codex accounts, two keys, a verified shared source shown once through either key, errors/auth expiry, 80-code-point-compatible long Unicode aliases, duplicate names with different IDs, removal pending and no accounts. Release Demo uses the multiple-account example. No synthetic records are stored as user connections.
 
-[Validation and complete screenshot index](validation.md) · [Independent review and dispositions](review.md) · [Implementation plan](plan.md).
+[Validation and complete screenshot index](../validation/ux-02b.md) · [Independent review and dispositions](../reviews/ux-02b.md) · [Implementation plan](../plans/ux-02b.md).
 
 ## Deferred work
 
@@ -47,4 +47,4 @@ UX-02C owns advanced filtering and interactions. ACC-04 owns Add/Rename/Disconne
 
 ## Screenshot timing correction
 
-The final captures now wait for real tab transitions and assert selected tab, linked visible panel, heading and settled highlight. The prior Overview/Accounts visual mismatch was a mid-transition capture, not a runtime selection defect. [Frame diagnosis and updated validation](validation.md#final-screenshot-consistency-follow-up). Production animation and reduced-motion code remain unchanged.
+The final captures now wait for real tab transitions and assert selected tab, linked visible panel, heading and settled highlight. The prior Overview/Accounts visual mismatch was a mid-transition capture, not a runtime selection defect. [Frame diagnosis and updated validation](../validation/ux-02b.md#final-screenshot-consistency-follow-up). Production animation and reduced-motion code remain unchanged.

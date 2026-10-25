@@ -31,9 +31,9 @@ Rust regressions use only existing isolated fake processes/protocol fixtures. No
 
 Actual browser captures were taken from the production Svelte application served locally at `127.0.0.1:1426` by Vite. Baseline captures preceded edits. “Production UI” here means the actual application components, not the isolated UX-01 prototype; captures are not release-WebView renders.
 
-[48-case matrix](browser-matrix.json): four screens (explicit Demo Overview, Accounts, Settings, Details) × three widths (320/380/420) × two palettes × two appearances, all at 480px height. **No measured document or panel horizontal overflow; no descendants outside horizontal viewport bounds.** Each content panel retained 347px of vertical space and vertical scrolling.
+[48-case matrix](../evidence/ux-02a/browser-matrix.json): four screens (explicit Demo Overview, Accounts, Settings, Details) × three widths (320/380/420) × two palettes × two appearances, all at 480px height. **No measured document or panel horizontal overflow; no descendants outside horizontal viewport bounds.** Each content panel retained 347px of vertical space and vertical scrolling.
 
-[9 disconnected cases](disconnected-matrix.json): Overview, Accounts and Details at all three widths, 480px height, Zinc & Signal / system-resolved light. No measured horizontal overflow.
+[9 disconnected cases](../evidence/ux-02a/disconnected-matrix.json): Overview, Accounts and Details at all three widths, 480px height, Zinc & Signal / system-resolved light. No measured horizontal overflow.
 
 | Check                           | Evidence / limit                                                                                                                                                       |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -56,20 +56,20 @@ Computer Use stopped when it could not determine the active Windows browser URL 
 
 | Capture                           | Before                                                    | After                                                            |
 | --------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------- |
-| Demo, 380×660, jade/light         | [Before](screenshots/before-demo-380.jpg)                 | [After](screenshots/after-demo-380.jpg)                          |
-| Disconnected, 380×660, jade/light | [Before](screenshots/before-disconnected-380.jpg)         | [After](screenshots/after-disconnected-380.jpg)                  |
-| Settings, 380×660                 | [Before, jade/light](screenshots/before-settings-380.jpg) | [After, zinc/dark](screenshots/after-settings-zinc-dark-380.jpg) |
+| Demo, 380×660, jade/light         | Before (archived visual removed)                 | After (archived visual removed)                          |
+| Disconnected, 380×660, jade/light | Before (archived visual removed)         | After (archived visual removed)                  |
+| Settings, 380×660                 | Before, jade/light (archived visual removed) | After, zinc/dark (archived visual removed) |
 
 | Responsive / palette evidence  | Capture                                                                                                                 |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Demo, 320×480                  | [Narrow](screenshots/after-demo-320-short.jpg)                                                                          |
-| Demo, 380×480                  | [Default short](screenshots/after-demo-380-short.jpg)                                                                   |
-| Demo, 420×480                  | [Wide short](screenshots/after-demo-420-short.jpg)                                                                      |
-| Details, 320×480               | [Details entry](screenshots/after-details-320-short.jpg)                                                                |
-| Activity, 320×480              | [Calendar and keyboard focus](screenshots/after-activity-320-short.jpg)                                                 |
-| Disconnected Accounts, 320×480 | [Gates and catalog](screenshots/after-accounts-disconnected-320.jpg)                                                    |
-| Demo jade, 380×480             | [Light](screenshots/after-demo-graphite-jade-light-380.jpg) / [Dark](screenshots/after-demo-graphite-jade-dark-380.jpg) |
-| Demo zinc, 380×480             | [Light](screenshots/after-demo-zinc-signal-light-380.jpg) / [Dark](screenshots/after-demo-zinc-signal-dark-380.jpg)     |
+| Demo, 320×480                  | Narrow (archived visual removed)                                                                          |
+| Demo, 380×480                  | Default short (archived visual removed)                                                                   |
+| Demo, 420×480                  | Wide short (archived visual removed)                                                                      |
+| Details, 320×480               | Details entry (archived visual removed)                                                                |
+| Activity, 320×480              | Calendar and keyboard focus (archived visual removed)                                                 |
+| Disconnected Accounts, 320×480 | Gates and catalog (archived visual removed)                                                    |
+| Demo jade, 380×480             | Light (archived visual removed) / Dark (archived visual removed) |
+| Demo zinc, 380×480             | Light (archived visual removed) / Dark (archived visual removed)     |
 
 Additional Settings captures at 420×480 are scrolled to appearance controls and live in screenshots/. They are not full-content renders.
 
@@ -77,7 +77,7 @@ Additional Settings captures at 420×480 are scrolled to appearance controls and
 
 Semantic text token pairs against base/raised/inset/selected surfaces and status ink/wash pairs were calculated directly from the authored colors. Minimum tested static text contrast was **4.55:1**; minimum focus-token contrast against tested surfaces was **4.18:1**. These are token measurements, not browser compositing or whole-application WCAG certification.
 
-The focus outline is 2px with 3px offset; tab panels use an inset offset to avoid clipping. Appearance radios retain their visible proxy focus. Selection remains visible without animation or color alone through active surfaces, labels and checked/pressed states. The [independent Luna High review](review.md) found no Critical/Important issues and noted small Activity pointer targets at 320px; touch-specific acceptance remains pending.
+The focus outline is 2px with 3px offset; tab panels use an inset offset to avoid clipping. Appearance radios retain their visible proxy focus. Selection remains visible without animation or color alone through active surfaces, labels and checked/pressed states. The [independent Luna High review](../reviews/ux-02a.md) found no Critical/Important issues and noted small Activity pointer targets at 320px; touch-specific acceptance remains pending.
 
 ## Security and hosted evidence
 

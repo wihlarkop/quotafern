@@ -11,12 +11,12 @@ Baseline: `9f6497b65188496fe9786787a75da6e7ce0fd5bf`. Its [post-merge run 402138
 | Oxlint / Oxfmt                           | Passed after final corrections                                               |
 | Frontend regression                      | 17 groups / 1,958 assertions; zero failures, including 199 ACC-04 assertions |
 | Production frontend build                | Passed                                                                       |
-| Source browser                           | 189 checks passed, zero failures; [actual JSON](browser-results.json)        |
-| Compiled production browser              | 159 checks passed, zero failures; [actual JSON](production-results.json)     |
+| Source browser                           | 189 checks passed, zero failures; [actual JSON](../evidence/acc-04/browser-results.json)        |
+| Compiled production browser              | 159 checks passed, zero failures; [actual JSON](../evidence/acc-04/production-results.json)     |
 | Rust formatting / Clippy / package check | Passed locally on Windows, locked dependencies, warnings denied              |
 | Synthetic Rust regression                | 57 passed, zero failed, 4 ignored fixture entry points                       |
 | Impeccable UI detector                   | Empty finding list for changed Svelte targets                                |
-| Independent Luna High review             | One P2 fixed and follow-up verified; [dispositions](review.md)               |
+| Independent Luna High review             | One P2 fixed and follow-up verified; [dispositions](../reviews/acc-04.md)               |
 
 Exact final HEAD and its hosted Windows/macOS/Linux CI run/status belong in the Draft PR description, avoiding a self-referential commit hash in these files. Hosted compilation is not native GUI acceptance.
 

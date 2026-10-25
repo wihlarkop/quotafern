@@ -18,7 +18,7 @@ The accepted quota/credit/spending/reset/Activity/84-day heatmap/Coming Soon imp
 
 | Linux/macOS process groups | Graceful cleanup has dedicated fake-process and blocked-I/O regressions in hosted CI; see exact-HEAD handoff results. Forced parent termination **BLOCKED**: process groups have no parent-death guarantee. Native GUI/tray acceptance **NOT RUN** for F3. |
 
-| 4. Independent review | **PASS — completed independent static review**, including recheck of cancellation/shutdown findings after fixes. See [finding disposition](f3-security-review.md). The interrupted historical addendum review is not counted. |
+| 4. Independent review | **PASS — completed independent static review**, including recheck of cancellation/shutdown findings after fixes. See finding disposition (archived visual removed). The interrupted historical addendum review is not counted. |
 
 | Live/Plus acceptance | **BLOCKED / NOT RUN.** No proposed enable diff or executable owner Plus checklist is eligible while Gate 1 is unresolved. |
 
@@ -82,7 +82,7 @@ Cargo added 14 locked package versions for the native dialog dependency and its 
 
 **The production live connection gate is closed.** F3 delivers the Codex bridge/normalized presentation foundation, native consent flow behind the gate, explicit demo separation, and credential-free regression. It does not deliver a verified live subscription monitor. Clicking or invoking Connect cannot discover/start Codex while this gate is closed. No local auth file, keychain secret, live account endpoint, account login/logout, or real app-server was used for implementation or validation.
 
-The blocker is documented in [Codex integration notes](codex-integration.md): stdio does not disable persisted Remote Control in the inspected 0.164.0 source. Its only deterministic per-process disable mechanism found is internal/undocumented. Additional model/cloud-configuration background requests also prevent claiming that stock startup contacts only the quota endpoint. A safe documented startup policy requires a separately reviewed source change; owner account access alone does not resolve this blocker.
+The blocker is documented in Codex integration notes (archived visual removed): stdio does not disable persisted Remote Control in the inspected 0.164.0 source. Its only deterministic per-process disable mechanism found is internal/undocumented. Additional model/cloud-configuration background requests also prevent claiming that stock startup contacts only the quota endpoint. A safe documented startup policy requires a separately reviewed source change; owner account access alone does not resolve this blocker.
 
 ## Reproducible automated checks
 
@@ -202,9 +202,9 @@ The same branch and Draft PR #3 continue the original F3 work. The original core
 
 | Activity heatmap | Calendar-correct week columns/weekday rows, relative jade intensities, distinct zero/unknown and keyboard details in Codex Details | Provider-only for live data; mock examples remain labeled synthetic |
 
-The owner has one Plus account. No other subscription, extra account, partner approval or live credential is needed to run mock checks. Actual Plus compatibility remains blocked/unverified until the local CLI startup/consent/process requirements are resolved, then accepted by the owner. SIWC identity and eligible inference support do not prove monitoring authorization; [the authorization decision](chatgpt-auth-decision.md) records the official scope evidence, source/documentation divergence, and absence of any real authorization probe.
+The owner has one Plus account. No other subscription, extra account, partner approval or live credential is needed to run mock checks. Actual Plus compatibility remains blocked/unverified until the local CLI startup/consent/process requirements are resolved, then accepted by the owner. SIWC identity and eligible inference support do not prove monitoring authorization; [the authorization decision](../security/chatgpt-auth-decision.md) records the official scope evidence, source/documentation divergence, and absence of any real authorization probe.
 
-Claude Code and Gemini CLI are Coming Soon catalog entries, with no login control, adapter or discovery. Codex is the only monitoring implementation. P2 thresholds, notifications, links, background refresh and local history are deferred. The [security roadmap](security-roadmap.md) records documented SEC-01 controls, partial implemented SEC-02 protections and explicit SEC-03–05 acceptance gates. No entire milestone set or live security approval is claimed complete.
+Claude Code and Gemini CLI are Coming Soon catalog entries, with no login control, adapter or discovery. Codex is the only monitoring implementation. P2 thresholds, notifications, links, background refresh and local history are deferred. The security roadmap (archived visual removed) records documented SEC-01 controls, partial implemented SEC-02 protections and explicit SEC-03–05 acceptance gates. No entire milestone set or live security approval is claimed complete.
 
 Addendum browser acceptance used the actual Chrome preview without credentials. Disconnected Details showed unknown/unavailable quota, credits, resets and Activity. Accounts showed both Coming Soon providers without login actions. Explicit Demo preview showed the synthetic funding/reset data and 84 UTC calendar cells. Arrow Right moved from a reported zero-token date to the same weekday in the following week and updated both focus and the exact-count detail. Unknown and zero cells had distinct computed colors in dark Zinc & Signal at 320×480 and light Graphite & Jade at 420×660; neither inspected layout overflowed horizontally. Native Windows F3 interaction remains NOT RUN.
 
