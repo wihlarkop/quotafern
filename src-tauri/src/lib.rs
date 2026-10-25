@@ -147,7 +147,9 @@ fn hide_main_window(app: &tauri::AppHandle) {
 }
 
 fn tray_icon() -> Image<'static> {
-    Image::from_bytes(include_bytes!("../icons/32x32.png"))
+    // White glyph: owner-selected fixed fallback for dark taskbars. Window theme
+    // does not reliably describe the Windows/Linux tray background.
+    Image::from_bytes(include_bytes!("../icons/tray/fern-dark-32.png"))
         .expect("the embedded Quotafern tray icon must be valid PNG")
 }
 
@@ -210,6 +212,8 @@ pub fn run() {
 
             let tray = TrayIconBuilder::new()
                 .icon(tray_icon())
+                // AppKit handles menu-bar contrast from the approved glyph alpha.
+                .icon_as_template(cfg!(target_os = "macos"))
                 .tooltip("Quotafern")
                 .menu(&menu)
                 // Windows and macOS use a primary click for popup toggling. Linux tray

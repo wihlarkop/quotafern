@@ -1,0 +1,483 @@
+{
+  "asset_root": "C:\\Users\\Edo\\Downloads\\Videos",
+  "archive": "not supplied; extracted directory verified",
+  "files": [
+    {
+      "path": "preview/icon-review-sheet.png",
+      "bytes": 166329,
+      "sha256": "b281b9c9517ea477a0f1a2bea844680efbf4f6f86b3c838fea14656e84b5eee9",
+      "format": "PNG",
+      "dimensions": [1440, 1040],
+      "mode": "RGB",
+      "alpha_range": [255, 255]
+    },
+    {
+      "path": "README.md",
+      "bytes": 2568,
+      "sha256": "008add3453ea0f9e1c34eaa6e877311b3b4cb20f2c83b83dd635cdf9786becd3"
+    },
+    {
+      "path": "source/quotafern-app-master-1024.png",
+      "bytes": 1449627,
+      "sha256": "1959e0d8e7c0ffffcb268a1cc71d17989eddb0833e79d722cd651ede57b769da",
+      "format": "PNG",
+      "dimensions": [1024, 1024],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "source/selected-original-soft-ivory-fern.png",
+      "bytes": 1846115,
+      "sha256": "25e1225ac1f6aad032a060bbb898ff136f90db516bafe742305e2dedb25e30e3",
+      "format": "PNG",
+      "dimensions": [1254, 1254],
+      "mode": "RGB",
+      "alpha_range": [255, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/128x128.png",
+      "bytes": 25623,
+      "sha256": "a6ebb0495587d00041866b75109351fc7554d269c3f10511eb9dedd6ad7ee542",
+      "format": "PNG",
+      "dimensions": [128, 128],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/128x128@2x.png",
+      "bytes": 87701,
+      "sha256": "a72afb07b7a990e19c1df318459680b9060f8ce4a36868a0626d57c35f5ff3c7",
+      "format": "PNG",
+      "dimensions": [256, 256],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/32x32.png",
+      "bytes": 2631,
+      "sha256": "8b6121ebb92fe5acff054d5734f3481e198951bb09e798e082c5f797f1917fb4",
+      "format": "PNG",
+      "dimensions": [32, 32],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/icon-1024.png",
+      "bytes": 1449627,
+      "sha256": "1959e0d8e7c0ffffcb268a1cc71d17989eddb0833e79d722cd651ede57b769da",
+      "format": "PNG",
+      "dimensions": [1024, 1024],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/icon-512.png",
+      "bytes": 359339,
+      "sha256": "1fb82627b9e088b15a345c6a95f819a4417636f4293a55da5ed4f0c3e0cc7fb2",
+      "format": "PNG",
+      "dimensions": [512, 512],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/icon.icns",
+      "bytes": 2424453,
+      "sha256": "8f46056bed17cb67e939d904c9df61342dc4fcb4462cd71ac7b8d19aaf5934bd",
+      "format": "ICNS",
+      "dimensions": [1024, 1024],
+      "mode": "RGBA",
+      "chunks": [
+        {
+          "type": "TOC ",
+          "bytes": 72
+        },
+        {
+          "type": "ic07",
+          "bytes": 24774
+        },
+        {
+          "type": "ic08",
+          "bytes": 86413
+        },
+        {
+          "type": "ic09",
+          "bytes": 351307
+        },
+        {
+          "type": "ic10",
+          "bytes": 1513912
+        },
+        {
+          "type": "ic11",
+          "bytes": 2489
+        },
+        {
+          "type": "ic12",
+          "bytes": 7758
+        },
+        {
+          "type": "ic13",
+          "bytes": 86413
+        },
+        {
+          "type": "ic14",
+          "bytes": 351307
+        }
+      ],
+      "sizes": [
+        [512, 512, 2],
+        [512, 512, 1],
+        [256, 256, 2],
+        [256, 256, 1],
+        [128, 128, 2],
+        [128, 128, 1],
+        [32, 32, 2],
+        [16, 16, 2]
+      ],
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/icon.ico",
+      "bytes": 135769,
+      "sha256": "9f77ffc26c1ddd010c81eaa72c9f714935564cfee4b41aca7ec759384c8eec96",
+      "format": "ICO",
+      "dimensions": [256, 256],
+      "mode": "RGBA",
+      "entries": [
+        {
+          "size": [16, 16],
+          "bits": 32,
+          "bytes": 863
+        },
+        {
+          "size": [24, 24],
+          "bits": 32,
+          "bytes": 1667
+        },
+        {
+          "size": [32, 32],
+          "bits": 32,
+          "bytes": 2627
+        },
+        {
+          "size": [48, 48],
+          "bits": 32,
+          "bytes": 5042
+        },
+        {
+          "size": [64, 64],
+          "bits": 32,
+          "bytes": 8134
+        },
+        {
+          "size": [128, 128],
+          "bits": 32,
+          "bytes": 26272
+        },
+        {
+          "size": [256, 256],
+          "bits": 32,
+          "bytes": 91046
+        }
+      ],
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tauri/src-tauri/icons/icon.png",
+      "bytes": 1449627,
+      "sha256": "1959e0d8e7c0ffffcb268a1cc71d17989eddb0833e79d722cd651ede57b769da",
+      "format": "PNG",
+      "dimensions": [1024, 1024],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "tray/fern-dark-128.png",
+      "bytes": 5111,
+      "sha256": "f5ee2e0dcd0838fd814cdbe09ab26b75677959924c724cb6f08d391e9cb1cea8",
+      "format": "PNG",
+      "dimensions": [128, 128],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-16.png",
+      "bytes": 315,
+      "sha256": "cf448ce073dd481668178dbf4f8868ee02ef8136d70c850184bd500297a2394a",
+      "format": "PNG",
+      "dimensions": [16, 16],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-20.png",
+      "bytes": 450,
+      "sha256": "4d30eb3e5019fe9664cf4bf4e60ef33723d208c179663f584ebfa428721eb31d",
+      "format": "PNG",
+      "dimensions": [20, 20],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-24.png",
+      "bytes": 604,
+      "sha256": "3dbb93c08ca55fa47bcb3db0c3b60dc54e2e4294048f8e27a191f0a1c4c85197",
+      "format": "PNG",
+      "dimensions": [24, 24],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-256.png",
+      "bytes": 13183,
+      "sha256": "02b726febe022b41eabf948ebe66a7bcae31ac77310640d4f318b8cb43236e61",
+      "format": "PNG",
+      "dimensions": [256, 256],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-32.png",
+      "bytes": 845,
+      "sha256": "a9a8cf9c0b510339728ca8fbaa80d2cb7fce88ddf72889f1e66273dc7ee9fbea",
+      "format": "PNG",
+      "dimensions": [32, 32],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-48.png",
+      "bytes": 1350,
+      "sha256": "aa6b6858dd2083fa3978dfeacb5750049afdbfc0b2cb5e66a0ec0ad2b58f5d4a",
+      "format": "PNG",
+      "dimensions": [48, 48],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-512.png",
+      "bytes": 34398,
+      "sha256": "4a82552bad4936becdc8fc9d267fc722c64d3e0bf64dae27b65e0cb83914b5e6",
+      "format": "PNG",
+      "dimensions": [512, 512],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-64.png",
+      "bytes": 2043,
+      "sha256": "71e6db664b119c08a150342f3fa79a431bd26712ef4c0033d6a4deca4f0b6d58",
+      "format": "PNG",
+      "dimensions": [64, 64],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [255, 255, 255]
+    },
+    {
+      "path": "tray/fern-dark-traced.svg",
+      "bytes": 4105,
+      "sha256": "0642d78c4c4540ee53ec4c833bb06c6715d288368de79ef01d2e76ea0a0c0117"
+    },
+    {
+      "path": "tray/fern-light-128.png",
+      "bytes": 6629,
+      "sha256": "88afbe169325eaba1532a463c33dfd01be354facd4ba9cb31356e718f8bd3d71",
+      "format": "PNG",
+      "dimensions": [128, 128],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-16.png",
+      "bytes": 336,
+      "sha256": "c22bce02567496d3291ed7905629bcb07b1f896ace93f17b83a485d5e5eb92e5",
+      "format": "PNG",
+      "dimensions": [16, 16],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-20.png",
+      "bytes": 485,
+      "sha256": "e924954a1080395e1efb9cf3f3eab4ed1c782ef75b60e8ef2eac5af691f420cd",
+      "format": "PNG",
+      "dimensions": [20, 20],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-24.png",
+      "bytes": 618,
+      "sha256": "1ee1a6daad1c515d3117c7443a5646f255971a67c7b0e06778546932f0a698a0",
+      "format": "PNG",
+      "dimensions": [24, 24],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-256.png",
+      "bytes": 15763,
+      "sha256": "437c3b2446684c50d7086f153167afc4ee1c4d537d7fa6b211b453d921d5ae0f",
+      "format": "PNG",
+      "dimensions": [256, 256],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-32.png",
+      "bytes": 921,
+      "sha256": "88cd5af4fc142c6a2ff8de49a961990eff0b5396696d0a433f54225f7b0a2899",
+      "format": "PNG",
+      "dimensions": [32, 32],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-48.png",
+      "bytes": 1621,
+      "sha256": "577b535d6cf9e2bf4dfc0b14109b73fcfc9924c52e49b0c5526af33dd3482c19",
+      "format": "PNG",
+      "dimensions": [48, 48],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-512.png",
+      "bytes": 35243,
+      "sha256": "2fae97ae9bcc22d45533099e75e7de518e97db4ef81f769f27f7db1cdcaa3600",
+      "format": "PNG",
+      "dimensions": [512, 512],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-64.png",
+      "bytes": 2515,
+      "sha256": "b62aab81cf3ae386b9ea643df6d8c84a5afcd6dd79fd61e51b2cef9415d5e862",
+      "format": "PNG",
+      "dimensions": [64, 64],
+      "mode": "RGBA",
+      "alpha_range": [0, 255],
+      "glyph_rgb": [23, 60, 48]
+    },
+    {
+      "path": "tray/fern-light-traced.svg",
+      "bytes": 4105,
+      "sha256": "5865a9140e2603d9aa2f1f7ced0c0b9d7cf9f1812563e5bc5e099efcfa4b3cb6"
+    },
+    {
+      "path": "web/apple-touch-icon.png",
+      "bytes": 13058,
+      "sha256": "944de30ff5cf6138057b647772b29265273647d8d7cd2cfe2b3c3d7c9d37d586",
+      "format": "PNG",
+      "dimensions": [180, 180],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon-16.png",
+      "bytes": 496,
+      "sha256": "21986a46814e7f87ecd952c110b749a54fea8b098fbbd35559498e48a6c2329d",
+      "format": "PNG",
+      "dimensions": [16, 16],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon-180.png",
+      "bytes": 13058,
+      "sha256": "944de30ff5cf6138057b647772b29265273647d8d7cd2cfe2b3c3d7c9d37d586",
+      "format": "PNG",
+      "dimensions": [180, 180],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon-192.png",
+      "bytes": 14082,
+      "sha256": "4f8a880be8d1d935e1ffcdc7c2c9b5cd00aaec218686c2a30fdeeec6197ffb3b",
+      "format": "PNG",
+      "dimensions": [192, 192],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon-32.png",
+      "bytes": 1317,
+      "sha256": "f66cbf18fad50d0b631d59ac5972f7e60cdefd08a8dd4590d69df54771f6c3fe",
+      "format": "PNG",
+      "dimensions": [32, 32],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon-48.png",
+      "bytes": 2385,
+      "sha256": "6df11fe7ac86857bf4d46da32231dcf7de09740f7b49b9810a3d958a1a5f2637",
+      "format": "PNG",
+      "dimensions": [48, 48],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon-512.png",
+      "bytes": 43853,
+      "sha256": "ec77c34ad707faafdff677ffdaffba0b6bef047427d4b6f5ab29d0c1bcafda1a",
+      "format": "PNG",
+      "dimensions": [512, 512],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon-64.png",
+      "bytes": 3549,
+      "sha256": "954e2104c338ebc2a423f38d836aa629f081235b759c6a5606d00a2dd250ac54",
+      "format": "PNG",
+      "dimensions": [64, 64],
+      "mode": "RGBA",
+      "alpha_range": [0, 255]
+    },
+    {
+      "path": "web/favicon.ico",
+      "bytes": 5945,
+      "sha256": "4779b7796f0f9ed6054dd5e027a3b4e118885680aecbb9cc571ebd9fcc46638c",
+      "format": "ICO",
+      "dimensions": [48, 48],
+      "mode": "RGBA",
+      "entries": [
+        {
+          "size": [16, 16],
+          "bits": 32,
+          "bytes": 764
+        },
+        {
+          "size": [32, 32],
+          "bits": 32,
+          "bytes": 1839
+        },
+        {
+          "size": [48, 48],
+          "bits": 32,
+          "bytes": 3288
+        }
+      ],
+      "alpha_range": [0, 255]
+    }
+  ]
+}
