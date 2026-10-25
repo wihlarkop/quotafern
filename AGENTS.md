@@ -34,6 +34,14 @@ Keep this application local-first and secure by default. Prefer minimal dependen
 
 Do not use TDD for this foundation slice. Unit suites are deferred until main features; add the regression, integration, and security checks required by those features. CI covers locked frontend quality, Rust formatting/lint/check on Linux, Windows, and macOS, and an unbundled desktop compilation. Compilation does not prove native tray behavior. Record actual browser or OS acceptance separately from CI results, and leave unexercised platform behavior explicitly pending.
 
+## Global personal-only scope (2026-10-26 owner decision)
+
+Quotafern serves **one human operator** with **their own personal accounts** and optionally multiple independently authorized personal API keys. Multi-account does not mean multi-user or organization support. This scope applies to **all** present and future providers; see `docs/plans/personal-only-product-scope.md`.
+
+Do **not** implement enterprise/team/business workspace administration, organization billing/analytics, company seat or member monitoring, shared dashboards, admin API scopes, or payment management. It is fine to recognize unsupported workspace plan types solely to reject or safely omit them. Optional plan, Free/Paid, quota, renewal, next-charge and expiry fields appear only when source-verified; omit missing fields and empty sections without manual billing entry.
+
+Active provider research is **Codex (PR #16)** and **Claude Code (PR #17)** only. Gemini, Copilot, OpenRouter and OpenCode research is paused. Keep provider research and implementation within its own Draft PR, and cross-cutting scope rules in a separate documentation PR. No automatic merger, release or provider live enabling.
+
 ## F3 Codex exception and ongoing boundaries
 
 F1 rules above remain historical foundation boundaries. F3 separately authorizes one native Codex app-server integration after explicit in-app consent. The Rust bridge owns process/protocol communication and returns a small sanitized live presentation contract to TypeScript. No other live provider is authorized.
