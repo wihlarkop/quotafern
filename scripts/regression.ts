@@ -17,6 +17,7 @@ import {
 } from "../src/lib/quota";
 import { runAccountsRegression } from "./accounts-regression";
 import { runActivityRegression } from "./activity-regression";
+import { runIconRegression } from "./icon-regression";
 
 type JsonObject = Record<string, unknown>;
 
@@ -568,6 +569,10 @@ await check("Codex activity calendar and summary regression", () => {
 
 await check("ACC-01 account architecture, metadata, ownership and selection", () => {
   assertionCount += runAccountsRegression();
+});
+
+await check("ICON-01 approved asset integrity and local integration", async () => {
+  assertionCount += await runIconRegression();
 });
 
 console.log(
