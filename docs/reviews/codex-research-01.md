@@ -1,6 +1,6 @@
 # CODEX-RESEARCH-01 — Official quota authorization and startup safety
 
-**Status:** Draft research, 2026-10-26. **Scope:** OpenAI Codex only, documentation and synthetic acceptance planning. No real login, CLI execution, account read, secret inspection, source change, Tauri permission change, live gate change or release.
+**Status:** Draft research, 2026-10-26. **Scope:** OpenAI Codex personal Free/Go/Plus/Pro accounts only, documentation and synthetic acceptance planning. No real login, CLI execution, account read, secret inspection, source change, Tauri permission change, live gate change or release.
 
 ## Goal and user-facing truth
 
@@ -9,7 +9,7 @@ Determine whether Quotafern can show the current user's Codex plan, each authori
 - **Plan coverage:** Official documentation says Codex is included across ChatGPT plans, including Free and Go. Exact limits and model availability vary by plan and account/workspace; a public tier description is **not** a current account entitlement. Do not assume every Free/Go account supports the same bucket or Codex Cloud (which is separately restricted).
 - **Read semantics:** Documented app-server `account/read`, `account/rateLimits/read`, and optional `account/usage/read` can expose plan classification, independent primary/secondary windows, percentages, reset timestamps, credits, spending and token activity when actually returned. Do not fabricate unavailable fields. Unsupported future schemas fail closed.
 - **Plan labels:** A returned `planType` is an observed Codex/ChatGPT usage-plan classification, **not** authenticated subscription billing status. Do not derive invoice amount, renewal date or payment schedule from this field.
-- **Independent sources:** Work/Codex or other shared allowance windows can share an authoritative quota source within one account; do not add percentages, double-count pools or infer a separate personal balance from workspace traffic.
+- **Independent sources:** Each personal Codex account can report multiple authoritative quota windows or limit IDs; do not add percentages, double-count related buckets or infer another account's allowance.
 - **Reset distinctions:** `resetsAt` for the 5-hour, weekly, monthly or source-specific window is not the billing date. Banked one-time reset expiry is not subscription expiry. Quota display remains source/window-specific.
 
 ## Existing Quotafern foundation
@@ -36,7 +36,7 @@ F3 is merged, dormant and **live disabled**. The Rust bridge implements fixed JS
 
 - Reverify the latest **supported Codex app-server version** versus F3's pinned 0.164.0: public startup controls, remote-control state, cloud config, model refresh, and compatibility with existing RPC response schemas.
 - Determine whether OpenAI offers a genuinely **quota-only** startup policy, direct official read-only endpoint, or separately granted monitoring token without inference entitlement. Capture exact version/source lines; do not invent undocumented switches.
-- Verify which returned plan/entitlement fields distinguish Free, Go, Plus, Pro, Business and Enterprise without assuming bill ownership or API-key mode equals ChatGPT subscription.
+- Verify which provider-returned plan/entitlement fields distinguish **personal Free, Go, Plus and Pro** without treating the API-key mode as a ChatGPT subscription. Unsupported Team/Business/Enterprise or organization-specific plan variants must be safely omitted; do not research or implement organization access.
 - Confirm the meaning of every per-window `usedPercent`, `resetsAt`, credit, spending limit, earned reset and activity field; unknown/null/malformed values and different time windows remain separate.
 - Address forced-parent process cleanup on Windows/macOS/Linux, including startup failure, timeout, disconnect, process tree descendants and user-account changes.
 - After independent security review, prepare **synthetic-only** DTO/transport tests and an explicit owner-native-acceptance checklist. Never perform authenticated acceptance without separate approval.
