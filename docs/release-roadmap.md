@@ -29,20 +29,43 @@ Status: Planned. Implement after UX-02B/C + ACC-04 and combined native Windows a
 - Add regression checks for malformed/inconsistent manifest versions, stale displayed version, duplicate tags, missing changelog or unsupported target-specific versions. Treat generated artifacts as untrusted until signed/verified.
 - For release readiness, require the owner-completed combined Windows native acceptance and OS-specific packaging/signing checks. macOS/Linux native GUI acceptance remains NOT RUN until available; do not claim supported releases without appropriate acceptance.
 
-## REL-02 — Optional secure update delivery (separate, later decision)
+## Distribution decision — GitHub Tags + Releases + Actions
 
-Status: Deferred. No implementation approval.
+**Owner-approved architecture decision (25 October 2026):** use GitHub as Quotafern's official source of published app releases; do not build a bespoke release-hosting or update server.
 
-Tauri 2 offers an official updater plugin; do not build an update downloader from scratch. The updater is distinct from base app versioning and is **not installed or configured** by this roadmap.
+- Keep `src-tauri/tauri.conf.json` as the authoritative **installed app version**. Check that `Cargo.toml` and `package.json` agree before publishing.
+- An explicitly approved, immutable annotated Git tag such as `v0.2.0` identifies the exact release commit. A GitHub Release references that tag and publishes release notes, platform-specific installers/packages, hashes and **signed Tauri updater artifacts**, along with compatible `latest.json` metadata when REL-02 is implemented.
+- Use GitHub Actions for reproducible, pinned-dependency CI and building release candidates for specifically supported platforms. Publishing the GitHub Release, signing artifacts and creating/updating release metadata must be separately owner-approved and protected by least-privilege workflow permissions and release-environment controls; routine PR merges must never publish.
+- Build once from the approved tag/ref with traceable commit/manifest versions, check integrity/signatures and retain provenance; do not silently retag or overwrite previously published artifacts.
+- An approved GitHub Release may be a draft/prerelease until platform-native acceptance, signing and distribution checks are satisfied. Do not claim that a successful CI compile makes an installer safe or a release supported.
+- **Distribution prerequisite:** public GitHub Release assets can support a direct static updater metadata URL (for example a release asset such as `latest.json`). A private repository/private asset may require authorization; never embed a personal access token or a repository secret into a shipped Quotafern binary. Decide on public assets or an independently reviewed secure distribution route before implementing REL-02.
+- Versioning, publishing and updating are distinct actions. This roadmap makes **no new tags/releases, uploads, builds or updater configuration**.
 
-Before any future updater implementation:
+## REL-02 — Manual Check for Updates (official Tauri updater; later implementation)
 
-- Define supported installers, operating systems/architectures, stable/beta channel mapping and authoritative HTTPS update endpoints.
-- Require genuine signed updater artifacts, public-key verification and **private signing keys stored only in a protected release environment**; never check keys into Git, read external CLI credentials, or expose secrets to the webview.
-- Define explicit user-consented update check/install, failure handling, restart behavior, rollback/recovery and no forced/silent downloads without owner-approved policy.
-- Test stale/malformed metadata, downgrade/replay, missing/bad signatures, compromised endpoints, wrong-platform artifacts, offline conditions and interrupted installations.
-- Keep any updater command/capability grant narrowly scoped; independently review network, signature, CSP/IPC and supply-chain impacts.
-- Do not treat hosted CI build success as proof that signing, installation or native updates work.
+Status: **Product interaction approved; implementation deferred.** The owner chose GitHub Releases + GitHub Actions and a user-controlled updater. This selection is NOT approval to install an updater plugin, add a remote endpoint/capability, sign binaries, publish releases or fetch remote data now.
+
+Tauri 2's official updater plugin separates checking (`check()`) from downloading and installation (`download()`, `install()` or `downloadAndInstall()`). Use it rather than creating a custom downloader.
+
+### Approved UX and consent boundary
+
+- Under **Settings → About & Updates**, show the true locally installed version (through official Tauri `getVersion()`), a clear **Check for Updates** button and a neutral status/error area.
+- **Manual-only default:** no version check at app startup, popup open, Settings open, tray click or on a timer. No background polling, silent download or automatic installation. Do not make a network call merely to render About.
+- On user click, make a bounded, HTTPS metadata-only check against a configured trusted release source. No installer/package download or install is permitted as part of this check.
+- If no update exists, say **You're up to date** only after a successful check. For offline/network/manifest errors, report **Unable to check** and offer Retry. Do not treat failure/unknown as up to date.
+- If a verified, newer compatible release is available, show current and offered versions, release notes, supported platform/architecture, and download size if available. Provide **Install Update** and **Later**; no action is preselected. **Later** keeps the current version.
+- Start a package download **only after a separate explicit Install Update click**. Show progress, integrity/signature-verification result and actionable download or installation errors. Fail closed for invalid signatures, wrong target, downgrade, unsupported channel or compromised metadata.
+- Before installer execution/app exit/restart, clearly describe the expected OS-specific behavior and obtain appropriate user confirmation where feasible. Some installers may close the running app and may not be cancelable after handoff; never promise guaranteed cancel/reversal on all OSes.
+- No forced updates or "Automatically install updates" setting in the initial REL-02. An opt-in notification-only policy could be evaluated later in another approved milestone; not part of this default.
+
+### Implementation prerequisites and acceptance
+
+- Produce approved GitHub Release updater metadata compatible with Tauri 2 (typically `latest.json`), with platform/architecture artifact URLs and mandatory Tauri updater signatures. Validate metadata compatibility with the precise official plugin version used.
+- Protect private update-signing keys in a dedicated release environment; ship only the public verification key. Do not expose keys, GitHub personal tokens or privileged release APIs to the Svelte renderer.
+- Review every plugin command/capability grant, network origin, process restart behavior, update-channel mapping, error handling and platform-specific signing/notarization requirements. Do not widen unrelated F3/Codex IPC or CSP.
+- Test metadata-only check (and proof of **no package download**), explicit user consent boundaries, up-to-date/offline/error results, Later, progress, tampered signatures, downgrade/prerelease rejection, interrupted download, invalid endpoint, installer handoff and restart behavior on supported platforms.
+- Stage signing, packaging and native update acceptance with disposable test artifacts. Hosted compilation and synthetic/browser mocks are not proof of a working installer or updater.
+- **No runtime implementation in PR #11.** The GitHub Release target is a plan until an approved public/supported distribution endpoint and signed-release workflow exist.
 
 ## Release safety gates
 
