@@ -14,7 +14,7 @@
   import X from "@lucide/svelte/icons/x";
   import { invoke, isTauri } from "@tauri-apps/api/core";
   import { Tabs } from "bits-ui";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
 
   import { createDemoMonitoring } from "./lib/activity";
   import {
@@ -489,6 +489,18 @@
     localRefreshLabel = "";
   }
 
+  async function openCodexDetails() {
+    showCodexDetails = true;
+    await tick();
+    document.getElementById("codex-details-title")?.focus();
+  }
+
+  async function closeCodexDetails() {
+    showCodexDetails = false;
+    await tick();
+    document.querySelector<HTMLButtonElement>('[data-testid="open-codex-details"]')?.focus();
+  }
+
   async function closePopup() {
     closeMessage = "";
     if (isTauri()) {
@@ -603,10 +615,10 @@
     {#if showCodexDetails}
       <div class="view-heading">
         <div>
-          <h1>Codex Details</h1>
+          <h1 id="codex-details-title" tabindex="-1">Codex Details</h1>
           <p>Quota, credits and Activity</p>
         </div>
-        <Button variant="outline" size="sm" onclick={() => (showCodexDetails = false)}>Back</Button>
+        <Button variant="outline" size="sm" onclick={closeCodexDetails}>Back</Button>
       </div>
       <CodexDetails
         source={demoPreview ? "synthetic" : "live"}
@@ -940,7 +952,7 @@
       <Button
         variant="outline"
         class="codex-details-link"
-        onclick={() => (showCodexDetails = true)}
+        onclick={openCodexDetails}
         data-testid="open-codex-details"
       >
         Codex Details · Activity <span aria-hidden="true">→</span>

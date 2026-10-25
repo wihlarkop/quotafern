@@ -106,3 +106,17 @@ Keep this roadmap separate from F4 live Codex startup and process-security block
 The next architectural step is ACC-01 before the second provider adapter. UX-01 can explore visual directions independently but implementation must not assume an unapproved identity model.
 
 No merge of future UI implementation, provider enablement, or release without owner approval.
+
+## UX-02A: Soft Native production foundation
+
+Status: implemented for owner review in an isolated Draft PR; not merged or released.
+
+The owner separately authorized this first production stage of Hybrid A + B: A's calm surfaces, restrained elevation and botanical identity, with B's compact header/navigation and 380px rhythm. Existing Svelte screens receive shared semantic surface/spacing/focus/motion tokens, fluid narrow layouts and Details focus restoration. Full account management, context filters and ACC-01 runtime cutover remain for UX-02B/C and ACC-04.
+
+See [implementation and screenshots](ux-02a/README.md), [actual validation and pending native/media checks](ux-02a/validation.md), and [independent visual/accessibility review](ux-02a/review.md). Neither browser evidence nor hosted desktop compilation establishes native GUI acceptance. Both Codex live gates remain false; SEC-01/SEC-02 and F4 blockers remain separate.
+
+## ICON-01: Original fern icon refresh
+
+Status: separate proposed design milestone; owner visual selection required.
+
+The current fern is provisional. Plan original browser favicon, Windows/macOS/Linux app icons, monochrome high-contrast tray glyphs, light/dark proofs and HiDPI variants. The [design specification and three concepts](ux-02a/icon-01.md) include actual-size 16/20/24/32px readability observations. No production icon asset is replaced in UX-02A. Select and refine a concept before a separately reviewed asset PR; no external unlicensed art, icon dependency or animated tray icon.

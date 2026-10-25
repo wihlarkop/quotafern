@@ -30,3 +30,16 @@ F2 uses one scrolling content region with persistent navigation and footer. Supp
 Escape uses the same restricted native hide action as Close. Inner controls retain first refusal of Escape; blur does not dismiss the popup. Reduced-motion preferences suppress nonessential transitions.
 
 The interface is the visible content of the single `main` Tauri window. Native window close and tray lifecycle are owned by Rust. The renderer's only F1 native command is `hide_popup`; UI components should not gain broader host capabilities for convenience.
+
+## UX-02A Soft Native foundation
+
+The Hybrid A + B production refinement adds shared CSS geometry and motion without changing the theme preference model or provider contracts. See [UX-02A](ux-02a/README.md) and its [validation limits](ux-02a/validation.md).
+
+- Spacing: `--space-1` through `--space-5` = 4/8/12/16/20px.
+- Radius: control 8px, panel 12px, shell 14px. Small segmented selections use 7px within the 10px inset group.
+- Elevation: `--elevation-shell`, `--elevation-panel`, `--elevation-control` define palette-aware soft shadows. Raised provider sections have no additional outer collection card.
+- Motion: press 120ms, selection 140ms, content entry 160ms, using shared feedback/entry easing tokens. No outgoing-context transition, height animation or quota-meter tweening. Reduced motion disables transitions, animations and active translation.
+- Focus: shared 2px outline and 3px offset, with inset panel outlines. Details focuses its heading and Back restores its opener.
+- Layout: 56px header, 40px tab strip, 32px tab targets, one vertical scrolling panel. Activity columns flex to the available width; exact date/count and unknown/zero semantics remain independent of appearance.
+
+Account-first multi-account screens, ID-backed filters and management transitions remain deferred to UX-02B/C and ACC-04. The existing production application still has its single F3 context; styling must not imply otherwise.
