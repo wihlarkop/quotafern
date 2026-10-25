@@ -1383,17 +1383,36 @@ mod tests {
         delay: Duration,
     ) -> (String, mpsc::Receiver<String>, std::thread::JoinHandle<()>) {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
         let url = format!("http://{}/usage", listener.local_addr().unwrap());
         let headers = headers.to_owned();
         let (tx, rx) = mpsc::channel();
         let thread = std::thread::spawn(move || {
-            let (mut stream, _) = listener.accept().unwrap();
+            let accept_deadline = Instant::now() + Duration::from_secs(5);
+            let mut stream = loop {
+                match listener.accept() {
+                    Ok((stream, _)) => break stream,
+                    Err(error)
+                        if error.kind() == std::io::ErrorKind::WouldBlock
+                            && Instant::now() < accept_deadline =>
+                    {
+                        std::thread::sleep(Duration::from_millis(2));
+                    }
+                    _ => return,
+                }
+            };
+            stream.set_nonblocking(false).unwrap();
             stream
-                .set_read_timeout(Some(Duration::from_secs(2)))
+                .set_write_timeout(Some(Duration::from_secs(2)))
                 .unwrap();
+            let read_deadline = Instant::now() + Duration::from_secs(2);
             let mut bytes = Vec::new();
             let mut chunk = [0; 1024];
             while bytes.len() < 32768 {
+                let Some(remaining) = read_deadline.checked_duration_since(Instant::now()) else {
+                    return;
+                };
+                stream.set_read_timeout(Some(remaining)).unwrap();
                 let n = stream.read(&mut chunk).unwrap_or(0);
                 if n == 0 {
                     break;
@@ -1699,10 +1718,10 @@ mod tests {
             .err(),
             Some(Failure::Network | Failure::Timeout)
         ));
-        let (url, _, thread) = server(200, "", b"{}".to_vec(), Duration::from_millis(150));
+        let (url, observed, thread) = server(200, "", b"{}".to_vec(), Duration::from_secs(1));
         assert_eq!(
             fetch_at(
-                &local_client(Duration::from_millis(50)),
+                &local_client(Duration::from_millis(250)),
                 &url,
                 &creds(),
                 &AtomicBool::new(false)
@@ -1711,12 +1730,17 @@ mod tests {
             .err(),
             Some(Failure::Timeout)
         );
+        observed
+            .recv_timeout(Duration::from_secs(2))
+            .expect("timeout fixture observed the request");
         thread.join().unwrap();
-        let (url, _, thread) = server(200, "", b"{}".to_vec(), Duration::from_millis(200));
+        let (url, observed, thread) = server(200, "", b"{}".to_vec(), Duration::from_secs(1));
         let cancelled = Arc::new(AtomicBool::new(false));
         let cancel = cancelled.clone();
         let stop = std::thread::spawn(move || {
-            std::thread::sleep(Duration::from_millis(50));
+            observed
+                .recv_timeout(Duration::from_secs(5))
+                .expect("cancellation starts only after the fixture observed the request");
             cancel.store(true, Ordering::SeqCst);
         });
         assert_eq!(

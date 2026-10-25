@@ -421,6 +421,12 @@ export function createDirectController(
         .map((c) => c.id);
       return (await Promise.all(ids.map(stop))).every(Boolean);
     },
+    async refreshAll(): Promise<void> {
+      const ids = state.connections
+        .filter((c) => c.lifecycle === "connected" && c.consent === "granted")
+        .map((c) => c.connectionId);
+      await Promise.all(ids.map((id) => this.action(id, "refresh")));
+    },
     refreshDue(nowMs: number) {
       for (const c of state.connections)
         if (

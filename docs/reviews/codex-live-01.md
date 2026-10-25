@@ -14,3 +14,5 @@ Final re-review found **no remaining P0-P2 issues in the inspected paths**. The 
 Parent integration review additionally corrected old-dialog cancellation affecting a newer session, native duplicate system/account reservations, recoverable refresh data preservation, and successful mocked Windows fixture directory creation without relaxing credential permissions. Focused synthetic tests cover these boundaries.
 
 Residual limits: private endpoint compatibility and personal-plan behavior require owner acceptance; file adapter does not reproduce Codex's entire layered config resolver; keyring-only login is unsupported; Unix forced-parent-death login-child containment remains unaccepted. Production direct and legacy app-server gates remain closed.
+
+Follow-up review: the parent added manual Refresh all through the existing per-account controller and Overview header. Luna High reviewed the four-file follow-up and found no P0-P2 issue. It targets only consented connected accounts, preserves independent cooldown/error handling, and remains hidden with the direct gate closed or Demo active. Regression now includes three-account refresh together.

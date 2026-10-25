@@ -762,11 +762,11 @@
   "requests": [
     "http://127.0.0.1:4175/",
     "http://127.0.0.1:4175/@vite/client",
-    "http://127.0.0.1:4175/src/main.ts?t=1792962961648",
+    "http://127.0.0.1:4175/src/main.ts",
     "http://127.0.0.1:4175/node_modules/vite/dist/client/env.mjs",
     "http://127.0.0.1:4175/node_modules/.vite/deps/svelte.js?v=37dd9ccf",
     "http://127.0.0.1:4175/src/App.svelte",
-    "http://127.0.0.1:4175/src/app.css?t=1792962961648",
+    "http://127.0.0.1:4175/src/app.css",
     "http://127.0.0.1:4175/node_modules/.vite/deps/runtime-BpaAs8Y4.js?v=37dd9ccf",
     "http://127.0.0.1:4175/node_modules/.vite/deps/index-client-BhMOSEHJ.js?v=37dd9ccf",
     "http://127.0.0.1:4175/node_modules/.vite/deps/legacy-client-CJFAnPo-.js?v=37dd9ccf",

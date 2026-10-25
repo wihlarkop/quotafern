@@ -191,6 +191,14 @@ export async function runCodexDirectRegression(): Promise<number> {
     cold.sources.length === 0 && cold.connections.every((x) => x.lifecycle === "disconnected"),
     "restart never restores consent/usage",
   );
+  clock += 30_001;
+  const beforeAll = calls.length;
+  await controller.refreshAll();
+  assert(
+    calls.length === beforeAll + 3,
+    "manual refresh all independently refreshes every consented account",
+  );
+  assert(current.sources.length === 3, "refresh all retains distinct sources");
   const callsBefore = calls.length;
   controller.refreshDue(Date.now());
   assert(calls.length === callsBefore, "automatic refresh waits five minutes");

@@ -16,13 +16,13 @@ Date: 2026-10-26. This record distinguishes synthetic implementation evidence fr
 | bun run check                      | PASS, 0 errors / 0 warnings                                                                       |
 | bun run lint                       | PASS                                                                                              |
 | bun run fmt:check                  | PASS                                                                                              |
-| bun run regression                 | PASS, 19 groups / 2,033 assertions; 71 direct lifecycle assertions                                |
+| bun run regression                 | PASS, 19 groups / 2,035 assertions; 73 direct lifecycle assertions                                |
 | bun run build                      | PASS                                                                                              |
 | bun run fmt:rust                   | PASS                                                                                              |
 | bun run lint:rust                  | PASS, warnings denied                                                                             |
 | bun run check:rust                 | PASS on Windows                                                                                   |
 | bun run regression:rust            | PASS, 74 passed / 0 failed / 4 ignored fixture entry points; 17 direct tests                      |
-| bun run build:desktop --no-bundle  | Running; final result recorded in handoff                                                         |
+| bun run build:desktop --no-bundle  | PASS, Windows unbundled release build; final frontend asset name verified in binary               |
 | Existing ACC-04 browser suite      | PASS, Edge source 189 checks / production 159, no page errors                                     |
 | GPT-6 Luna High independent review | Findings fixed; no remaining P0-P2 in inspected source; see [review](../reviews/codex-live-01.md) |
 
@@ -47,4 +47,4 @@ The committed production gates deliberately prevent connection. These steps requ
 7. Exercise sign-in-again, expired sessions, offline and cooldown states. A failed refresh must not advance Last updated or fall back to Demo. Changing to Demo disconnects all monitoring; leaving Demo does not reconnect.
 8. Close/reopen the window, quit/restart, test keyboard/Escape/focus and narrow layouts. Check login cancellation/timeout/app exit and ensure no child remains. Native GUI acceptance must be recorded by OS.
 
-Personal plan matrix Free/Go/Plus/Pro and real endpoint behavior: **NOT RUN — owner acceptance required**. Windows/macOS/Linux native GUI for this change: **NOT RUN** until explicitly recorded. Synthetic credentials are never evidence of real entitlement.
+Personal plan matrix Free/Go/Plus/Pro and real endpoint behavior: **NOT RUN — owner acceptance required**. Windows gated binary launch/window discovery: **PASS (limited smoke only)**. Further Windows GUI, consent/login/tray acceptance and macOS/Linux native GUI: **NOT RUN — deferred to the owner**. Local previews and the task-owned smoke process were stopped at the owner's request. Synthetic credentials are never evidence of real entitlement.

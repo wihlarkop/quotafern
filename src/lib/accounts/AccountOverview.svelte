@@ -1,6 +1,7 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+  import RefreshCw from "@lucide/svelte/icons/refresh-cw";
 
   import CodexDetails from "../components/CodexDetails.svelte";
   import { Button } from "../components/ui/button";
@@ -25,6 +26,8 @@
     oncontext,
     ondetails,
     onback,
+    onrefresh,
+    refreshing = false,
     synthetic = true,
   }: {
     state: AccountState;
@@ -33,6 +36,8 @@
     oncontext: (selection: Selection) => void;
     ondetails: (target: DetailTarget, controlId: string) => void;
     onback: () => void;
+    onrefresh?: () => void;
+    refreshing?: boolean;
     synthetic?: boolean;
   } = $props();
   let selectedDetail = $derived(navigation.detail);
@@ -83,6 +88,18 @@
         : "Each source belongs to its own account"}
     </p>
   </div>
+  {#if onrefresh && !synthetic}<Button
+      class="refresh-button"
+      variant="outline"
+      size="sm"
+      onclick={onrefresh}
+      disabled={refreshing}
+      aria-busy={refreshing}
+      aria-label="Refresh all connected Codex accounts"
+      ><RefreshCw size={13} aria-hidden="true" class={refreshing ? "spin" : ""} />{refreshing
+        ? "Refreshing"
+        : "Refresh all"}</Button
+    >{/if}
   {#if selectedDetail || navigation.overviewReturn}<Button
       variant="outline"
       size="sm"

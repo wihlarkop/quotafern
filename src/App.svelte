@@ -672,6 +672,10 @@
         oncontext={selectAccountContext}
         ondetails={openAccountDetails}
         onback={backAccountContext}
+        onrefresh={!demoPreview && CODEX_DIRECT_CONNECTION_AVAILABLE && directConnectedCount > 0
+          ? () => void directController.refreshAll()
+          : undefined}
+        refreshing={Object.values(directPresentations).some((p) => p?.busy)}
       />
     {:else if showCodexDetails}
       <div class="view-heading">
