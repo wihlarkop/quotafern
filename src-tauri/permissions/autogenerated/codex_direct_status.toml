@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-codex-direct-status"
+description = "Enables the codex_direct_status command without any pre-configured scope."
+commands.allow = ["codex_direct_status"]
+
+[[permission]]
+identifier = "deny-codex-direct-status"
+description = "Denies the codex_direct_status command without any pre-configured scope."
+commands.deny = ["codex_direct_status"]

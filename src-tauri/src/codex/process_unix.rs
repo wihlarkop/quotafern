@@ -1,27 +1,28 @@
 //! Existing Unix process-group ownership, kept separate from Windows handles.
-use std::ffi::OsStr;
+use std::ffi::{OsStr, OsString};
 use std::io;
 use std::path::Path;
 use std::process::{Child, Command, ExitStatus, Stdio};
 
-pub(super) type ChildInput = std::process::ChildStdin;
-pub(super) type ChildOutput = std::process::ChildStdout;
+pub(crate) type ChildInput = std::process::ChildStdin;
+pub(crate) type ChildOutput = std::process::ChildStdout;
 
-pub(super) enum InputMode {
+pub(crate) enum InputMode {
     Null,
     Pipe,
 }
 
-pub(super) enum OutputMode {
+pub(crate) enum OutputMode {
     Pipe,
+    Null,
 }
 
-pub(super) struct SupervisedChild(Child);
+pub(crate) struct SupervisedChild(Child);
 
-pub(super) struct TerminationHandle(u32);
+pub(crate) struct TerminationHandle(u32);
 
 impl TerminationHandle {
-    pub(super) fn terminate(&self) -> io::Result<()> {
+    pub(crate) fn terminate(&self) -> io::Result<()> {
         if unsafe { libc::kill(-(self.0 as i32), libc::SIGKILL) } == 0 {
             Ok(())
         } else {
@@ -31,37 +32,57 @@ impl TerminationHandle {
 }
 
 impl SupervisedChild {
-    pub(super) fn terminate_handle(&self) -> TerminationHandle {
+    pub(crate) fn terminate_handle(&self) -> TerminationHandle {
         TerminationHandle(self.0.id())
     }
-    pub(super) fn spawn(
+    pub(crate) fn spawn(
         executable: &Path,
         args: &[impl AsRef<OsStr>],
         stdin: InputMode,
-        _stdout: OutputMode,
+        stdout: OutputMode,
+    ) -> io::Result<Self> {
+        Self::spawn_with_environment(executable, args, stdin, stdout, None, None)
+    }
+    pub(crate) fn spawn_with_environment(
+        executable: &Path,
+        args: &[impl AsRef<OsStr>],
+        stdin: InputMode,
+        stdout: OutputMode,
+        environment: Option<&[(OsString, OsString)]>,
+        current_directory: Option<&Path>,
     ) -> io::Result<Self> {
         use std::os::unix::process::CommandExt;
-        Command::new(executable)
+        let mut command = Command::new(executable);
+        if let Some(environment) = environment {
+            command.env_clear().envs(environment.iter().cloned());
+        }
+        if let Some(directory) = current_directory {
+            command.current_dir(directory);
+        }
+        command
             .args(args)
             .stdin(match stdin {
                 InputMode::Null => Stdio::null(),
                 InputMode::Pipe => Stdio::piped(),
             })
-            .stdout(Stdio::piped())
+            .stdout(match stdout {
+                OutputMode::Pipe => Stdio::piped(),
+                OutputMode::Null => Stdio::null(),
+            })
             .stderr(Stdio::null())
             .process_group(0)
             .spawn()
             .map(Self)
     }
 
-    pub(super) fn take_stdin(&mut self) -> Option<ChildInput> {
+    pub(crate) fn take_stdin(&mut self) -> Option<ChildInput> {
         self.0.stdin.take()
     }
-    pub(super) fn take_stdout(&mut self) -> Option<ChildOutput> {
+    pub(crate) fn take_stdout(&mut self) -> Option<ChildOutput> {
         self.0.stdout.take()
     }
 
-    pub(super) fn try_wait(&mut self) -> io::Result<Option<ExitStatus>> {
+    pub(crate) fn try_wait(&mut self) -> io::Result<Option<ExitStatus>> {
         let status = self.0.try_wait()?;
         if status.is_some() {
             self.terminate()?;
@@ -69,7 +90,7 @@ impl SupervisedChild {
         Ok(status)
     }
 
-    pub(super) fn terminate(&mut self) -> io::Result<()> {
+    pub(crate) fn terminate(&mut self) -> io::Result<()> {
         unsafe {
             let _ = libc::kill(-(self.0.id() as i32), libc::SIGKILL);
         }

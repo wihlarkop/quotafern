@@ -37,7 +37,7 @@ export function validateAlias(value: unknown): string | null {
   return alias;
 }
 
-export type Mechanism = "cli-session" | "oauth-grant" | "api-key";
+export type Mechanism = "cli-session" | "codex-managed" | "oauth-grant" | "api-key";
 export interface Provider {
   id: string;
   displayName: string;
@@ -117,6 +117,7 @@ export interface ConnectionRuntime {
 }
 export type Freshness = "current" | "stale" | "unknown" | "unavailable" | "error";
 export interface SourceData {
+  plan?: "Free" | "Go" | "Plus" | "Pro";
   subscription: {
     id: LocalId<"window">;
     label: string;

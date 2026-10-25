@@ -1,5 +1,7 @@
 # CODEX-RESEARCH-01 — Official quota authorization and startup safety
 
+> **2026-10-26 scope update:** CODEX-LIVE-01 authorizes a separate consented, native direct-HTTP adapter using selected Codex file credentials and isolated Codex-managed login. The historical app-server/SIWC conclusions below remain evidence for those routes, not a prohibition on the new route. Both old app-server gates remain closed. See [current direct integration](../security/codex-live-01.md); live direct activation still requires security and owner acceptance.
+
 **Status:** Draft research, 2026-10-26. **Scope:** OpenAI Codex personal Free/Go/Plus/Pro accounts only, documentation and synthetic acceptance planning. No real login, CLI execution, account read, secret inspection, source change, Tauri permission change, live gate change or release.
 
 ## Goal and user-facing truth

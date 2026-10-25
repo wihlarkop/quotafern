@@ -34,7 +34,7 @@ Keep this application local-first and secure by default. Prefer minimal dependen
 
 Do not use TDD for this foundation slice. Unit suites are deferred until main features; add the regression, integration, and security checks required by those features. CI covers locked frontend quality, Rust formatting/lint/check on Linux, Windows, and macOS, and an unbundled desktop compilation. Compilation does not prove native tray behavior. Record actual browser or OS acceptance separately from CI results, and leave unexercised platform behavior explicitly pending.
 
-## F3 Codex exception and ongoing boundaries
+## F3 Codex exception and ongoing boundaries (historical app-server route)
 
 F1 rules above remain historical foundation boundaries. F3 separately authorizes one native Codex app-server integration after explicit in-app consent. The Rust bridge owns process/protocol communication and returns a small sanitized live presentation contract to TypeScript. No other live provider is authorized.
 
@@ -46,6 +46,16 @@ F1 rules above remain historical foundation boundaries. F3 separately authorizes
 - Review subprocess containment/cleanup and all new permissions. Never merge, deploy, publish, or release without explicit owner approval.
 - The F3 addendum permits read-only `account/usage/read` and optional credit/spending/earned-reset metadata. Never consume resets, purchase credits, change limits, or initiate inference. Calendar gaps are unknown; token counts never imply money. Unimplemented providers are Coming Soon outside explicitly labeled demos.
 - Sign in with ChatGPT identity and inference scopes are distinct from Codex monitoring authorization. Do not add OAuth or request inference scopes without evidence of the required read-only monitoring grant and a separately reviewed credential lifecycle. Keep SEC-01/SEC-02 gates in `docs/security-roadmap.md` explicit.
+
+## CODEX-LIVE-01 direct quota exception (2026-10-26)
+
+- Owner authorization permits native read-only reuse of the selected Codex file login after fresh native consent. This narrowly supersedes F3's credential-read/login prohibition for the separate direct adapter only. Developer/CI access to real credentials remains unauthorized.
+- Support personal Free, Go, Plus and Pro. Use only the fixed trusted HTTPS usage endpoint; no app-server polling, local session logs, copied OAuth client registration, browser cookies, token renewal implementation, inference, purchases, reset consumption or billing.
+- Codex owns authentication and credential renewal. Managed accounts use ordinary user-initiated Codex login in isolated app-owned homes, without changing system login. Never overwrite system auth or expose tokens, credential paths or native account identity to the renderer, logs or evidence.
+- ACC-04 opaque IDs bind selected native sessions; aliases never authenticate identities. Persist only non-sensitive metadata, including the managed connection mechanism. Consent and live readings remain memory-only. Remove disconnects without deleting credentials.
+- Fixed main-only commands accept validated opaque account/connection IDs and system/managed selection, never executable/path/URL/RPC input. Keep CSP and unrelated provider gates unchanged.
+- Conservative refresh is allowed only for explicitly consented connected sessions, with native cooldown/backoff and per-account cancellation. Failures never produce demo fallback or a fresh success timestamp.
+- The new native and renderer direct gates stay false until dedicated security review and required native/owner account acceptance. Old app-server gates remain false independently. See docs/security/codex-live-01.md and docs/validation/codex-live-01.md.
 
 ## ACC-01/ACC-04 account metadata (current scope)
 

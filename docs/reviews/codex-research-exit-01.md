@@ -1,5 +1,7 @@
 # CODEX-RESEARCH-EXIT-01: Final provider feasibility decision
 
+> **2026-10-26 scope update:** CODEX-LIVE-01 authorizes a separate consented, native direct-HTTP adapter using selected Codex file credentials and isolated Codex-managed login. The historical app-server/SIWC conclusions below remain evidence for those routes, not a prohibition on the new route. Both old app-server gates remain closed. See [current direct integration](../security/codex-live-01.md); live direct activation still requires security and owner acceptance.
+
 **Research closed:** 2026-10-26. **Scope:** **one individual user's personal ChatGPT Free, Go, Plus and Pro Codex accounts only**. Multiple individually owned accounts are permitted; teams, organizations, company-paid seats and Enterprise administration are excluded. **Verdict:** **NO-GO for production live integration** with Codex CLI v0.164.0. **GO for a separately approved synthetic-only implementation slice** that never launches Codex or reads credentials. This document is a research decision, not implementation approval, independent platform acceptance, or a claim that OpenAI has explicitly forbidden every local integration.
 
 ## What has been established

@@ -4,7 +4,14 @@
   import { Button } from "../components/ui/button";
   import AccountDialog from "./AccountDialog.svelte";
   import AccountsPanel from "./AccountsPanel.svelte";
+  import {
+    CODEX_DIRECT_CONNECTION_AVAILABLE,
+    type DirectController,
+    type DirectPresentation,
+    type DirectTarget,
+  } from "./direct";
   import type { LocalAction, LocalStore, ManagementTarget } from "./local";
+  import type { ConnectionId } from "./model";
   import type { AccountState } from "./model";
   import type { DetailTarget } from "./navigation";
   import type { Selection } from "./views";
@@ -12,12 +19,16 @@
     state: accountState,
     store,
     onstate,
+    direct,
+    presentations,
     collapsedProviders = $bindable([]),
     onoverview,
     ondetails,
   }: {
     state: AccountState;
     store: LocalStore;
+    direct: DirectController;
+    presentations: Partial<Record<ConnectionId, DirectPresentation>>;
     onstate: (state: AccountState) => void;
     collapsedProviders?: string[];
     onoverview: (selection: Selection, id: string) => void;
@@ -28,7 +39,11 @@
   let fallbacks: string[] = [];
   let notice = $state(untrack(() => store.notice));
   let blocked = $state(untrack(() => store.blocked));
-  function open(next: ManagementTarget, id: string) {
+  function open(next: ManagementTarget | DirectTarget, id: string) {
+    if (next.kind === "direct") {
+      void direct.action(next.id, next.action);
+      return;
+    }
     opener = id;
     const connection =
       "id" in next ? accountState.metadata.connections.find((c) => c.id === next.id) : null;
@@ -54,7 +69,16 @@
     ];
     target = next;
   }
-  function save(action: LocalAction): string | null {
+  async function save(action: LocalAction): Promise<string | null> {
+    if (action.kind === "remove-account" && !(await direct.beforeRemoval(action.id)))
+      return "Could not confirm monitoring stopped. Try Disconnect before removing this account.";
+    if (action.kind === "remove-connection") {
+      const owner = accountState.metadata.connections.find((c) => c.id === action.id)?.accountId;
+      if (!owner || !(await direct.beforeRemoval(owner, action.id)))
+        return "Could not confirm monitoring stopped. Try Disconnect before removing this connection.";
+    }
+    if (action.kind === "reset" && !(await direct.disconnectAll()))
+      return "Could not confirm monitoring stopped. Disconnect before resetting local metadata.";
     const result = store.apply(action);
     if (!result.ok) return result.error;
     onstate(result.state);
@@ -84,7 +108,11 @@
 <div class="view-heading">
   <div>
     <h1 id="local-accounts-title" tabindex="-1">Accounts</h1>
-    <p>Local accounts · no provider is signed in</p>
+    <p>
+      {CODEX_DIRECT_CONNECTION_AVAILABLE
+        ? "Local accounts · connect each account separately"
+        : "Local accounts · no provider is signed in"}
+    </p>
   </div>
 </div>
 <Button
@@ -115,6 +143,7 @@
   {onoverview}
   {ondetails}
   onmanage={blocked ? undefined : open}
+  {presentations}
 />
 {#if target}<AccountDialog
     {target}

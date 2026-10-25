@@ -15,10 +15,10 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 mod consent;
 mod monitoring;
 #[cfg(windows)]
-mod process;
+pub(crate) mod process;
 #[cfg(unix)]
 #[path = "codex/process_unix.rs"]
-mod process;
+pub(crate) mod process;
 use consent::{ConsentGate, NativeConsent};
 use monitoring::{apply_activity_result, apply_quota_monitoring, CodexMonitoring};
 use process::{ChildInput, InputMode, OutputMode, SupervisedChild as OwnedChild};
@@ -809,6 +809,10 @@ fn apply_failure(snapshot: &mut CodexSnapshot, error: BridgeFailure) {
     }
     snapshot.connection_status = error.connection_status();
     snapshot.diagnostic = Some(error.diagnostic());
+}
+
+pub(crate) fn direct_login_executable() -> Option<PathBuf> {
+    find_codex_executable().ok()
 }
 
 fn find_codex_executable() -> Result<PathBuf, BridgeFailure> {

@@ -76,7 +76,8 @@ export function validMetadata(value: unknown): value is AccountMetadata {
         (typeof c.workspaceId === "string" && workspaces.get(c.workspaceId) === c.accountId)
       ) ||
       typeof c.mechanism !== "string" ||
-      !["cli-session", "oauth-grant", "api-key"].includes(c.mechanism)
+      !["cli-session", "codex-managed", "oauth-grant", "api-key"].includes(c.mechanism) ||
+      (c.mechanism === "codex-managed" && accounts.get(c.accountId) !== "codex")
     )
       return false;
   }

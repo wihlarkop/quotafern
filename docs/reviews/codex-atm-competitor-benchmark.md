@@ -1,5 +1,7 @@
 # CODEX-ATM-01 — Competitor methods, safe alternatives and Quotafern improvements
 
+> **2026-10-26 scope update:** CODEX-LIVE-01 authorizes a separate consented, native direct-HTTP adapter using selected Codex file credentials and isolated Codex-managed login. The historical app-server/SIWC conclusions below remain evidence for those routes, not a prohibition on the new route. Both old app-server gates remain closed. See [current direct integration](../security/codex-live-01.md); live direct activation still requires security and owner acceptance.
+
 **Research date:** 2026-10-26  
 **Product scope:** single local app owner; individually owned ChatGPT Free, Go, Plus or Pro accounts only. Multiple personal sources may exist; company/enterprise/admin integration is excluded. Claude comparisons below are used to learn UI/adapter boundaries, **not** to resume Claude development or other provider research.  
 **Artifact type:** public-source competitive research and architecture decision. **No installation, live account testing, native file access, credentials, code changes or implementation authorization.**

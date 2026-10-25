@@ -11,23 +11,27 @@
       {@const band = classifyRemainingPercent(window.remainingPercent)}
       <section class="quota-window" aria-label={`${window.label} quota window`}>
         <div class="window-heading">
-          <span>{window.label}</span><span class={`status-pill ${band}`}
-            >{band === "normal"
-              ? "Normal"
-              : band === "low"
-                ? "Low"
-                : band === "critical"
-                  ? "Critical"
-                  : "Unknown"}</span
+          <span>{window.label}</span
+          >{#if source.origin === "synthetic" || window.remainingPercent !== null}<span
+              class={`status-pill ${band}`}
+              >{band === "normal"
+                ? "Normal"
+                : band === "low"
+                  ? "Low"
+                  : band === "critical"
+                    ? "Critical"
+                    : "Unknown"}</span
+            >{/if}
+        </div>
+        {#if source.origin === "synthetic" || window.remainingPercent !== null}<div
+            class="window-value-row"
           >
-        </div>
-        <div class="window-value-row">
-          <strong class="remaining-value" class:unknown-value={window.remainingPercent === null}
-            >{window.remainingPercent === null
-              ? "Unknown"
-              : formatRemainingPercent(window.remainingPercent)}</strong
-          ><span class="window-reset">remaining</span>
-        </div>
+            <strong class="remaining-value" class:unknown-value={window.remainingPercent === null}
+              >{window.remainingPercent === null
+                ? "Unknown"
+                : formatRemainingPercent(window.remainingPercent)}</strong
+            ><span class="window-reset">remaining</span>
+          </div>{/if}
         {#if window.remainingPercent !== null}<div
             class={`usage-meter meter-${band}`}
             role="meter"
@@ -39,17 +43,22 @@
           >
             <span style={`--meter-value: ${window.remainingPercent}%`}></span>
           </div>{/if}
-        <p class="owned-reset">Reset · {sampleTime(window.resetAtMs)}</p>
-        {#if detailed}<p class="owned-reset">
+        {#if source.origin === "synthetic" || window.resetAtMs !== null}<p class="owned-reset">
+            Reset · {sampleTime(window.resetAtMs)}
+          </p>{/if}
+        {#if detailed && (source.origin === "synthetic" || window.durationMins !== null)}<p
+            class="owned-reset"
+          >
             Window · {window.durationMins === null ? "Unknown" : `${window.durationMins} min`}
           </p>{/if}
       </section>
     {/each}
   </div>
-{:else if source.data.apiMetering === null}
+{:else if source.data.apiMetering === null && source.origin === "synthetic"}
   <p class="account-screen-note">Quota windows · Unknown. No values estimated.</p>
 {/if}
-{#if detailed || source.data.subscription.length === 0}
+{#if source.data.plan}<p class="source-freshness">{source.data.plan} plan</p>{/if}
+{#if detailed || source.data.subscription.length === 0 || (source.origin === "live" && source.data.credits)}
   <dl class="owned-measures">
     {#if source.data.apiMetering}<div>
         <dt>API metering</dt>
@@ -60,29 +69,30 @@
           {source.data.apiMetering.unit}
         </dd>
       </div>{/if}
-    <div>
-      <dt>Credits</dt>
-      <dd>
-        {source.data.credits?.unlimited === true
-          ? "Unlimited"
-          : (source.data.credits?.balance ?? "Unknown")} <span>provider credits</span>
-      </dd>
-    </div>
-    <div>
-      <dt>Spending</dt>
-      <dd>
-        {source.data.spending?.used ?? "Unknown"}
-        <span>{source.data.spending?.currency ?? "unit unknown"}</span>
-      </dd>
-    </div>
-    {#if detailed}<div>
+    {#if source.origin === "synthetic" || source.data.credits}<div>
+        <dt>Credits</dt>
+        <dd>
+          {source.data.credits?.unlimited === true
+            ? "Unlimited"
+            : (source.data.credits?.balance ?? "Unknown")} <span>provider credits</span>
+        </dd>
+      </div>{/if}
+    {#if source.origin === "synthetic" || source.data.spending}<div>
+        <dt>Spending</dt>
+        <dd>
+          {source.data.spending?.used ?? "Unknown"}
+          <span>{source.data.spending?.currency ?? "unit unknown"}</span>
+        </dd>
+      </div>{/if}
+    {#if detailed && (source.origin === "synthetic" || source.data.spending)}<div>
         <dt>Spending limit</dt>
         <dd>
           {source.data.spending?.limit ?? "Unknown"}
           <span>{source.data.spending?.currency ?? "unit unknown"}</span>
         </dd>
       </div>
-      <div>
+    {/if}
+    {#if detailed && (source.origin === "synthetic" || source.data.entitlements)}<div>
         <dt>Earned resets</dt>
         <dd>{source.data.entitlements?.earnedResets ?? "Unknown"}</dd>
       </div>{/if}

@@ -9,6 +9,7 @@ use tauri::{Manager, WebviewWindow, WindowEvent};
 use codex::CodexBridge;
 
 mod codex;
+mod codex_direct;
 mod popup;
 
 const FOCUS_LOSS_RACE_WINDOW: Duration = Duration::from_millis(250);
@@ -160,6 +161,7 @@ fn tray_icon() -> Image<'static> {
 pub fn run() {
     let builder = tauri::Builder::default()
         .manage(CodexBridge::default())
+        .manage(codex_direct::DirectBridge::default())
         .manage(LastTrayAnchor::default())
         .manage(TrayIconHandle::default())
         .manage(WindowFocusHistory::default());
@@ -179,7 +181,12 @@ pub fn run() {
             codex::codex_connect,
             codex::codex_refresh,
             codex::codex_disconnect,
-            codex::codex_status
+            codex::codex_status,
+            codex_direct::codex_direct_connect,
+            codex_direct::codex_direct_login,
+            codex_direct::codex_direct_refresh,
+            codex_direct::codex_direct_disconnect,
+            codex_direct::codex_direct_status
         ])
         .on_window_event(|window, event| {
             if window.label() == "main" {
@@ -290,6 +297,9 @@ pub fn run() {
             tauri::RunEvent::Exit | tauri::RunEvent::ExitRequested { .. }
         ) {
             if let Some(bridge) = app.try_state::<CodexBridge>() {
+                bridge.shutdown();
+            }
+            if let Some(bridge) = app.try_state::<codex_direct::DirectBridge>() {
                 bridge.shutdown();
             }
         }

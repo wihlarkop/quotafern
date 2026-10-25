@@ -1,0 +1,830 @@
+{
+  "checks": 189,
+  "failures": [],
+  "results": [
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "opening Accounts does not persist a fabricated account",
+      "passed": true
+    },
+    {
+      "label": "two Codex accounts use distinct IDs and canonical aliases",
+      "passed": true
+    },
+    {
+      "label": "descriptor dialog opens",
+      "passed": true
+    },
+    {
+      "label": "descriptor dialog opens",
+      "passed": true
+    },
+    {
+      "label": "descriptor dialog opens",
+      "passed": true
+    },
+    {
+      "label": "descriptor dialog opens",
+      "passed": true
+    },
+    {
+      "label": "multiple independent descriptor IDs",
+      "passed": true
+    },
+    {
+      "label": "optional workspace has correct owner",
+      "passed": true
+    },
+    {
+      "label": "rename shows complete current alias and focuses input",
+      "passed": true
+    },
+    {
+      "label": "duplicate aliases preserve independent identity",
+      "passed": true
+    },
+    {
+      "label": "rename restores initiating action",
+      "passed": true
+    },
+    {
+      "label": "precise rejection nonempty",
+      "passed": true
+    },
+    {
+      "label": "invalid input never persisted",
+      "passed": true
+    },
+    {
+      "label": "precise rejection 80 Unicode",
+      "passed": true
+    },
+    {
+      "label": "invalid input never persisted",
+      "passed": true
+    },
+    {
+      "label": "precise rejection Remove control",
+      "passed": true
+    },
+    {
+      "label": "invalid input never persisted",
+      "passed": true
+    },
+    {
+      "label": "IME Enter does not submit",
+      "passed": true
+    },
+    {
+      "label": "NFC Unicode/emoji saved intact",
+      "passed": true
+    },
+    {
+      "label": "key rename independent from account",
+      "passed": true
+    },
+    {
+      "label": "native modal traps reverse Tab",
+      "passed": true
+    },
+    {
+      "label": "Escape cancels and restores focus without popup hide",
+      "passed": true
+    },
+    {
+      "label": "write failure keeps dialog/input with error",
+      "passed": true
+    },
+    {
+      "label": "write failure leaves visible and saved alias unchanged",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "reload retains stable IDs and restores every descriptor disconnected",
+      "passed": true
+    },
+    {
+      "label": "local descriptors show no invented quota or activity",
+      "passed": true
+    },
+    {
+      "label": "local Accounts navigation uses stable IDs and unknown values",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "rename updates context label without changing selection",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "complete long alias displayed without truncation in rename",
+      "passed": true
+    },
+    {
+      "label": "account aliases and actions fit at 320/480",
+      "passed": true
+    },
+    {
+      "label": "full 80-codepoint value retained at 320/480",
+      "passed": true
+    },
+    {
+      "label": "no document/modal horizontal overflow at 320/480",
+      "passed": true
+    },
+    {
+      "label": "account aliases and actions fit at 320/660",
+      "passed": true
+    },
+    {
+      "label": "full 80-codepoint value retained at 320/660",
+      "passed": true
+    },
+    {
+      "label": "no document/modal horizontal overflow at 320/660",
+      "passed": true
+    },
+    {
+      "label": "account aliases and actions fit at 380/480",
+      "passed": true
+    },
+    {
+      "label": "full 80-codepoint value retained at 380/480",
+      "passed": true
+    },
+    {
+      "label": "no document/modal horizontal overflow at 380/480",
+      "passed": true
+    },
+    {
+      "label": "account aliases and actions fit at 380/660",
+      "passed": true
+    },
+    {
+      "label": "full 80-codepoint value retained at 380/660",
+      "passed": true
+    },
+    {
+      "label": "no document/modal horizontal overflow at 380/660",
+      "passed": true
+    },
+    {
+      "label": "account aliases and actions fit at 420/480",
+      "passed": true
+    },
+    {
+      "label": "full 80-codepoint value retained at 420/480",
+      "passed": true
+    },
+    {
+      "label": "no document/modal horizontal overflow at 420/480",
+      "passed": true
+    },
+    {
+      "label": "account aliases and actions fit at 420/660",
+      "passed": true
+    },
+    {
+      "label": "full 80-codepoint value retained at 420/660",
+      "passed": true
+    },
+    {
+      "label": "no document/modal horizontal overflow at 420/660",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "reduced motion runtime active",
+      "passed": true
+    },
+    {
+      "label": "connection removal names exact alias and owner",
+      "passed": true
+    },
+    {
+      "label": "remove only targeted descriptor",
+      "passed": true
+    },
+    {
+      "label": "deleted connection focus returns to owner action",
+      "passed": true
+    },
+    {
+      "label": "account deletion lists exact local target and cascade",
+      "passed": true
+    },
+    {
+      "label": "deletion Cancel preserves target",
+      "passed": true
+    },
+    {
+      "label": "deleted account focus returns to next surviving account action",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "removal invalidates selected Overview safely",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details announcement and 84-day activity match Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details Back restores original filter, focus and scroll",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work",
+      "passed": true
+    },
+    {
+      "label": "Provider Details Back restores provider filter and source opener",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace",
+      "passed": true
+    },
+    {
+      "label": "Workspace Details Back restores workspace ID",
+      "passed": true
+    },
+    {
+      "label": "Changing Details context exits Details and clears outgoing quota/activity",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Configured provider starts expanded",
+      "passed": true
+    },
+    {
+      "label": "Space collapses provider and hides descendants",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Disclosure survives tab round trip",
+      "passed": true
+    },
+    {
+      "label": "Account navigation focuses Overview heading",
+      "passed": true
+    },
+    {
+      "label": "Account navigation uses account ID",
+      "passed": true
+    },
+    {
+      "label": "Accounts opens only Work sources",
+      "passed": true
+    },
+    {
+      "label": "New account context starts at top",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Account context survives Settings round trip",
+      "passed": true
+    },
+    {
+      "label": "Overview Back restores Accounts opener focus",
+      "passed": true
+    },
+    {
+      "label": "Overview Back restores Accounts scroll",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Workspace link uses workspace ID",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace / Work session",
+      "passed": true
+    },
+    {
+      "label": "Direct Accounts Details selector uses connection ID",
+      "passed": true
+    },
+    {
+      "label": "Accounts connection opens 84-day source-owned Details",
+      "passed": true
+    },
+    {
+      "label": "Connection Details names workspace and excludes other identity",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details target survives tab round trip",
+      "passed": true
+    },
+    {
+      "label": "Direct Details Back restores connection opener focus",
+      "passed": true
+    },
+    {
+      "label": "Direct Details Back restores Accounts scroll",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Nested Details Back restores Overview source opener",
+      "passed": true
+    },
+    {
+      "label": "Second Back restores Accounts origin",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Native selector retains keyboard focus on context change",
+      "passed": true
+    },
+    {
+      "label": "Owned select Escape does not hide popup",
+      "passed": true
+    },
+    {
+      "label": "Tab reaches first source action from selector",
+      "passed": true
+    },
+    {
+      "label": "Keyboard source action opens Details",
+      "passed": true
+    },
+    {
+      "label": "ArrowRight moves tab selection to Accounts",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Keyboard tab round trip retains selection",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Back from Details restores collapsed provider disclosure instead of hidden opener",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Changing source within account announces the specific source and connection before readings",
+      "passed": true
+    },
+    {
+      "label": "Unconsumed Escape reaches popup hide path (browser disclosure)",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Removed selection announces fallback to All",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Returning fixture cannot restore invalid selection",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Disconnected Details clears quota and activity without choosing another source",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Personal",
+      "passed": true
+    },
+    {
+      "label": "Missing source opener falls back to selector",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Narrowed duplicate Details retains connection ordinal",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Personal · account 2",
+      "passed": true
+    },
+    {
+      "label": "Duplicate alias Details Back restores All rather than another same-name account",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Removed Details owner stays unavailable",
+      "passed": true
+    },
+    {
+      "label": "Removed Details owner has explicit unavailable selection without falling back to All",
+      "passed": true
+    },
+    {
+      "label": "Removed Details source falls back to selector",
+      "passed": true
+    },
+    {
+      "label": "Removed account origin falls back to Accounts heading",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Demo cycle discards selection and Details",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Reload starts disconnected without remembered demo or context",
+      "passed": true
+    },
+    {
+      "label": "full demo navigation and fixture changes never persist demo accounts",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "corrupt preserved and editing locked",
+      "passed": true
+    },
+    {
+      "label": "corrupt reset cancellation preserves recoverable data",
+      "passed": true
+    },
+    {
+      "label": "corrupt explicit recovery succeeds and focuses heading",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "oversized preserved and editing locked",
+      "passed": true
+    },
+    {
+      "label": "oversized reset cancellation preserves recoverable data",
+      "passed": true
+    },
+    {
+      "label": "oversized explicit recovery succeeds and focuses heading",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "unknown-version preserved and editing locked",
+      "passed": true
+    },
+    {
+      "label": "unknown-version reset cancellation preserves recoverable data",
+      "passed": true
+    },
+    {
+      "label": "unknown-version explicit recovery succeeds and focuses heading",
+      "passed": true
+    },
+    {
+      "label": "recovery preserves appearance/palette",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "unavailable storage read locks edits and forbids destructive reset",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "reload after storage recovery preserves prior bytes",
+      "passed": true
+    },
+    {
+      "label": "last account removal focuses Accounts heading",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "all observed source/production browser requests stay localhost-only",
+      "passed": true
+    },
+    {
+      "label": "only three allowlisted storage namespaces",
+      "passed": true
+    }
+  ],
+  "requests": [
+    "http://127.0.0.1:4175/",
+    "http://127.0.0.1:4175/@vite/client",
+    "http://127.0.0.1:4175/src/main.ts?t=1792962961648",
+    "http://127.0.0.1:4175/node_modules/vite/dist/client/env.mjs",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/svelte.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/src/App.svelte",
+    "http://127.0.0.1:4175/src/app.css?t=1792962961648",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/runtime-BpaAs8Y4.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/index-client-BhMOSEHJ.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/legacy-client-CJFAnPo-.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/warnings-eg1vThES.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/flags-qfBdqUK7.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/events-B4i6LoU8.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/svelte_n_clsx.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/shared-D33xPAfl.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/create-subscriber-DoCDG2bD.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/svelte_internal_disclose-version.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/svelte_internal_client.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_circle-help.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_clock-3.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_command.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_leaf.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_monitor.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_moon.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_refresh-cw.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_settings-2.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_sun.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_users-round.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_x.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@tauri-apps_api_core.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/bits-ui.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/src/lib/accounts/AccountOverview.svelte",
+    "http://127.0.0.1:4175/src/lib/accounts/AccountsPanel.svelte",
+    "http://127.0.0.1:4175/src/lib/accounts/demo.ts",
+    "http://127.0.0.1:4175/src/lib/accounts/direct.ts",
+    "http://127.0.0.1:4175/src/lib/accounts/local.ts",
+    "http://127.0.0.1:4175/src/lib/accounts/LocalAccounts.svelte",
+    "http://127.0.0.1:4175/src/lib/accounts/navigation.ts",
+    "http://127.0.0.1:4175/src/lib/codex.ts",
+    "http://127.0.0.1:4175/src/lib/components/CodexDetails.svelte",
+    "http://127.0.0.1:4175/src/lib/components/ui/button/index.ts",
+    "http://127.0.0.1:4175/src/lib/quota.ts",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/Icon-B84tUUjK.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/svelte_internal_flags_legacy.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/index-client-aObMFxqa.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/svelte_events.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/reactive-value-C_kgBwUC.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_arrow-left.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_arrow-up-right.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/src/lib/accounts/presentation.ts",
+    "http://127.0.0.1:4175/src/lib/accounts/SourceReadings.svelte",
+    "http://127.0.0.1:4175/src/lib/accounts/views.ts",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_chevron-down.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_layers.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/src/lib/accounts/AccountActions.svelte",
+    "http://127.0.0.1:4175/src/lib/accounts/model.ts",
+    "http://127.0.0.1:4175/src/lib/accounts/state.ts",
+    "http://127.0.0.1:4175/src/lib/accounts/metadata.ts",
+    "http://127.0.0.1:4175/src/lib/accounts/AccountDialog.svelte",
+    "http://127.0.0.1:4175/src/lib/activity.ts",
+    "http://127.0.0.1:4175/src/lib/components/ui/button/button.svelte",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/@lucide_svelte_icons_ellipsis.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/clsx.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/tailwind-merge.js?v=37dd9ccf",
+    "http://127.0.0.1:4175/node_modules/.vite/deps/tailwind-variants.js?v=37dd9ccf"
+  ],
+  "pageErrors": []
+}

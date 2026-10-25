@@ -12,15 +12,13 @@ The owner reported **combined Windows native UI acceptance** after UX-02A/B/C, I
 
 ## Codex connection status
 
-Overview starts disconnected. Accounts explains the intended **Connect existing Codex session** permission and the current blocker. Codex app-server can restore a saved Remote Control setting even in stdio mode; Quotafern will not start it while that startup policy is unresolved. Installing or signing in to Codex does not bypass this gate. See [the integration decision](docs/security/codex-integration.md).
+CODEX-LIVE-01 adds a separate native direct-HTTP adapter and minimal account actions for an existing Codex file login or isolated Codex-managed accounts. ACC-04 remains the metadata registry; aliases never establish identity. The adapter normalizes only server-reported quota windows, personal plan labels and optional credits. It does not run app-server polling, read session logs, implement OAuth/token renewal, or initiate inference.
 
-Once a separately reviewed change enables it, the intended flow is Accounts → read the consent disclosure → Connect. Codex manages its own login and may refresh/save its credentials or enforce login/workspace restrictions. Quotafern never asks for a secret, starts an agent turn, or logs out the CLI. Disconnect stops Quotafern's monitor. F3 does not remember connection consent, store quota history, or auto-refresh provider data.
+**The direct route remains disabled pending dedicated security and owner acceptance.** Opening Accounts does not read credentials. Both legacy app-server gates also remain closed. A separately reviewed acceptance build is required to exercise Connect, managed Sign in again, per-account/manual refresh and conservative five-minute refresh. Disconnect/remove cancels monitoring without deleting credentials. See [direct integration and compatibility](docs/security/codex-live-01.md) and [validation/owner steps](docs/validation/codex-live-01.md).
 
-For credential-free examples, enable **Demo preview** in Settings. Every synthetic view is labeled Demo and stays separate from local accounts and live state; production builds use the multi-account sample, while development exposes additional controlled scenarios. Failed live requests never use demo values. [F3 validation](docs/validation/f3-validation.md) separates mock evidence, UI acceptance, and authenticated behavior.
+For credential-free examples, enable **Demo preview** in Settings. Synthetic sources remain explicit, separate and unpersisted. Failed live reads never use demo values. Existing Codex Details activity/spending/reset examples belong to the historical mock foundation; the direct quota endpoint does not invent those fields. Other providers remain **Coming Soon**.
 
-Codex Details groups optional credits, spending controls, earned resets and Activity. The activity calendar distinguishes known zero from unavailable dates and never estimates money from tokens. These features are mock-validated while live connection is gated; a single Plus account is sufficient for later owner acceptance, but compatibility with that actual account remains unverified. Claude Code and Gemini CLI are **Coming Soon**, without login controls.
-
-Sign in with ChatGPT is a future preference, not a functional login option in this build. Its published identity/inference scopes do not explicitly establish existing Codex monitoring access. [Authentication decision](docs/security/chatgpt-auth-decision.md) and [security roadmap](docs/plans/security-roadmap.md) record the evidence and remaining gates.
+The [historical app-server decision](docs/security/codex-integration.md), [Sign in with ChatGPT decision](docs/security/chatgpt-auth-decision.md) and [security roadmap](docs/plans/security-roadmap.md) retain their route-specific blockers. The owner has authorized selected native credential reuse for CODEX-LIVE-01; this does not create a public monitoring OAuth grant or authorize other providers.
 
 The owner-approved Soft Ivory & Forest Jade icon family is installed for the desktop app and favicon, with a separate neutral high-contrast Windows/Linux tray glyph and a monochrome macOS template. See [ICON-01 evidence](docs/specs/icon-01.md); no remote icon assets are loaded.
 
@@ -31,7 +29,7 @@ The owner-approved Soft Ivory & Forest Jade icon family is installed for the des
 - A second launch routes to the already-running app. On Linux, use the tray context menu; left-click tray events are not supported by the current Linux tray integration.
 - F1/F2 quota data were synthetic only. Later milestones preserved explicitly labeled Demo fixtures, without implicit fallback to synthetic readings when live data is unavailable.
 - Appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) are separate, non-sensitive preferences stored in `localStorage`.
-- Quotafern sends no telemetry and has no cloud server or synchronization. F3's production gate prevents Codex startup and credential/provider access.
+- Quotafern sends no telemetry and has no cloud server or synchronization. The direct and legacy app-server production gates prevent Codex startup and credential/provider access.
 
 ## Development
 

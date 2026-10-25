@@ -2,6 +2,7 @@
   import MoreHorizontal from "@lucide/svelte/icons/ellipsis";
   import { DropdownMenu } from "bits-ui";
 
+  import type { DirectTarget } from "./direct";
   import type { ManagementTarget } from "./local";
   let {
     id,
@@ -11,8 +12,8 @@
   }: {
     id: string;
     label: string;
-    actions: { label: string; target: ManagementTarget; disabled?: boolean }[];
-    onaction: (target: ManagementTarget, opener: string) => void;
+    actions: { label: string; target: ManagementTarget | DirectTarget; disabled?: boolean }[];
+    onaction: (target: ManagementTarget | DirectTarget, opener: string) => void;
   } = $props();
 </script>
 
