@@ -24,6 +24,7 @@ jobs:
           python3 - <<'PY'
           import json
           import pathlib
+          import time
           import subprocess
           names = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
           print("OXFMT_FORMATTED_FILES_BEGIN", flush=True)
@@ -32,6 +33,7 @@ jobs:
               print("OXFMT_FILE_START:" + name, flush=True)
               for start in range(0, len(data), 3500):
                   print("OXFMT_CHUNK:" + data[start:start+3500], flush=True)
+                  time.sleep(0.08)
               print("OXFMT_FILE_END", flush=True)
           print("OXFMT_FORMATTED_FILES_END", flush=True)
           PY
