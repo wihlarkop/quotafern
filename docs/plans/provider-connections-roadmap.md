@@ -32,7 +32,7 @@ OpenCode is a coding client that can use multiple upstream providers, not necess
 
 ## ACC-01: Shared multi-account data model
 
-Status: ACC-01 additive foundation implemented; integration and account-management UI remain planned. See [architecture and migration](acc-01-architecture.md), [future UX contract](acc-01-ux-contract.md) and [validation](acc-01-validation.md). The module is not wired into the F3 runtime or storage, and does not authorize a second adapter.
+Status: ACC-01 additive foundation implemented; integration and account-management UI remain planned. See [architecture and migration](../specs/acc-01-architecture.md), [future UX contract](../specs/acc-01-ux-contract.md) and [validation](../validation/acc-01-validation.md). The module is not wired into the F3 runtime or storage, and does not authorize a second adapter.
 
 Use these independent concepts:
 
@@ -131,4 +131,4 @@ No additional paid accounts are required for model, UI, or mock security tests. 
 
 ## ACC-04 local-only delivery
 
-[ACC-04](acc-04/README.md) implements Add/Rename/Remove for disconnected local account and connection labels, optional workspace grouping and strict non-sensitive metadata persistence. This supersedes the historical planned account-management/persistence status above only for descriptor management. It does not implement ACC-02/ACC-03 provider authorization, credential storage, multi-login isolation or native cleanup coordination. All adapters remain unavailable/gated or Coming Soon; Remember Connection stays deferred. [Functional and blocked action matrices](acc-04/README.md#functional-action-matrix) and [validation](acc-04/validation.md).
+[ACC-04](../specs/acc-04.md) implements Add/Rename/Remove for disconnected local account and connection labels, optional workspace grouping and strict non-sensitive metadata persistence. This supersedes the historical planned account-management/persistence status above only for descriptor management. It does not implement ACC-02/ACC-03 provider authorization, credential storage, multi-login isolation or native cleanup coordination. All adapters remain unavailable/gated or Coming Soon; Remember Connection stays deferred. [Functional and blocked action matrices](../specs/acc-04.md#functional-action-matrix) and [validation](../validation/acc-04.md).
