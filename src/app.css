@@ -1894,6 +1894,287 @@ button.activity-cell {
   }
 }
 
+/* UX-02B: one raised surface per source; Accounts is an indented list, not nested cards. */
+.account-demo-notice {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 var(--space-4);
+  padding: 10px 12px;
+  border-radius: var(--radius-control);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.account-demo-notice strong {
+  font-size: 11px;
+  font-weight: 700;
+}
+.account-context-control {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.account-context-control label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+.account-context-control select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  color: var(--text);
+}
+.context-announcement {
+  margin: 8px 0 16px;
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.owned-source-list,
+.account-provider-list {
+  display: grid;
+  gap: var(--space-3);
+}
+.owned-source,
+.owned-detail-readings {
+  min-width: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-panel);
+  background: var(--surface-raised);
+  box-shadow: var(--elevation-panel);
+}
+.owned-source-heading,
+.owned-account-heading,
+.connection-title,
+.account-provider-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.owned-source-heading {
+  justify-content: space-between;
+  align-items: start;
+}
+.owned-source-heading > div {
+  min-width: 0;
+}
+.owned-source h2,
+.owned-detail-context h2,
+.owned-detail-readings h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.owned-source-heading p,
+.owned-detail-context p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.source-freshness {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+.source-freshness.source-stale {
+  color: var(--low-ink);
+}
+.owned-source-connection {
+  margin: 12px 0 10px;
+  font-size: 11px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.owned-reset {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.owned-source .window-grid,
+.owned-detail-readings .window-grid {
+  margin-top: 12px;
+}
+.source-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.source-relationship {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.owned-details-button {
+  margin-top: 10px;
+  padding-left: 0;
+  color: var(--accent);
+}
+.owned-measures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 12px;
+  margin: 16px 0 0;
+}
+.owned-measures > div {
+  min-width: 0;
+}
+.owned-measures dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+.owned-measures dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.owned-measures dd span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.account-screen-note,
+.account-catalog-note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.account-screen-note {
+  margin: 16px 0 0;
+}
+.account-provider {
+  min-width: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.account-provider-heading {
+  align-items: center;
+  flex-wrap: wrap;
+}
+.account-provider-heading h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+  min-width: 80px;
+  overflow-wrap: anywhere;
+}
+.account-provider-heading .provider-icon {
+  width: 28px;
+  height: 28px;
+}
+.account-provider-heading .system-chip {
+  font-size: 11px;
+}
+.account-catalog-note {
+  margin: 8px 0 0 36px;
+}
+.owned-account-list,
+.owned-connection-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.owned-account {
+  margin-top: 16px;
+  padding-left: 12px;
+}
+.owned-account-heading {
+  flex-wrap: wrap;
+}
+.owned-account h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.account-kind {
+  color: var(--muted);
+  font-size: 11px;
+}
+.owned-connection-list {
+  margin-top: 10px;
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
+}
+.owned-connection + .owned-connection {
+  margin-top: 16px;
+}
+.connection-title {
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.connection-title strong {
+  font-size: 12px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.connection-state-text {
+  font-size: 11px;
+  color: var(--normal-ink);
+}
+.owned-connection p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.connection-problem,
+.owned-connection .connection-problem,
+.account-pending {
+  color: var(--critical-ink);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.owned-detail-context {
+  margin: 0 0 16px;
+}
+.owned-detail-readings {
+  margin-bottom: 16px;
+}
+.owned-empty {
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: var(--radius-panel);
+  background: var(--surface-inset);
+}
+.owned-empty h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+.owned-empty p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+/* Account changes replace data synchronously, including the reused heatmap. */
+.owned-detail-readings ~ .codex-details {
+  animation: none;
+}
+
 /* Hidden/outgoing contexts never animate. Meters deliberately do not tween:
    synthetic, unknown and newly selected values must not imply measured progress. */
 @media (prefers-reduced-motion: reduce) {

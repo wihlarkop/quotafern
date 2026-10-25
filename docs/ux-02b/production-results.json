@@ -1,0 +1,206 @@
+{
+  "checks": 50,
+  "failures": [],
+  "results": [
+    {
+      "label": "Production starts disconnected",
+      "passed": true
+    },
+    {
+      "label": "Development fixture control excluded from production",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --text on --surface contrast 14.56",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --text on --surface-raised contrast 15.69",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --text on --surface-inset contrast 13.55",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --muted on --surface contrast 6.07",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --muted on --surface-raised contrast 6.54",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --muted on --surface-inset contrast 5.65",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --normal-ink on --normal-wash contrast 7.16",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --low-ink on --low-wash contrast 7.30",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --critical-ink on --critical-wash contrast 6.88",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --unknown-ink on --unknown-wash contrast 6.38",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --accent on --accent-soft contrast 5.63",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --text on --surface contrast 14.49",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --text on --surface-raised contrast 12.54",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --text on --surface-inset contrast 13.40",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --muted on --surface contrast 8.68",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --muted on --surface-raised contrast 7.51",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --muted on --surface-inset contrast 8.03",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --normal-ink on --normal-wash contrast 8.20",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --low-ink on --low-wash contrast 7.59",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --critical-ink on --critical-wash contrast 7.25",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --unknown-ink on --unknown-wash contrast 6.61",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --accent on --accent-soft contrast 7.84",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --text on --surface contrast 13.88",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --text on --surface-raised contrast 15.11",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --text on --surface-inset contrast 12.84",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --muted on --surface contrast 6.34",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --muted on --surface-raised contrast 6.90",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --muted on --surface-inset contrast 5.87",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --normal-ink on --normal-wash contrast 7.16",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --low-ink on --low-wash contrast 7.30",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --critical-ink on --critical-wash contrast 6.88",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --unknown-ink on --unknown-wash contrast 6.38",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --accent on --accent-soft contrast 5.88",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --text on --surface contrast 14.94",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --text on --surface-raised contrast 13.23",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --text on --surface-inset contrast 13.74",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --muted on --surface contrast 8.70",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --muted on --surface-raised contrast 7.71",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --muted on --surface-inset contrast 8.01",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --normal-ink on --normal-wash contrast 8.20",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --low-ink on --low-wash contrast 7.59",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --critical-ink on --critical-wash contrast 7.25",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --unknown-ink on --unknown-wash contrast 6.61",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --accent on --accent-soft contrast 7.22",
+      "passed": true
+    },
+    {
+      "label": "Production Demo has independent accounts and connections",
+      "passed": true
+    },
+    {
+      "label": "Production Demo has four independent sources",
+      "passed": true
+    },
+    {
+      "label": "Production Details has 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Production reload does not restore synthetic accounts or consent",
+      "passed": true
+    }
+  ]
+}

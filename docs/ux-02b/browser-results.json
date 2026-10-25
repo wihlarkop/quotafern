@@ -1,0 +1,1302 @@
+{
+  "checks": 324,
+  "failures": [],
+  "results": [
+    {
+      "label": "Graphite & Jade/Light/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/320x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light/420x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/320x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark/420x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/320x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light/420x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/320x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1167}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x480: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Details: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1155}",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660/Details: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660: Details heading focused",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660: 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark/420x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "single/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":978}",
+      "passed": true
+    },
+    {
+      "label": "single/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "single/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":630}",
+      "passed": true
+    },
+    {
+      "label": "single/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "two-accounts/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1105}",
+      "passed": true
+    },
+    {
+      "label": "two-accounts/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "two-accounts/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":958}",
+      "passed": true
+    },
+    {
+      "label": "two-accounts/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "two-keys/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1074}",
+      "passed": true
+    },
+    {
+      "label": "two-keys/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "two-keys/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1066}",
+      "passed": true
+    },
+    {
+      "label": "two-keys/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "shared/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1074}",
+      "passed": true
+    },
+    {
+      "label": "shared/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "shared/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":667}",
+      "passed": true
+    },
+    {
+      "label": "shared/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Shared source appears once",
+      "passed": true
+    },
+    {
+      "label": "Shared key filters retain one source ID",
+      "passed": true
+    },
+    {
+      "label": "Shared key filters retain one source ID",
+      "passed": true
+    },
+    {
+      "label": "mixed/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1342}",
+      "passed": true
+    },
+    {
+      "label": "mixed/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "mixed/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":958}",
+      "passed": true
+    },
+    {
+      "label": "mixed/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "unicode/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1843}",
+      "passed": true
+    },
+    {
+      "label": "unicode/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "unicode/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":2280}",
+      "passed": true
+    },
+    {
+      "label": "unicode/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "duplicates/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
+      "passed": true
+    },
+    {
+      "label": "duplicates/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "duplicates/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1722}",
+      "passed": true
+    },
+    {
+      "label": "duplicates/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Duplicate aliases have unique accessible Details names",
+      "passed": true
+    },
+    {
+      "label": "removing/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1338}",
+      "passed": true
+    },
+    {
+      "label": "removing/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "removing/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1394}",
+      "passed": true
+    },
+    {
+      "label": "removing/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "empty/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1038}",
+      "passed": true
+    },
+    {
+      "label": "empty/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "empty/Overview/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":429}",
+      "passed": true
+    },
+    {
+      "label": "empty/Overview/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Empty state has no synthetic accounts",
+      "passed": true
+    },
+    {
+      "label": "Provider scope selects both Codex accounts",
+      "passed": true
+    },
+    {
+      "label": "Workspace scope retains owner and source",
+      "passed": true
+    },
+    {
+      "label": "Heatmap arrow navigation changes date",
+      "passed": true
+    },
+    {
+      "label": "Exact date/token details announced",
+      "passed": true
+    },
+    {
+      "label": "Switch synchronously clears old Details and activity",
+      "passed": true
+    },
+    {
+      "label": "Work overview contains only Work values",
+      "passed": true
+    },
+    {
+      "label": "Work Details clears Personal identity",
+      "passed": true
+    },
+    {
+      "label": "New account clears focused activity detail",
+      "passed": true
+    },
+    {
+      "label": "Reduced motion suppresses content animation and transitions",
+      "passed": true
+    },
+    {
+      "label": "System dark updates live",
+      "passed": true
+    },
+    {
+      "label": "System light updates live",
+      "passed": true
+    },
+    {
+      "label": "Demo OFF Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1164}",
+      "passed": true
+    },
+    {
+      "label": "Demo OFF Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Demo OFF has no synthetic accounts",
+      "passed": true
+    },
+    {
+      "label": "Demo OFF Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":527}",
+      "passed": true
+    },
+    {
+      "label": "Demo OFF Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Demo OFF has no synthetic quota",
+      "passed": true
+    },
+    {
+      "label": "Only appearance preferences persist",
+      "passed": true
+    },
+    {
+      "label": "Browser interactions issue no external provider requests",
+      "passed": true
+    }
+  ]
+}
