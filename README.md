@@ -67,9 +67,12 @@ F1 has no unit-test suite. As product features are added, include the regression
 
 ## Documentation guide
 
-- **Architecture and contracts:** [Architecture](docs/architecture.md), [ACC-01 multi-account model](docs/acc-01-architecture.md), [ACC-01 UX contracts](docs/acc-01-ux-contract.md), [ACC-04 local management](docs/acc-04/README.md).
-- **Security and provider research:** [Current security boundaries](docs/security.md), [Security roadmap](docs/security-roadmap.md), [Codex integration](docs/codex-integration.md), [F3 startup blocker](docs/f3-startup-security-investigation.md), [Provider connections roadmap](docs/provider-connections-roadmap.md), [ChatGPT auth decision](docs/chatgpt-auth-decision.md).
-- **Approved visual system:** [Design system](docs/design-system.md), [Hybrid A+B exploration (UX-01)](docs/ux-01/README.md), [UX-02A foundation](docs/ux-02a/README.md), [UX-02B account-aware UI](docs/ux-02b/README.md), [UX-02C navigation](docs/ux-02c/README.md), [ICON-01 approved assets](docs/icon-01/README.md).
-- **Historical acceptance and audit evidence:** [F1](docs/f1-validation.md), [F2](docs/f2-validation.md), [F3](docs/f3-validation.md), [ACC-04 checks](docs/acc-04/validation.md). Keep [Superpowers implementation plans](docs/superpowers/plans/2026-10-24-f1-foundation.md) and referenced scenario screenshots/result matrices as evidence even after their feature PRs merge.
+**Architecture and account contracts:** [Architecture](docs/architecture.md), [ACC-01 ownership](docs/acc-01-architecture.md), [UX contract](docs/acc-01-ux-contract.md), [ACC-04 local account management](docs/acc-04/README.md).
+
+**Security and providers:** [Current boundaries](docs/security.md), [Security roadmap](docs/security-roadmap.md), [Codex integration](docs/codex-integration.md), [F3 startup blocker](docs/f3-startup-security-investigation.md), [Provider roadmap](docs/provider-connections-roadmap.md), [ChatGPT authentication](docs/chatgpt-auth-decision.md).
+
+**Visual design:** [Design system](docs/design-system.md), [UX-01 exploration](docs/ux-01/README.md), [UX-02A](docs/ux-02a/README.md), [UX-02B](docs/ux-02b/README.md), [UX-02C](docs/ux-02c/README.md), [ICON-01 assets](docs/icon-01/README.md).
+
+**Historical acceptance and audit evidence:** [F1](docs/f1-validation.md), [F2](docs/f2-validation.md), [F3](docs/f3-validation.md), [ACC-04](docs/acc-04/validation.md), and [Superpowers implementation plans](docs/superpowers/plans/2026-10-24-f1-foundation.md). Scenario screenshots and result matrices should remain available for audit.
 
 Documentation is organized by milestone rather than runtime importance. An older document may still be necessary to reproduce tests or explain a security decision. Do not infer that an unlinked screenshot or duplicate image is disposable: source-browser and compiled-production captures can intentionally have identical pixels but distinct provenance.
