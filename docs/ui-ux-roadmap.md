@@ -124,3 +124,11 @@ The current fern is provisional. Plan original browser favicon, Windows/macOS/Li
 ## UX-02B: Account-aware production presentation
 
 Status: implemented for owner review in an isolated Draft PR. The [production Svelte screens](ux-02b/README.md) consume ACC-01 accounts/overview/details projections for explicit synthetic examples. The compact transient context selector supports All/provider/account/workspace/eligible connection scopes; advanced interactions stay with UX-02C. Lifecycle management and persistence remain ACC-04 work. Live Codex stays disabled, other adapters are Coming Soon, and native acceptance is deferred until ICON-01, UX-02B/C and ACC-04. See [actual validation](ux-02b/validation.md) and [review dispositions](ux-02b/review.md). Earlier milestone status paragraphs above are historical.
+
+## REL-01 — Application Versioning & Release Foundations
+
+Status: Planned. [Release/versioning roadmap](release-roadmap.md).
+
+Quotafern already uses Tauri 2's native app version field; the current Tauri, Rust and Bun manifests are all at `0.1.0`. Before public distribution or external provider integrations, define SemVer, deterministic manifest synchronization, installed-version display, changelog/tags and manually approved release gates. GitHub Tags/Releases are the owner-approved distribution source and GitHub Actions is the planned release-build pipeline. REL-02 remains implementation-deferred. Its owner-approved UX includes **Check for Updates → Install Update or Later** and an **opt-in New Version notification (OFF by default)** linking to a dedicated Release Notes & Updates view. When enabled, only infrequent metadata checks are allowed while the app runs; when disabled, checks are strictly manual. Download and installation are **never automatic**. Tauri's official signed updater and GitHub-hosted update metadata require their own implementation/security review. Neither milestone authorizes publishing, networking or live provider access.
+
+Owner sequencing: finish UX-02C + ACC-04, perform combined Windows native acceptance, retain DOCS-CLEANUP before third-party integrations, and implement release readiness before public shipping. See the dedicated roadmap for details and security restrictions.
