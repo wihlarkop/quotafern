@@ -27,14 +27,12 @@ This PR is a planning placeholder, not a refactor. Revisit its assumptions again
 
 ## Execution order — only after both providers are accepted
 
-| Step | Result |
-| --- | --- |
-| 1. Baseline & audit | Rebase from current accepted `main`; map modules, dependencies, duplicated behavior, poor DX, documentation gaps and CI state. Record measured pain points rather than hypothetical issues. |
-| 2. Small refactors | Separate provider-specific clients from shared snapshot/account contracts where warranted; simplify Svelte state and Rust command ownership without changing behavior. |
-| 3. Contributor docs | Publish a short reproducible onboarding flow, architecture overview and provider-contribution checklist. |
-| 4. Verification | Run existing locked Bun/Rust checks, regression suites, browser QA and available Windows/macOS/Linux native checks. Compare key user flows before vs. after. |
-| 5. Independent review | Obtain an independent Luna High review for architecture, security, accidental behavior changes and unnecessary complexity. Address findings and update evidence. |
-| 6. Delivery | Push reviewed changes to the dedicated DX-01 Draft PR, check exact HEAD and CI/GitGuardian where configured, report remaining platform acceptance separately. **Do not merge without owner approval.** |
+1. **Baseline and audit:** Rebase on the accepted `main`; map module boundaries, actual duplication, contributor friction and CI state. Record measured issues.
+2. **Small refactors:** Simplify provider and account contracts and Rust/Svelte responsibilities only where real implementations justify the change.
+3. **Contributor docs:** Publish a reproducible quickstart, architecture map and provider-contribution checklist.
+4. **Verification:** Run existing Bun/Rust checks, regression suites, browser QA and available Windows/macOS/Linux native checks; compare user flows before and after.
+5. **Independent review:** Request Luna High review for maintainability, security and accidental behavior changes; address actionable findings.
+6. **Delivery:** Push the dedicated Draft PR, verify exact HEAD/CI and report untested native acceptance separately. Never merge without approval.
 
 ## Acceptance criteria
 
