@@ -6,7 +6,7 @@ The app supports multiple independent catalog-provider accounts, local aliases, 
 
 ## Persistence boundary
 
-See the [preimplementation design and threat review](plan.md). One app-origin key, `quotafern.account-presentation.v1`, stores only account/workspace/connection IDs, ownership, aliases, provider IDs and mechanism descriptors. The strict codec enforces exact keys, parent ownership, 200 records per collection and 65,536 UTF-8 bytes. Appearance and palette keep their separate existing keys. No new native storage permission or dependency is needed.
+See the [preimplementation design and threat review](../plans/acc-04.md). One app-origin key, `quotafern.account-presentation.v1`, stores only account/workspace/connection IDs, ownership, aliases, provider IDs and mechanism descriptors. The strict codec enforces exact keys, parent ownership, 200 records per collection and 65,536 UTF-8 bytes. Appearance and palette keep their separate existing keys. No new native storage permission or dependency is needed.
 
 localStorage is plaintext and user editable. It protects neither against local malware nor a compromised renderer. Labels must be non-sensitive; a user can choose to type sensitive text into any label. No field collects a key, token, credential locator or OAuth grant. Metadata validation supplies structural integrity, never authentication or authorization. Alias validation also rejects invisible fillers/word joiners/bidi formatting while retaining valid Unicode, emoji joiners and variation selectors.
 
@@ -50,9 +50,9 @@ Compiled-production Svelte captures, not mockups or native GUI acceptance:
 
 | Local accounts                                             | Save failure                                                                | Corrupt metadata recovery                                                            |
 | ---------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| ![Local accounts](screenshots/production-accounts-380.png) | ![Save failure retains input](screenshots/production-write-failure-380.png) | ![Recovery preserves rejected data](screenshots/production-recovery-corrupt-380.png) |
+| *Screenshot removed from current repository* | *Screenshot removed from current repository* | *Screenshot removed from current repository* |
 
-Additional source/production captures cover both palettes, light/dark, all 320/380/420 × 480/660 dialog sizes and source-specific demo navigation. [Validation](validation.md) · [Review dispositions](review.md).
+Additional source/production captures cover both palettes, light/dark, all 320/380/420 × 480/660 dialog sizes and source-specific demo navigation. [Validation](../validation/acc-04.md) · [Review dispositions](../reviews/acc-04.md).
 
 ## Remaining acceptance and integration limits
 

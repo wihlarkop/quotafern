@@ -80,4 +80,4 @@ Future runtime cutover, separately reviewed:
 
 `scripts/accounts-regression.ts` runs through the existing `bun run regression` command. It uses only fixed synthetic metadata, quotas, keys-as-descriptors and cleanup acknowledgements, including two Codex accounts, two API-key connections, workspace isolation, shared and unknown billing, migration, aliases, ownership collisions, filters and late results. No fake credential is used to authenticate anything.
 
-See [validation evidence](acc-01-validation.md), [future UX acceptance](acc-01-ux-contract.md), [provider roadmap](provider-connections-roadmap.md) and [security gates](security-roadmap.md). F4 startup-policy and Unix forced-parent termination remain blocked. macOS/Linux native GUI behavior remains NOT RUN; compilation is separate evidence.
+See [validation evidence](../validation/acc-01-validation.md), [future UX acceptance](acc-01-ux-contract.md), provider roadmap (archived visual removed) and security gates (archived visual removed). F4 startup-policy and Unix forced-parent termination remain blocked. macOS/Linux native GUI behavior remains NOT RUN; compilation is separate evidence.

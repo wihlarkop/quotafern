@@ -4,7 +4,7 @@ Date: 2026-10-25. Target implementers: ACC-04 / UX-02; visual exploration: UX-01
 
 ## Purpose and visual direction
 
-Help a person quickly identify whose quota, reset, credits and activity they are inspecting, then manage independent local connection names without confusing those names with a provider login. Preserve the Soft Native direction from the [UI roadmap](ui-ux-roadmap.md): Things 3 whitespace and hierarchy, Raycast keyboard feedback and Ice restraint. Use the existing semantic components and tokens. UX-01 chooses visual composition through its own exploration; it must not redesign source ownership.
+Help a person quickly identify whose quota, reset, credits and activity they are inspecting, then manage independent local connection names without confusing those names with a provider login. Preserve the Soft Native direction from the UI roadmap (archived visual removed): Things 3 whitespace and hierarchy, Raycast keyboard feedback and Ice restraint. Use the existing semantic components and tokens. UX-01 chooses visual composition through its own exploration; it must not redesign source ownership.
 
 ## Information architecture and view fields
 

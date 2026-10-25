@@ -10,10 +10,10 @@ Actual browser captures of the production Svelte UI at 380 × 660, with the same
 
 | Before                                                          | After                                                         |
 | --------------------------------------------------------------- | ------------------------------------------------------------- |
-| ![Before Demo](screenshots/before-demo-380.jpg)                 | ![After Demo](screenshots/after-demo-380.jpg)                 |
-| ![Before disconnected](screenshots/before-disconnected-380.jpg) | ![After disconnected](screenshots/after-disconnected-380.jpg) |
+| *Screenshot removed from current repository*                 | *Screenshot removed from current repository*                 |
+| *Screenshot removed from current repository* | *Screenshot removed from current repository* |
 
-[Validation and complete screenshot index](validation.md) · [ICON-01 concepts and specification](icon-01.md) · [Independent review](review.md) · [Implementation plan](plan.md).
+[Validation and complete screenshot index](../validation/ux-02a.md) · [ICON-01 concepts and specification](icon-01-concepts.md) · [Independent review](../reviews/ux-02a.md) · [Implementation plan](../plans/ux-02a.md).
 
 ## Implementation
 

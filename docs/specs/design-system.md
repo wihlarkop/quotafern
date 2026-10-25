@@ -33,7 +33,7 @@ The interface is the visible content of the single `main` Tauri window. Native w
 
 ## UX-02A Soft Native foundation
 
-The Hybrid A + B production refinement adds shared CSS geometry and motion without changing the theme preference model or provider contracts. See [UX-02A](ux-02a/README.md) and its [validation limits](ux-02a/validation.md).
+The Hybrid A + B production refinement adds shared CSS geometry and motion without changing the theme preference model or provider contracts. See [UX-02A](ux-02a.md) and its [validation limits](../validation/ux-02a.md).
 
 - Spacing: `--space-1` through `--space-5` = 4/8/12/16/20px.
 - Radius: control 8px, panel 12px, shell 14px. Small segmented selections use 7px within the 10px inset group.
@@ -46,4 +46,4 @@ Account-first multi-account screens, ID-backed filters and management transition
 
 ## UX-02B account hierarchy
 
-The [account-aware presentation](ux-02b/README.md) extends the existing Soft Native tokens: raised surfaces belong to independent sources, while Accounts uses semantic nested provider/account/connection lists and dividing rules. Local aliases lead; provider and connection names remain explicit. Freshness, lifecycle, identity and error text are independent. A single labeled native select carries transient ID-backed contexts, including provider/workspace scopes, without another control framework. Unknown values never render as zero. Per-source details reuse the established Activity grid with account/source keys and no cross-account content animation. The preceding UX-02B/C deferral described the earlier foundation; UX-02B now implements synthetic presentation only. Account lifecycle and persistence remain deferred.
+The [account-aware presentation](ux-02b.md) extends the existing Soft Native tokens: raised surfaces belong to independent sources, while Accounts uses semantic nested provider/account/connection lists and dividing rules. Local aliases lead; provider and connection names remain explicit. Freshness, lifecycle, identity and error text are independent. A single labeled native select carries transient ID-backed contexts, including provider/workspace scopes, without another control framework. Unknown values never render as zero. Per-source details reuse the established Activity grid with account/source keys and no cross-account content animation. The preceding UX-02B/C deferral described the earlier foundation; UX-02B now implements synthetic presentation only. Account lifecycle and persistence remain deferred.

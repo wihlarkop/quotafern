@@ -10,9 +10,9 @@ Use original authored vector geometry, no external artwork, remote assets, stock
 
 ## Owner-selectable concepts
 
-![Actual-size original vector concept study](icon-01-study.png)
+*Screenshot removed from current repository*
 
-[Editable SVG study](icon-01-study.svg). The raster proof is drawn from the same original geometry at each stated size; this is a design study, not a browser screenshot or OS acceptance.
+Editable SVG study (archived visual removed). The raster proof is drawn from the same original geometry at each stated size; this is a design study, not a browser screenshot or OS acceptance.
 
 | Concept                         | Intended character                                                                             | Trade-off                                                                      |
 | ------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |

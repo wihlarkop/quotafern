@@ -14,7 +14,7 @@ The owner approved **Soft Ivory & Forest Jade** in the ICON-01 integration reque
 
 `ICON_ASSET_ROOT = <owner-local-extracted-assets>` (the owner-supplied extracted asset pack). The ZIP itself was not present in that folder; this work verifies the supplied extracted files, not an unavailable ZIP checksum or a vendor signature.
 
-[Source inventory](source-inventory.json) lists all **41 supplied files**, byte lengths, SHA-256 hashes, decoded formats/dimensions/modes, alpha ranges, ICO entries, ICNS chunks/sizes and tray RGB values. [Installed asset inventory](installed-assets.json) maps all **28 installed assets** to exact source paths, destination hashes and operations. Hashes identify the inspected bytes; they are not independent proof of authorship.
+[Source inventory](../assets/icon-01/source-inventory.json) lists all **41 supplied files**, byte lengths, SHA-256 hashes, decoded formats/dimensions/modes, alpha ranges, ICO entries, ICNS chunks/sizes and tray RGB values. Installed asset inventory (archived visual removed) maps all **28 installed assets** to exact source paths, destination hashes and operations. Hashes identify the inspected bytes; they are not independent proof of authorship.
 
 All supplied PNG chunk CRCs and complete IEND boundaries were checked. PNGs decoded successfully, production PNGs are RGBA with both transparent and opaque pixels, and supplied tray files have a single visible RGB color plus antialiasing alpha. Every ICO representation and advertised ICNS representation decoded with the bundled Pillow runtime; directory/chunk lengths and bounds were checked. This offline verification added no project dependency.
 
@@ -22,7 +22,7 @@ All supplied PNG chunk CRCs and complete IEND boundaries were checked. PNGs deco
 - Web ICO sizes: 16, 32, 48px.
 - ICNS decoded representations: 32, 64, 128, 256, 512, 1024px, including the pack's advertised Retina representations.
 - Original selected reference: 1254×1254 RGB, intentionally opaque; master: 1024×1024 RGBA with transparent exterior corners.
-- Historical [pack README](source/asset-pack-README.md) is a text copy formatted by Oxfmt; its original byte hash remains in the source inventory. All copied image files retain exact source bytes.
+- Historical [pack README](../assets/icon-01/source/asset-pack-README.md) is a text copy formatted by Oxfmt; its original byte hash remains in the source inventory. All copied image files retain exact source bytes.
 
 ## Integration
 
@@ -32,7 +32,7 @@ Existing `StoreLogo.png` and `Square*Logo.png` resources have no references in t
 
 Tray: final review replaces the fixed white Windows/Linux fallback with `icons/tray/fern-neutral-32.png`. macOS selects the original `icons/tray/fern-dark-32.png` under a separate compile-time configuration and retains `icon_as_template`. The macOS template system never receives the dual-tone image. Pack filenames describe their **intended background**: `fern-dark-*` is white and `fern-light-*` is forest jade; these source assets remain unchanged.
 
-The original owner-selected white fallback and its light-taskbar limitation are preserved as historical evidence in `before-after.png`. The final review request supersedes that fallback selection. [Final review fixes](final-review.md) records both findings, derivation, contrast evidence and new validation. The static neutral fallback improves separation across tested flat light/dark backgrounds; it does not establish universal or native contrast. No theme detection, image switching, registry access, polling, preference or permission is added.
+The original owner-selected white fallback and its light-taskbar limitation are preserved as historical evidence in `before-after.png`. The final review request supersedes that fallback selection. Final review fixes (archived visual removed) records both findings, derivation, contrast evidence and new validation. The static neutral fallback improves separation across tested flat light/dark backgrounds; it does not establish universal or native contrast. No theme detection, image switching, registry access, polling, preference or permission is added.
 
 The production Rust diff changes only compile-time image selection and the existing template builder flag, plus explanatory comments. Synthetic image decode/selection regressions are added separately. Tray click/Show/Hide/Quit handlers, anchors, single-instance behavior, process cleanup and popup lifecycle are unchanged.
 
@@ -40,11 +40,11 @@ Browser: Vite copies local files from `public/` to `dist/`. `index.html` declare
 
 ## Actual asset comparison
 
-![Baseline and approved application icons, tray variants at actual sizes, and favicon](before-after.png)
+*Screenshot removed from current repository*
 
 This is a static composition of actual baseline and supplied image bytes, not a native application screenshot. Tray glyphs appear at actual 16/20/24/32px sizes, including both matching and mismatched backgrounds. Only the large app comparison and the Apple icon thumbnail are resized for the sheet. The baseline had no declared favicon.
 
-The unchanged [owner-supplied review sheet](pack-review-sheet.png) retains its historical provisional label; the current owner's approval is recorded above.
+The unchanged owner-supplied review sheet (archived visual removed) retains its historical provisional label; the current owner's approval is recorded above.
 
 ## Verification evidence
 
@@ -94,6 +94,6 @@ No real authenticated acceptance, credentials, provider requests, merge, deploym
 
 ## Changed files and delivery
 
-The [complete changed-file list](changed-files.txt) records the source/asset/evidence scope. The [installed asset inventory](installed-assets.json) gives every copied/generated destination. Additional changes are `index.html`, `src-tauri/src/lib.rs`, `src-tauri/tauri.conf.json`, `scripts/icon-regression.ts`, `scripts/regression.ts`, this evidence file, the two inventories, and `before-after.png`.
+The [complete changed-file list](../evidence/icon-01/changed-files.txt) records the source/asset/evidence scope. The installed asset inventory (archived visual removed) gives every copied/generated destination. Additional changes are `index.html`, `src-tauri/src/lib.rs`, `src-tauri/tauri.conf.json`, `scripts/icon-regression.ts`, `scripts/regression.ts`, this evidence file, the two inventories, and `before-after.png`.
 
 The Draft PR description records the immutable exact HEAD and latest observed hosted CI status, avoiding a self-referential commit hash in this file. Keep the managed worktree for owner review. Stop after Draft PR delivery; do not merge, deploy, release or start another UX stage.
