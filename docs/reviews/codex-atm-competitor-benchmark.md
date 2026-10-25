@@ -33,6 +33,8 @@ Specific evidence:
 | **Quota Monitor** — https://github.com/timmyagentic/quota-monitor | Codex app-server for live, local Codex rollout/session logs for historical tokens and estimate; Claude private OAuth usage | Correct split between live quota and local usage; local SQLite history; cost estimates clearly not invoices | Starting unsafe Codex app-server; extracting Claude subscription login credentials |
 | **Agentic Usage Meter** — https://github.com/prime-radiant-inc/agentic-usage-meter | Separate browser OAuth+PKCE modeled on Codex source, direct personal usage API and app-owned account-scoped Keychain | Distinct personal accounts, per-account Keychain entries, explicit invalid-identity rejection, true absent-window omission, two-account qualification notes | Copying the first-party Codex OAuth `client_id` or redirect registration, using an unregistered Quotafern OAuth flow, calling unpublished `wham/usage` |
 | **Token Use** — https://tokenuse.app/docs/development/tools/codex/ | Local rollout parsing for token activity and **last-observed rate-limit snapshots**; separately opt-in cookie-based network quota sync | Potential **no-login local observation**; proven parser test target; divide last-observed state from live network sync | User cookie import, session-token exchange, treating an old local event as live remaining |
+| **Token Monitor** — https://github.com/Javis603/token-monitor | Reads existing Codex/Claude local session directories for tokens and limits; optional separate multi-device sync | Customizable tray, desktop/floating compact surfaces; multi-account personal labels; history by day/model and estimated costs | One-click rewriting the active Codex login, always-on cross-device sync or automatic access to all local tool stores; these exceed our no-secret, personal local-first scope |
+| **ModelMeter** — https://github.com/rupprath/modelmeter | Claude subscription OAuth from Claude Code's own credential file; OpenAI/Anthropic API spend through organization Admin API keys | Explicitly separate native units (quota %, token metrics, credits, cost), explain source/credential permissions and do not claim estimated cost is a bill | Subscription OAuth token reuse and any organization Admin API-key permission; the product primarily targets API admin billing, not personal Codex plan allowance |
 | **AIQuota** — https://github.com/niederme/ai-quota | Guided per-provider onboarding, per-account gauges/widgets | Onboarding and last-updated captions; omit unavailable windows | Different licensing restrictions and Claude keychain reuse without a separate consent/security review |
 
 **Evidence depth:** Official project READMEs and provider/qualification docs, plus original OpenAI pinned protocol/source. We have **not** executed competitor binaries or intercepted their network requests, so statements about their runtime are repository-author-documented mechanisms rather than independently verified behavior.
@@ -46,6 +48,8 @@ Selected method sources:
 - https://github.com/Duoasa/QuotaView/blob/main/README.md
 - https://github.com/timmyagentic/quota-monitor/blob/main/README.md
 - https://tokenuse.app/docs/development/tools/codex/
+- https://github.com/Javis603/token-monitor/blob/main/README.md
+- https://github.com/rupprath/modelmeter/blob/main/README.md
 
 ## Candidate architecture: three honest data lanes, not interchangeable fallback
 
