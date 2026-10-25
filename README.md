@@ -1,27 +1,35 @@
 # Quotafern
 
-Quotafern is a compact local-first system-tray app for remaining AI subscription quotas. F3 adds a Codex bridge foundation, but **live connection is disabled in this build** until Codex exposes a documented safe startup policy. No account or credential is accessed by opening the app.
+Quotafern is a compact local-first system-tray app for remaining AI subscription quotas. Its multi-account UI supports local account and connection labels, but **live provider connections are disabled in this build**. Opening the app does not access provider accounts or credentials.
+
+## Local accounts (ACC-04)
+
+With **Demo preview off**, Accounts lets users add, rename and remove provider-specific local accounts, optional workspaces and connection descriptors, including API-key _labels_. These records are not signed in and do not represent working integrations. There are no API-key, token or OAuth credential inputs; Overview never invents quotas for disconnected records.
+
+Only validated non-sensitive IDs, aliases, ownership and mechanism descriptors are saved under the app-owned `quotafern.account-presentation.v1` localStorage key. All records restore disconnected, with no authorization, identities, quota or Activity snapshots. Do not put secrets in labels. The explicit Demo preview remains entirely separate and is never persisted as an account. See [ACC-04 implementation and boundaries](docs/specs/acc-04.md) and [ACC-01 ownership contracts](docs/specs/acc-01-architecture.md).
+
+The owner reported **combined Windows native UI acceptance** after UX-02A/B/C, ICON-01 and ACC-04, with exact-merge CI success. macOS/Linux native GUI acceptance, signed installers and real provider access have not been verified. This is not a public release.
 
 ## Codex connection status
 
-Overview starts disconnected. Accounts explains the intended **Connect existing Codex session** permission and the current blocker. Codex app-server can restore a saved Remote Control setting even in stdio mode; Quotafern will not start it while that startup policy is unresolved. Installing or signing in to Codex does not bypass this gate. See [the integration decision](docs/codex-integration.md).
+Overview starts disconnected. Accounts explains the intended **Connect existing Codex session** permission and the current blocker. Codex app-server can restore a saved Remote Control setting even in stdio mode; Quotafern will not start it while that startup policy is unresolved. Installing or signing in to Codex does not bypass this gate. See [the integration decision](docs/security/codex-integration.md).
 
 Once a separately reviewed change enables it, the intended flow is Accounts → read the consent disclosure → Connect. Codex manages its own login and may refresh/save its credentials or enforce login/workspace restrictions. Quotafern never asks for a secret, starts an agent turn, or logs out the CLI. Disconnect stops Quotafern's monitor. F3 does not remember connection consent, store quota history, or auto-refresh provider data.
 
-For credential-free examples, enable **Demo preview** in Settings. Every synthetic view is labeled Demo and stays separate from live state; release builds use the healthy demo fixture, and development offers all eight scenarios. Failed live requests never use demo values. [F3 validation](docs/f3-validation.md) separates mock evidence, UI acceptance, and authenticated behavior.
+For credential-free examples, enable **Demo preview** in Settings. Every synthetic view is labeled Demo and stays separate from local accounts and live state; production builds use the multi-account sample, while development exposes additional controlled scenarios. Failed live requests never use demo values. [F3 validation](docs/validation/f3-validation.md) separates mock evidence, UI acceptance, and authenticated behavior.
 
 Codex Details groups optional credits, spending controls, earned resets and Activity. The activity calendar distinguishes known zero from unavailable dates and never estimates money from tokens. These features are mock-validated while live connection is gated; a single Plus account is sufficient for later owner acceptance, but compatibility with that actual account remains unverified. Claude Code and Gemini CLI are **Coming Soon**, without login controls.
 
-Sign in with ChatGPT is a future preference, not a functional login option in this build. Its published identity/inference scopes do not explicitly establish existing Codex monitoring access. [Authentication decision](docs/chatgpt-auth-decision.md) and [security roadmap](docs/security-roadmap.md) record the evidence and remaining gates.
+Sign in with ChatGPT is a future preference, not a functional login option in this build. Its published identity/inference scopes do not explicitly establish existing Codex monitoring access. [Authentication decision](docs/security/chatgpt-auth-decision.md) and [security roadmap](docs/plans/security-roadmap.md) record the evidence and remaining gates.
 
-The local fern icon is provisional artwork. Desktop icon sizes are checked in under `src-tauri/icons/`; no remote assets are loaded.
+The owner-approved Soft Ivory & Forest Jade icon family is installed for the desktop app and favicon, with a separate neutral high-contrast Windows/Linux tray glyph and a monochrome macOS template. See [ICON-01 evidence](docs/specs/icon-01.md); no remote icon assets are loaded.
 
-## F2 behavior
+## Native tray behavior (F2 foundation)
 
 - The `main` window opens visibly at 380 × 660 on first launch, near the tray when native geometry is available and safely clamped otherwise. It can be resized to 320–420 logical pixels wide and a configured minimum of 480 pixels high; smaller work areas temporarily relax those limits. Close and Escape hide it. The tray menu provides **Show Quotafern**, **Hide Quotafern**, and **Quit**.
 - On Windows/macOS, primary tray click opens, focuses, or toggles the popup; secondary click opens its menu. Native tray geometry positions the popup near the icon when available, with work-area clamping and a safe fallback. Losing focus leaves Settings and account inspection open.
 - A second launch routes to the already-running app. On Linux, use the tray context menu; left-click tray events are not supported by the current Linux tray integration.
-- F1/F2 quota data were synthetic only. F3 preserves those fixtures behind the explicit Demo preview flow, with no implicit fallback.
+- F1/F2 quota data were synthetic only. Later milestones preserved explicitly labeled Demo fixtures, without implicit fallback to synthetic readings when live data is unavailable.
 - Appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) are separate, non-sensitive preferences stored in `localStorage`.
 - Quotafern sends no telemetry and has no cloud server or synchronization. F3's production gate prevents Codex startup and credential/provider access.
 
@@ -59,12 +67,12 @@ F1 has no unit-test suite. As product features are added, include the regression
 
 ## Project notes
 
-- [Architecture](docs/architecture.md)
-- [Design system](docs/design-system.md)
-- [Security boundaries](docs/security.md)
-- [F1 validation and owner acceptance](docs/f1-validation.md)
-- [F2 validation and native acceptance checklist](docs/f2-validation.md)
-- [F3 validation and launch-policy blocker](docs/f3-validation.md)
-- [Codex integration research](docs/codex-integration.md)
-- [Sign in with ChatGPT authorization decision](docs/chatgpt-auth-decision.md)
-- [Security roadmap](docs/security-roadmap.md)
+- [Architecture](docs/specs/architecture.md)
+- [Design system](docs/specs/design-system.md)
+- [Security boundaries](docs/security/security.md)
+- [F1 validation and owner acceptance](docs/validation/f1-validation.md)
+- [F2 validation and native acceptance checklist](docs/validation/f2-validation.md)
+- [F3 validation and launch-policy blocker](docs/validation/f3-validation.md)
+- [Codex integration research](docs/security/codex-integration.md)
+- [Sign in with ChatGPT authorization decision](docs/security/chatgpt-auth-decision.md)
+- [Security roadmap](docs/plans/security-roadmap.md)

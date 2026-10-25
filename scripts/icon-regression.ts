@@ -15,7 +15,7 @@ export async function runIconRegression(): Promise<number> {
     sha256: string;
     source?: string;
     source_sha256?: string;
-  }[] = await file(new URL("docs/icon-01/installed-assets.json", root)).json();
+  }[] = await file(new URL("docs/assets/icon-01/installed-assets.json", root)).json();
   for (const asset of installed) {
     const bytes = Buffer.from(await file(new URL(asset.destination, root)).arrayBuffer());
     assert(
@@ -89,12 +89,14 @@ export async function runIconRegression(): Promise<number> {
   );
   assert(!rust.includes('include_bytes!("../icons/32x32.png")'), "tray never embeds the app tile");
   assert(rust.includes('.icon_as_template(cfg!(target_os = "macos"))'), "macOS template rendering");
-  const inventory = await file(new URL("docs/icon-01/source-inventory.json", root)).json();
+  const inventory = await file(new URL("docs/assets/icon-01/source-inventory.json", root)).json();
   assert(inventory.asset_root === "<owner-local-extracted-assets>", "portable provenance root");
   for await (const path of new Bun.Glob("**/*.{md,json,txt,py}").scan(
-    fileURLToPath(new URL("docs/icon-01/", root)),
+    fileURLToPath(new URL("docs/assets/icon-01/", root)),
   )) {
-    const text = await file(new URL(`docs/icon-01/${path.replaceAll("\\", "/")}`, root)).text();
+    const text = await file(
+      new URL(`docs/assets/icon-01/${path.replaceAll("\\", "/")}`, root),
+    ).text();
     assert(!/\b[a-z]:[\\/]|\/(?:Users|home)\//i.test(text), `portable documentation: ${path}`);
   }
   return assertions;
