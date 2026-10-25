@@ -1,6 +1,14 @@
 # Quotafern
 
-Quotafern is a compact local-first system-tray app for remaining AI subscription quotas. F3 adds a Codex bridge foundation, but **live connection is disabled in this build** until Codex exposes a documented safe startup policy. No account or credential is accessed by opening the app.
+Quotafern is a compact local-first system-tray app for remaining AI subscription quotas. Its multi-account UI supports local account and connection labels, but **live provider connections are disabled in this build**. Opening the app does not access provider accounts or credentials.
+
+## Local accounts (ACC-04)
+
+With **Demo preview off**, Accounts lets users add, rename and remove provider-specific local accounts, optional workspaces and connection descriptors, including API-key *labels*. These records are not signed in and do not represent working integrations. There are no API-key, token or OAuth credential inputs; Overview never invents quotas for disconnected records.
+
+Only validated non-sensitive IDs, aliases, ownership and mechanism descriptors are saved under the app-owned `quotafern.account-presentation.v1` localStorage key. All records restore disconnected, with no authorization, identities, quota or Activity snapshots. Do not put secrets in labels. The explicit Demo preview remains entirely separate and is never persisted as an account. See [ACC-04 implementation and boundaries](docs/acc-04/README.md) and [ACC-01 ownership contracts](docs/acc-01-architecture.md).
+
+The owner reported **combined Windows native UI acceptance** after UX-02A/B/C, ICON-01 and ACC-04, with exact-merge CI success. macOS/Linux native GUI acceptance, signed installers and real provider access have not been verified. This is not a public release.
 
 ## Codex connection status
 
@@ -8,20 +16,20 @@ Overview starts disconnected. Accounts explains the intended **Connect existing 
 
 Once a separately reviewed change enables it, the intended flow is Accounts → read the consent disclosure → Connect. Codex manages its own login and may refresh/save its credentials or enforce login/workspace restrictions. Quotafern never asks for a secret, starts an agent turn, or logs out the CLI. Disconnect stops Quotafern's monitor. F3 does not remember connection consent, store quota history, or auto-refresh provider data.
 
-For credential-free examples, enable **Demo preview** in Settings. Every synthetic view is labeled Demo and stays separate from live state; release builds use the healthy demo fixture, and development offers all eight scenarios. Failed live requests never use demo values. [F3 validation](docs/f3-validation.md) separates mock evidence, UI acceptance, and authenticated behavior.
+For credential-free examples, enable **Demo preview** in Settings. Every synthetic view is labeled Demo and stays separate from local accounts and live state; production builds use the multi-account sample, while development exposes additional controlled scenarios. Failed live requests never use demo values. [F3 validation](docs/f3-validation.md) separates mock evidence, UI acceptance, and authenticated behavior.
 
 Codex Details groups optional credits, spending controls, earned resets and Activity. The activity calendar distinguishes known zero from unavailable dates and never estimates money from tokens. These features are mock-validated while live connection is gated; a single Plus account is sufficient for later owner acceptance, but compatibility with that actual account remains unverified. Claude Code and Gemini CLI are **Coming Soon**, without login controls.
 
 Sign in with ChatGPT is a future preference, not a functional login option in this build. Its published identity/inference scopes do not explicitly establish existing Codex monitoring access. [Authentication decision](docs/chatgpt-auth-decision.md) and [security roadmap](docs/security-roadmap.md) record the evidence and remaining gates.
 
-The local fern icon is provisional artwork. Desktop icon sizes are checked in under `src-tauri/icons/`; no remote assets are loaded.
+The owner-approved Soft Ivory & Forest Jade icon family is installed for the desktop app and favicon, with a separate neutral high-contrast Windows/Linux tray glyph and a monochrome macOS template. See [ICON-01 evidence](docs/icon-01/README.md); no remote icon assets are loaded.
 
-## F2 behavior
+## Native tray behavior (F2 foundation)
 
 - The `main` window opens visibly at 380 × 660 on first launch, near the tray when native geometry is available and safely clamped otherwise. It can be resized to 320–420 logical pixels wide and a configured minimum of 480 pixels high; smaller work areas temporarily relax those limits. Close and Escape hide it. The tray menu provides **Show Quotafern**, **Hide Quotafern**, and **Quit**.
 - On Windows/macOS, primary tray click opens, focuses, or toggles the popup; secondary click opens its menu. Native tray geometry positions the popup near the icon when available, with work-area clamping and a safe fallback. Losing focus leaves Settings and account inspection open.
 - A second launch routes to the already-running app. On Linux, use the tray context menu; left-click tray events are not supported by the current Linux tray integration.
-- F1/F2 quota data were synthetic only. F3 preserves those fixtures behind the explicit Demo preview flow, with no implicit fallback.
+- F1/F2 quota data were synthetic only. Later milestones preserved explicitly labeled Demo fixtures, without implicit fallback to synthetic readings when live data is unavailable.
 - Appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) are separate, non-sensitive preferences stored in `localStorage`.
 - Quotafern sends no telemetry and has no cloud server or synchronization. F3's production gate prevents Codex startup and credential/provider access.
 
@@ -57,14 +65,11 @@ F1 has no unit-test suite. As product features are added, include the regression
 
 `bun run regression` runs the committed, deterministic smoke assertions against synthetic snapshots and native security configuration. It needs no credentials, network, or test framework and runs in the Frontend quality CI job. `bun run regression:rust` adds focused popup-placement checks using Rust's built-in runner in each desktop CI job; these calculations do not establish native tray interaction acceptance.
 
-## Project notes
+## Documentation guide
 
-- [Architecture](docs/architecture.md)
-- [Design system](docs/design-system.md)
-- [Security boundaries](docs/security.md)
-- [F1 validation and owner acceptance](docs/f1-validation.md)
-- [F2 validation and native acceptance checklist](docs/f2-validation.md)
-- [F3 validation and launch-policy blocker](docs/f3-validation.md)
-- [Codex integration research](docs/codex-integration.md)
-- [Sign in with ChatGPT authorization decision](docs/chatgpt-auth-decision.md)
-- [Security roadmap](docs/security-roadmap.md)
+- **Architecture and contracts:** [Architecture](docs/architecture.md), [ACC-01 multi-account model](docs/acc-01-architecture.md), [ACC-01 UX contracts](docs/acc-01-ux-contract.md), [ACC-04 local management](docs/acc-04/README.md).
+- **Security and provider research:** [Current security boundaries](docs/security.md), [Security roadmap](docs/security-roadmap.md), [Codex integration](docs/codex-integration.md), [F3 startup blocker](docs/f3-startup-security-investigation.md), [Provider connections roadmap](docs/provider-connections-roadmap.md), [ChatGPT auth decision](docs/chatgpt-auth-decision.md).
+- **Approved visual system:** [Design system](docs/design-system.md), [Hybrid A+B exploration (UX-01)](docs/ux-01/README.md), [UX-02A foundation](docs/ux-02a/README.md), [UX-02B account-aware UI](docs/ux-02b/README.md), [UX-02C navigation](docs/ux-02c/README.md), [ICON-01 approved assets](docs/icon-01/README.md).
+- **Historical acceptance and audit evidence:** [F1](docs/f1-validation.md), [F2](docs/f2-validation.md), [F3](docs/f3-validation.md), [ACC-04 checks](docs/acc-04/validation.md). Keep [Superpowers implementation plans](docs/superpowers/plans/2026-10-24-f1-foundation.md) and referenced scenario screenshots/result matrices as evidence even after their feature PRs merge.
+
+Documentation is organized by milestone rather than runtime importance. An older document may still be necessary to reproduce tests or explain a security decision. Do not infer that an unlinked screenshot or duplicate image is disposable: source-browser and compiled-production captures can intentionally have identical pixels but distinct provenance.
