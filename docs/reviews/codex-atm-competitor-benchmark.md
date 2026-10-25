@@ -51,6 +51,22 @@ Selected method sources:
 - https://github.com/Javis603/token-monitor/blob/main/README.md
 - https://github.com/rupprath/modelmeter/blob/main/README.md
 
+## Additional UI study and exclusions
+
+Open-source and product examples inspected for interface patterns:
+
+- **Token Monitor:** user-selectable tray, edge, floating and overview surfaces, model/day history and per-source switching. In Quotafern, keep **one personal owner** and no enabled multi-device server/hub; remote sync is not a prerequisite for quota.
+- **ModelMeter:** useful native-unit separation (quota %, USD estimates, credits). It primarily targets OpenAI/Anthropic API organization spend via Admin API keys, so its admin-billing data path is **explicitly excluded** from personal ChatGPT Codex.
+- **OpenTokenUsage:** experimental Windows 11 taskbar strip with session and weekly numbers plus configurable alerts and adaptive account polling. Taskbar strip requires OS-specific acceptance, and Quotafern must not add a global hook or always-on localhost API merely to imitate it.
+- **CodexBar:** compact two-window glance + credits + provenance and detailed charts, but its OAuth `auth.json` and direct personal usage endpoint are excluded.
+- **Quota:** per-account dashboard with rename/reconnect, different layout densities and separate account views. Treat imported credentials as a prohibited shortcut.
+- **QuotaView:** creative minimal floating quota display and activity visibility; task-control/approval handlers are **outside** a passive personal quota meter.
+
+Visual references are design *observations*, not artwork to clone:
+https://codexbar.app/ , https://opentokenusage.app/ , https://quota-ai.my/ , https://github.com/Duoasa/QuotaView .
+
+**Opportunity specific to Quotafern:** a single-owner dashboard that says *why* a number is absent and *where* every present number came from, offers a non-network `Last observed` path when appropriate, and never requests administrator credentials or copies another CLI's login.
+
 ## Candidate architecture: three honest data lanes, not interchangeable fallback
 
 | Lane | Provider/credential access | Meaning | Current decision |
