@@ -22,6 +22,14 @@
     type AccountDemoScenario,
   } from "./lib/accounts/demo";
   import {
+    initialNavigation,
+    reconcileNavigation,
+    type AccountNavigation,
+    type DetailTarget,
+    type ReturnTarget,
+  } from "./lib/accounts/navigation";
+  import type { Selection } from "./lib/accounts/views";
+  import {
     ageCodexSnapshot,
     CODEX_CONNECTION_AVAILABLE,
     codexMessage,
@@ -75,6 +83,111 @@
   }
 
   let activeTab = $state("overview");
+  let accountNavigation = $state<AccountNavigation>(initialNavigation());
+  $effect(() => {
+    const next = reconcileNavigation(demoAccountState, accountNavigation);
+    if (next !== accountNavigation) accountNavigation = next;
+  });
+  let collapsedProviders = $state<string[]>([]);
+  const tabScroll: Record<string, number> = { overview: 0, accounts: 0, settings: 0 };
+  let navigationVersion = 0;
+  function returnPoint(controlId: string): ReturnTarget {
+    return {
+      tab: activeTab === "accounts" ? "accounts" : "overview",
+      controlId,
+      scrollTop:
+        document.querySelector<HTMLElement>('[role="tabpanel"][data-state="active"]')?.scrollTop ??
+        0,
+    };
+  }
+  async function revealAccountContext() {
+    const version = ++navigationVersion;
+    tabScroll.overview = 0;
+    activeTab = "overview";
+    await tick();
+    if (version !== navigationVersion || activeTab !== "overview") return;
+    document
+      .querySelector<HTMLElement>('[role="tabpanel"][data-state="active"]')
+      ?.scrollTo({ top: 0, behavior: "instant" });
+    document.getElementById("owned-details-title")?.focus({ preventScroll: true });
+  }
+  function selectAccountContext(selection: Selection) {
+    accountNavigation = {
+      ...accountNavigation,
+      notice: "",
+      selection,
+      detail: null,
+      detailReturn: null,
+    };
+    navigationVersion++;
+    tabScroll.overview = 0;
+    document
+      .querySelector<HTMLElement>('[role="tabpanel"][data-state="active"]')
+      ?.scrollTo({ top: 0, behavior: "instant" });
+  }
+  function openAccountOverview(selection: Selection, controlId: string) {
+    accountNavigation = {
+      selection,
+      notice: "",
+      detail: null,
+      detailReturn: null,
+      overviewReturn: returnPoint(controlId),
+    };
+    void revealAccountContext();
+  }
+  function openAccountDetails(detail: DetailTarget, controlId: string) {
+    const origin = returnPoint(controlId);
+    accountNavigation = {
+      ...accountNavigation,
+      notice: "",
+      detail,
+      detailReturn: origin,
+      ...(origin.tab === "accounts" ? { selection: detail.selection, overviewReturn: null } : {}),
+    };
+    void revealAccountContext();
+  }
+  async function backAccountContext() {
+    const target = accountNavigation.detail
+      ? accountNavigation.detailReturn
+      : accountNavigation.overviewReturn;
+    accountNavigation = {
+      ...accountNavigation,
+      detail: null,
+      detailReturn: null,
+      overviewReturn: target?.tab === "accounts" ? null : accountNavigation.overviewReturn,
+    };
+    const version = ++navigationVersion;
+    activeTab = target?.tab ?? "overview";
+    tabScroll[activeTab] = target?.scrollTop ?? 0;
+    await tick();
+    if (version !== navigationVersion || activeTab !== (target?.tab ?? "overview")) return;
+    const panel = document.querySelector<HTMLElement>('[role="tabpanel"][data-state="active"]');
+    const opener = target ? document.getElementById(target.controlId) : null;
+    const visibleOpener =
+      opener?.isConnected && opener.getClientRects().length > 0 && !opener.hasAttribute("disabled")
+        ? opener
+        : null;
+    const disclosure = opener
+      ?.closest(".account-provider")
+      ?.querySelector<HTMLElement>(".provider-disclosure");
+    (
+      visibleOpener ??
+      disclosure ??
+      (activeTab === "overview"
+        ? document.getElementById("account-context")
+        : panel?.querySelector<HTMLElement>("h1"))
+    )?.focus({ preventScroll: true });
+    if (panel) panel.scrollTop = target?.scrollTop ?? 0;
+  }
+  // Tabs unmount their panels; keep only transient reading positions in the app shell.
+  $effect(() => {
+    const tab = activeTab;
+    void tick().then(() => {
+      if (activeTab !== tab) return;
+      const panel = document.querySelector<HTMLElement>('[role="tabpanel"][data-state="active"]');
+      if (panel) panel.scrollTop = tabScroll[tab] ?? 0;
+    });
+  });
   let scenario = $state<AccountDemoScenario>("multi");
   let snapshotNow = $state(Date.now());
   let demoAccountState = $derived(createAccountDemo(scenario, snapshotNow));
@@ -243,6 +356,9 @@
       snapshotNow = Date.now();
       scenario = "multi";
     }
+    accountNavigation = initialNavigation();
+    collapsedProviders = [];
+    navigationVersion++;
     demoPreview = enabled;
     showCodexDetails = false;
     connectConsent = false;
@@ -512,9 +628,22 @@
     </Tabs.Trigger>
   </Tabs.List>
 
-  <Tabs.Content class="view-content" value="overview">
+  <Tabs.Content
+    class="view-content"
+    value="overview"
+    onscroll={(event) => {
+      tabScroll.overview = event.currentTarget.scrollTop;
+    }}
+  >
     {#if demoPreview}
-      {#key scenario}<AccountOverview state={demoAccountState} nowMs={snapshotNow} />{/key}
+      <AccountOverview
+        state={demoAccountState}
+        nowMs={snapshotNow}
+        navigation={accountNavigation}
+        oncontext={selectAccountContext}
+        ondetails={openAccountDetails}
+        onback={backAccountContext}
+      />
     {:else if showCodexDetails}
       <div class="view-heading">
         <div>
@@ -720,9 +849,21 @@
     {/if}
   </Tabs.Content>
 
-  <Tabs.Content class="view-content" value="accounts">
+  <Tabs.Content
+    class="view-content"
+    value="accounts"
+    onscroll={(event) => {
+      tabScroll.accounts = event.currentTarget.scrollTop;
+    }}
+  >
     {#if demoPreview}
-      <AccountsPanel state={demoAccountState} nowMs={snapshotNow} />
+      <AccountsPanel
+        state={demoAccountState}
+        nowMs={snapshotNow}
+        bind:collapsedProviders
+        onoverview={openAccountOverview}
+        ondetails={openAccountDetails}
+      />
     {:else}
       <div class="view-heading">
         <div>

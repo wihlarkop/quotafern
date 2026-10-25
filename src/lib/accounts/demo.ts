@@ -13,6 +13,7 @@ export const ACCOUNT_DEMO_SCENARIOS = [
   ["two-accounts", "Two Codex accounts"],
   ["two-keys", "Two keys · relationship unknown"],
   ["shared", "Two keys · verified shared source"],
+  ["disconnected", "One disconnected · another current"],
   ["mixed", "Independent errors & freshness"],
   ["unicode", "Long Unicode names"],
   ["duplicates", "Duplicate names · distinct IDs"],
@@ -172,6 +173,20 @@ export function createAccountDemo(scenario: AccountDemoScenario, nowMs: number):
       connectionIds: connections.map((c) => c.id),
     };
     state.sources[0].connectionGenerations = Object.fromEntries(connections.map((c) => [c.id, 1]));
+  }
+  if (scenario === "disconnected") {
+    const target = connections[0].id;
+    Object.assign(
+      state.connections.find((c) => c.connectionId === target)!,
+      {
+        lifecycle: "disconnected",
+        consent: "not-requested",
+        authorization: "not-requested",
+        lastSuccessAtMs: null,
+      },
+    );
+    state.sources = state.sources.filter((s) => !s.association.connectionIds.includes(target));
+    state.identities = state.identities.filter((i) => i.connectionId !== target);
   }
   if (scenario === "mixed") {
     const failed = state.connections.find((c) => c.connectionId === id("connection", 4))!;

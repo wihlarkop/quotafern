@@ -124,3 +124,7 @@ The current fern is provisional. Plan original browser favicon, Windows/macOS/Li
 ## UX-02B: Account-aware production presentation
 
 Status: implemented for owner review in an isolated Draft PR. The [production Svelte screens](ux-02b/README.md) consume ACC-01 accounts/overview/details projections for explicit synthetic examples. The compact transient context selector supports All/provider/account/workspace/eligible connection scopes; advanced interactions stay with UX-02C. Lifecycle management and persistence remain ACC-04 work. Live Codex stays disabled, other adapters are Coming Soon, and native acceptance is deferred until ICON-01, UX-02B/C and ACC-04. See [actual validation](ux-02b/validation.md) and [review dispositions](ux-02b/review.md). Earlier milestone status paragraphs above are historical.
+
+## UX-02C: Multi-account interaction and navigation
+
+Implemented for Draft owner review: [shared transient context and Accounts navigation](ux-02c/README.md), provider disclosure, workspace/connection navigation, source-specific Details announcements and safe Back/focus/scroll restoration. ACC-01 projections remain authoritative. Missing Overview contexts fall back to All; unavailable Details fail closed. [Local/browser evidence](ux-02c/validation.md) remains separate from hosted and native acceptance. ACC-04 lifecycle/persistence, SEC-01/02 and F4 blockers remain deferred; both live gates stay disabled. No merge or release is authorized.
