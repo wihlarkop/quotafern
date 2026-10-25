@@ -4,6 +4,7 @@ Quotafern documentation is grouped by purpose; use the links below instead of se
 
 - [Specifications](specs/): architecture, ACC-01 contracts, account management, visual design and ICON-01.
 - [Implementation plans](plans/): UX, security, provider sequencing and milestone plans.
+- [Personal-only product scope](plans/personal-only-product-scope.md): one owner, multiple personal accounts/keys, no organization or enterprise administration.
 - [Security decisions](security/): current boundaries, Codex constraints, authorization and independent review.
 - [Validation](validation/): feature acceptance records, test matrices and reported limitations.
 - [Reviews](reviews/): historical review findings and dispositions.
