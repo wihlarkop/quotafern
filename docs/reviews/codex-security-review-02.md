@@ -1,6 +1,6 @@
 # CODEX-SEC-REVIEW-02 — Version-pinned feasibility and live gate decision
 
-Research date: 2026-10-26. Scope: OpenAI Codex only. This is a
+Research date: 2026-10-26. Scope: **one individual's personally owned OpenAI Codex accounts, Free/Go/Plus/Pro only**. Organization and Enterprise features are out of scope for every provider. This is a
 documentation-first, source-based security review. It does not authorize or
 perform a real CLI launch, ChatGPT login, authenticated quota read,
 credential inspection, provider mutation, release or live gate change.
@@ -47,6 +47,8 @@ remote-control management **must not** be callable by Quotafern.
 The app-server supports many powerful methods; a Rust allowlist
 restricts Quotafern's own calls, but cannot prevent independent
 startup/background behavior or other clients using Codex.
+
+Only personal ChatGPT Free/Go/Plus/Pro plan types are product targets. Other plan variants may be recognized only to **omit or reject them safely**, never to trigger organization analytics, admin permissions or workspace features.
 
 The auth documents distinguish ChatGPT subscription sign-in from
 API-key pay-as-you-go. Only ChatGPT-backed authorized responses
