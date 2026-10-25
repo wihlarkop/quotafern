@@ -35,7 +35,7 @@ Two same-named accounts, sessions, workspaces or keys can have different usage a
 
 ### M-01: GitHub AI Credit billing report is historical usage, not full entitlement — OPEN
 
-User-level report is scoped to *personally billed paid users*, while GitHub organization/enterprise reporting has distinct privilege and payer ownership. The report's consumed credits cannot be subtracted from arbitrary static plan limits without proof of current allowance and adjustments. Free users' applicability is unverified.
+User-level report is scoped to _personally billed paid users_, while GitHub organization/enterprise reporting has distinct privilege and payer ownership. The report's consumed credits cannot be subtracted from arbitrary static plan limits without proof of current allowance and adjustments. Free users' applicability is unverified.
 
 **Disposition:** prefer investigating `Plan: read` user-auth for eligible individuals first; do not use an org admin grant as the default. Prove inclusion, effective allowance, reset boundary and whether usage includes additional paid credits before showing percentage/remaining. Suppress plan/billing fields absent independent authority.
 
