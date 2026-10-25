@@ -6,8 +6,8 @@ const mode = Bun.argv[2];
 if (mode !== "browser" && mode !== "production") throw new Error("Use browser or production");
 const session = Bun.argv[3] ?? "quotafern-ux02b-fix";
 const milestone = Bun.argv[4] ?? "ux-02b";
-if (!["ux-02b", "ux-02c"].includes(milestone)) throw new Error("Unknown UI milestone");
-const checkPath = `docs/${milestone}/${mode === "browser" ? "browser" : "production"}-check.js`;
+if (!["ux-02b", "ux-02c", "acc-04"].includes(milestone)) throw new Error("Unknown UI milestone");
+const checkPath = `docs/${milestone}/${mode === "browser" || milestone === "acc-04" ? "browser" : "production"}-check.js`;
 const helper = new Bun.Transpiler({ loader: "ts" })
   .transformSync(await Bun.file("scripts/tab-capture.ts").text())
   .replace(/^export /gm, "");
@@ -16,7 +16,12 @@ const start = check.indexOf("{") + 1;
 await mkdir(".tmp", { recursive: true });
 const bundledPath = `.tmp/${milestone}-${mode}-check-with-tab-capture.js`;
 const interactions =
-  milestone === "ux-02c" ? await Bun.file("docs/ux-02c/interaction-check.js").text() : "";
+  milestone === "ux-02c" || milestone === "acc-04"
+    ? (await Bun.file("docs/ux-02c/interaction-check.js").text()).replaceAll(
+        "docs/ux-02c/screenshots/",
+        `docs/${milestone}/screenshots/`,
+      )
+    : "";
 await Bun.write(
   bundledPath,
   check.slice(0, start) + "\n" + helper + "\n" + interactions + check.slice(start),

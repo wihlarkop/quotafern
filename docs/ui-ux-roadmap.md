@@ -128,3 +128,7 @@ Status: implemented for owner review in an isolated Draft PR. The [production Sv
 ## UX-02C: Multi-account interaction and navigation
 
 Implemented for Draft owner review: [shared transient context and Accounts navigation](ux-02c/README.md), provider disclosure, workspace/connection navigation, source-specific Details announcements and safe Back/focus/scroll restoration. ACC-01 projections remain authoritative. Missing Overview contexts fall back to All; unavailable Details fail closed. [Local/browser evidence](ux-02c/validation.md) remains separate from hosted and native acceptance. ACC-04 lifecycle/persistence, SEC-01/02 and F4 blockers remain deferred; both live gates stay disabled. No merge or release is authorized.
+
+## ACC-04: Local account management
+
+Implemented for Draft owner review: [local account/connection alias management and durable non-sensitive metadata](acc-04/README.md), preserving Hybrid A+B, ICON-01 and UX-02C's stable-ID context/navigation. Native provider actions remain gated; demo fixtures never enter account storage. Includes accessible menus/dialogs, explicit recovery, transactional visible state and local-only removal with native-managed cases blocked. [Validation](acc-04/validation.md) separates browser/compiled checks from combined owner Windows acceptance and NOT RUN macOS/Linux GUI acceptance. No release/merge is authorized.

@@ -5,6 +5,8 @@
   import Layers from "@lucide/svelte/icons/layers";
 
   import { Button } from "../components/ui/button";
+  import AccountActions from "./AccountActions.svelte";
+  import { localRemovalAllowed, type ManagementTarget } from "./local";
   import type { AccountState } from "./model";
   import type { DetailTarget } from "./navigation";
   import { contextualAlias, sampleTime } from "./presentation";
@@ -19,6 +21,7 @@
     collapsedProviders = $bindable([]),
     onoverview,
     ondetails,
+    onmanage,
   }: {
     state: AccountState;
     nowMs: number;
@@ -27,6 +30,7 @@
     collapsedProviders?: string[];
     onoverview?: (selection: Selection, controlId: string) => void;
     ondetails?: (target: DetailTarget, controlId: string) => void;
+    onmanage?: (target: ManagementTarget, opener: string) => void;
   } = $props();
   let providers = $derived(
     accountsView(state).sort(
@@ -52,7 +56,8 @@
   </div>
 {:else}
   <p class="account-screen-note">
-    Account setup is planned. Live Codex is gated; other adapters are Coming Soon.
+    Local metadata only. All connections are disconnected. Live Codex is disabled; other adapters
+    are Coming Soon.
   </p>
 {/if}
 <div class="account-provider-list">
@@ -68,7 +73,7 @@
               size={16}
             />{/if}</span
         >
-        <h2>
+        <h2 id={`provider-heading-${provider.providerId}`} tabindex="-1">
           {#if provider.accounts.length > 0}<button
               type="button"
               class="provider-disclosure"
@@ -128,10 +133,40 @@
                     )}{/if}
                 </h3>
                 <span class="account-kind">Local alias</span>
+                {#if onmanage && !synthetic}<AccountActions
+                    id={`account-actions-${account.accountId}`}
+                    label={`Actions for ${provider.displayName} ${contextualAlias(provider.accounts, accountIndex, "account")}`}
+                    onaction={onmanage}
+                    actions={[
+                      {
+                        label: "Add local connection descriptor",
+                        target: { kind: "add-connection", accountId: account.accountId },
+                        disabled: !localRemovalAllowed(state, account.accountId),
+                      },
+                      {
+                        label: "Rename account",
+                        target: { kind: "rename-account", id: account.accountId },
+                        disabled: account.state === "removing",
+                      },
+                      {
+                        label: "Remove local account…",
+                        target: { kind: "remove-account", id: account.accountId },
+                        disabled: !localRemovalAllowed(state, account.accountId),
+                      },
+                    ]}
+                  />{/if}
               </div>
               {#if account.state === "removing"}<p class="account-pending" role="status">
                   Removal pending · monitoring cleanup could not be confirmed.
                 </p>{/if}
+              {#if !synthetic}<p class="account-screen-note">
+                  Disconnected · Identity not verified
+                </p>
+                {#if !localRemovalAllowed(state, account.accountId)}<p class="account-pending">
+                    Native cleanup confirmation is unavailable. Removal and new descriptors are
+                    blocked.
+                  </p>{/if}
+              {/if}
               {#if onoverview && account.workspaces.length > 0}<div
                   class="workspace-navigation"
                   aria-label="Workspace contexts"
@@ -189,11 +224,38 @@
                                 ? "Error · demo"
                                 : connection.runtime.lifecycle}</span
                       >
+                      {#if onmanage && !synthetic}<AccountActions
+                          id={`connection-actions-${connection.connectionId}`}
+                          label={`Actions for ${provider.displayName} ${contextualAlias(provider.accounts, accountIndex, "account")} ${contextualAlias(account.connections, connectionIndex, "connection")}`}
+                          onaction={onmanage}
+                          actions={[
+                            {
+                              label:
+                                connection.mechanism === "api-key"
+                                  ? "Rename key label"
+                                  : "Rename connection",
+                              target: { kind: "rename-connection", id: connection.connectionId },
+                              disabled: account.state === "removing",
+                            },
+                            {
+                              label: "Remove local connection descriptor…",
+                              target: { kind: "remove-connection", id: connection.connectionId },
+                              disabled: !localRemovalAllowed(
+                                state,
+                                account.accountId,
+                                connection.connectionId,
+                              ),
+                            },
+                          ]}
+                        />{/if}
                     </div>
                     <p>
                       {connection.mechanism === "api-key"
                         ? "API key label"
-                        : "CLI session"}{#if connection.workspaceId}
+                        : connection.mechanism === "oauth-grant"
+                          ? "OAuth grant label"
+                          : "CLI session label"}{#if !synthetic}
+                        · Descriptor only{/if}{#if connection.workspaceId}
                         · {account.workspaces.find((w) => w.workspaceId === connection.workspaceId)
                           ?.alias}{/if}
                     </p>
@@ -244,6 +306,9 @@
                   </li>
                 {/each}
               </ul>
+              {#if account.connections.length === 0}<p class="account-catalog-note">
+                  No connection descriptors. Add a local label from account actions.
+                </p>{/if}
             </li>
           {/each}
         </ul>
@@ -252,6 +317,7 @@
   {/each}
 </div>
 <p class="account-screen-note">
-  Add, rename, disconnect and remove are planned for account management. No account names or
-  connections are saved.
+  {synthetic
+    ? "Synthetic fixtures stay separate from saved local accounts. Turn Demo off to manage your labels."
+    : "Only non-sensitive local metadata is saved. Connection, authentication and monitoring are unavailable. No quota values are inferred."}
 </p>

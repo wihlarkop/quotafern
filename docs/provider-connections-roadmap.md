@@ -128,3 +128,7 @@ No additional paid accounts are required for model, UI, or mock security tests. 
 - Gemini usage: https://geminicli.com/docs/resources/quota-and-pricing/
 - GitHub Copilot login: https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/authenticate-copilot-cli
 - GitHub usage billing API: https://docs.github.com/en/rest/billing/usage
+
+## ACC-04 local-only delivery
+
+[ACC-04](acc-04/README.md) implements Add/Rename/Remove for disconnected local account and connection labels, optional workspace grouping and strict non-sensitive metadata persistence. This supersedes the historical planned account-management/persistence status above only for descriptor management. It does not implement ACC-02/ACC-03 provider authorization, credential storage, multi-login isolation or native cleanup coordination. All adapters remain unavailable/gated or Coming Soon; Remember Connection stays deferred. [Functional and blocked action matrices](acc-04/README.md#functional-action-matrix) and [validation](acc-04/validation.md).

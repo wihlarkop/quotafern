@@ -1,5 +1,124 @@
 @import "tailwindcss";
 
+.local-action-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: var(--radius-control);
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+.local-action-trigger:hover,
+.local-action-trigger[data-state="open"] {
+  background: var(--surface-inset);
+  color: var(--text);
+}
+.local-action-menu {
+  z-index: 50;
+  max-width: calc(100vw - 24px);
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  color: var(--text);
+}
+.local-action-item {
+  padding: 9px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.local-action-item[data-highlighted] {
+  background: var(--accent-soft);
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+.local-action-item[data-disabled] {
+  color: var(--subtle);
+  cursor: default;
+}
+.local-dialog {
+  margin: auto;
+  padding: 20px;
+  width: min(400px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-raised);
+  color: var(--text);
+  box-shadow: var(--elevation-shell);
+}
+.local-dialog::backdrop {
+  background: rgb(0 0 0 / 38%);
+}
+.local-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.local-dialog h2 {
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.local-dialog p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.local-dialog label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.local-dialog input,
+.local-dialog select {
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  color: var(--text);
+  background: var(--surface-inset);
+  font: inherit;
+  caret-color: var(--accent);
+}
+.local-dialog [aria-invalid="true"] {
+  border-color: var(--critical-ink);
+}
+.local-dialog .local-error {
+  color: var(--critical-ink);
+  min-height: 0;
+}
+.local-dialog .local-error:empty {
+  display: none;
+}
+.local-dialog .local-removal-name {
+  font-weight: 650;
+  color: var(--text);
+}
+.local-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+.local-owner-context {
+  font-weight: 600;
+}
+.local-storage-notice {
+  margin-block: 12px;
+}
+
 :root {
   font-family: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   font-synthesis: none;

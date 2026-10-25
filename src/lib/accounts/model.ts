@@ -24,10 +24,13 @@ export function isProviderId(value: unknown): value is string {
 }
 
 export const MAX_ALIAS_LENGTH = 80;
+// Keep emoji joiners/variation selectors, while rejecting hidden formatting and fillers.
+export const FORBIDDEN_ALIAS_CHARACTERS =
+  /[\p{Cc}\u00ad\u061c\u115f\u1160\u180e\u200b\u200e\u200f\u202a-\u202e\u2060-\u206f\u3164\ufeff\uffa0]|\u034f|\u17b4|\u17b5/u;
 export function validateAlias(value: unknown): string | null {
   if (typeof value !== "string") return null;
   // Preserve Unicode/emoji and duplicate names, but reject controls and bidi overrides.
-  if (/[\p{Cc}\u200b\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/u.test(value)) return null;
+  if (FORBIDDEN_ALIAS_CHARACTERS.test(value)) return null;
   const alias = value.normalize("NFC").trim();
   if (!/[\p{L}\p{N}\p{P}\p{S}]/u.test(alias) || Array.from(alias).length > MAX_ALIAS_LENGTH)
     return null;

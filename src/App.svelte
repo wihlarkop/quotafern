@@ -21,6 +21,8 @@
     createAccountDemo,
     type AccountDemoScenario,
   } from "./lib/accounts/demo";
+  import { createLocalStore } from "./lib/accounts/local";
+  import LocalAccounts from "./lib/accounts/LocalAccounts.svelte";
   import {
     initialNavigation,
     reconcileNavigation,
@@ -83,9 +85,11 @@
   }
 
   let activeTab = $state("overview");
+  const localStore = createLocalStore(() => window.localStorage);
+  let localAccountState = $state(localStore.state);
   let accountNavigation = $state<AccountNavigation>(initialNavigation());
   $effect(() => {
-    const next = reconcileNavigation(demoAccountState, accountNavigation);
+    const next = reconcileNavigation(visibleAccountState, accountNavigation);
     if (next !== accountNavigation) accountNavigation = next;
   });
   let collapsedProviders = $state<string[]>([]);
@@ -192,6 +196,7 @@
   let snapshotNow = $state(Date.now());
   let demoAccountState = $derived(createAccountDemo(scenario, snapshotNow));
   let demoPreview = $state(false);
+  let visibleAccountState = $derived(demoPreview ? demoAccountState : localAccountState);
   let showCodexDetails = $state(false);
   let codexSnapshot = $state<LiveCodexSnapshot>(disconnectedCodexSnapshot());
   let liveNowMs = $state(Date.now());
@@ -635,9 +640,10 @@
       tabScroll.overview = event.currentTarget.scrollTop;
     }}
   >
-    {#if demoPreview}
+    {#if demoPreview || !CODEX_CONNECTION_AVAILABLE}
       <AccountOverview
-        state={demoAccountState}
+        state={visibleAccountState}
+        synthetic={demoPreview}
         nowMs={snapshotNow}
         navigation={accountNavigation}
         oncontext={selectAccountContext}
@@ -865,112 +871,142 @@
         ondetails={openAccountDetails}
       />
     {:else}
-      <div class="view-heading">
-        <div>
-          <h1>Accounts</h1>
-          <p>
-            {CODEX_CONNECTION_AVAILABLE
-              ? "Connect a local Codex session"
-              : "No accounts configured · live connection unavailable"}
-          </p>
-        </div>
-      </div>
-
-      <section class="codex-account-panel" aria-labelledby="codex-account-title">
-        <div class="codex-account-heading">
-          <span class="provider-icon" aria-hidden="true">
-            <Command size={16} strokeWidth={1.8} />
-          </span>
-          <div class="account-copy">
-            <strong id="codex-account-title">Codex</strong>
-            <span>Codex quota connection</span>
+      <LocalAccounts
+        state={localAccountState}
+        store={localStore}
+        onstate={(state) => (localAccountState = state)}
+        bind:collapsedProviders
+        onoverview={openAccountOverview}
+        ondetails={openAccountDetails}
+      />
+      {#if CODEX_CONNECTION_AVAILABLE}
+        <div class="view-heading">
+          <div>
+            <h1>Accounts</h1>
+            <p>
+              {CODEX_CONNECTION_AVAILABLE
+                ? "Connect a local Codex session"
+                : "No accounts configured · live connection unavailable"}
+            </p>
           </div>
-          <span
-            class="account-state codex-connection-state"
-            class:connected={agedCodexSnapshot.connectionStatus === "connected"}
-            class:failed={agedCodexSnapshot.connectionStatus === "error" ||
-              agedCodexSnapshot.connectionStatus === "unavailable" ||
-              agedCodexSnapshot.connectionStatus === "incompatible" ||
-              agedCodexSnapshot.connectionStatus === "unsupported"}
-          >
-            {agedCodexSnapshot.connectionStatus === "connected"
-              ? "Connected"
-              : agedCodexSnapshot.connectionStatus === "disconnected"
-                ? "Not connected"
-                : agedCodexSnapshot.connectionStatus === "auth-required"
-                  ? "Sign-in needed"
-                  : agedCodexSnapshot.connectionStatus}
-          </span>
         </div>
 
-        {#if codexNotice}
-          <div class="inline-notice codex-notice" role="status" aria-live="polite">
-            {codexNotice}
-          </div>
-        {/if}
-
-        {#if !CODEX_CONNECTION_AVAILABLE}
-          <div class="codex-disabled-note" role="status">
-            <strong>Live connection unavailable in this build.</strong>
-            <p>
-              Starting the Codex app-server may enable saved Remote Control. Quotafern requires a
-              documented way to disable it before connecting.
-            </p>
-          </div>
-        {/if}
-
-        {#if !isTauri()}
-          <div class="native-only-note" role="note">
-            <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
-            <p>
-              This browser preview never checks for a Codex CLI or credentials. Connect flows run
-              only in the native app when supported.
-            </p>
-          </div>
-        {:else if agedCodexSnapshot.connectionStatus !== "connected"}
-          <p class="codex-connection-help">
-            {agedCodexSnapshot.connectionStatus === "disconnected"
-              ? "Connect to read subscription limits from your existing Codex session on this device."
-              : codexMessage(agedCodexSnapshot)}
-          </p>
-          <div class="codex-consent-copy">
-            <p>
-              In a supported build, Quotafern would start the installed Codex app-server and read
-              subscription limits through your existing Codex session. Codex may refresh or save its
-              own credentials and applies its normal sign-in and workspace policies.
-            </p>
-            <p>
-              Quotafern would not send agent turns or remember this connection. Disconnect would
-              stop Quotafern monitoring without signing out of Codex CLI. A native system dialog
-              would ask for confirmation before any Codex process starts.
-            </p>
-          </div>
-          <label class="codex-consent-check">
-            <input
-              type="checkbox"
-              bind:checked={connectConsent}
-              disabled={codexBusy || !CODEX_CONNECTION_AVAILABLE}
-            />
-            <span>I understand and want to continue to native confirmation.</span>
-          </label>
-          <Button
-            class="codex-connect-button"
-            variant="default"
-            onclick={connectCodex}
-            disabled={codexBusy || !connectConsent || !CODEX_CONNECTION_AVAILABLE}
-            aria-busy={codexBusy}
-            data-testid="connect-codex"
-          >
-            {#if codexBusy}<RefreshCw size={14} class="spin" aria-hidden="true" />{/if}
-            <span>
-              {codexBusy
-                ? "Connecting"
-                : CODEX_CONNECTION_AVAILABLE
-                  ? "Connect Codex session"
-                  : "Live connection unavailable"}
+        <section class="codex-account-panel" aria-labelledby="codex-account-title">
+          <div class="codex-account-heading">
+            <span class="provider-icon" aria-hidden="true">
+              <Command size={16} strokeWidth={1.8} />
             </span>
-          </Button>
-          {#if agedCodexSnapshot.connectionStatus !== "disconnected"}
+            <div class="account-copy">
+              <strong id="codex-account-title">Codex</strong>
+              <span>Codex quota connection</span>
+            </div>
+            <span
+              class="account-state codex-connection-state"
+              class:connected={agedCodexSnapshot.connectionStatus === "connected"}
+              class:failed={agedCodexSnapshot.connectionStatus === "error" ||
+                agedCodexSnapshot.connectionStatus === "unavailable" ||
+                agedCodexSnapshot.connectionStatus === "incompatible" ||
+                agedCodexSnapshot.connectionStatus === "unsupported"}
+            >
+              {agedCodexSnapshot.connectionStatus === "connected"
+                ? "Connected"
+                : agedCodexSnapshot.connectionStatus === "disconnected"
+                  ? "Not connected"
+                  : agedCodexSnapshot.connectionStatus === "auth-required"
+                    ? "Sign-in needed"
+                    : agedCodexSnapshot.connectionStatus}
+            </span>
+          </div>
+
+          {#if codexNotice}
+            <div class="inline-notice codex-notice" role="status" aria-live="polite">
+              {codexNotice}
+            </div>
+          {/if}
+
+          {#if !CODEX_CONNECTION_AVAILABLE}
+            <div class="codex-disabled-note" role="status">
+              <strong>Live connection unavailable in this build.</strong>
+              <p>
+                Starting the Codex app-server may enable saved Remote Control. Quotafern requires a
+                documented way to disable it before connecting.
+              </p>
+            </div>
+          {/if}
+
+          {#if !isTauri()}
+            <div class="native-only-note" role="note">
+              <CircleHelp size={15} strokeWidth={2} aria-hidden="true" />
+              <p>
+                This browser preview never checks for a Codex CLI or credentials. Connect flows run
+                only in the native app when supported.
+              </p>
+            </div>
+          {:else if agedCodexSnapshot.connectionStatus !== "connected"}
+            <p class="codex-connection-help">
+              {agedCodexSnapshot.connectionStatus === "disconnected"
+                ? "Connect to read subscription limits from your existing Codex session on this device."
+                : codexMessage(agedCodexSnapshot)}
+            </p>
+            <div class="codex-consent-copy">
+              <p>
+                In a supported build, Quotafern would start the installed Codex app-server and read
+                subscription limits through your existing Codex session. Codex may refresh or save
+                its own credentials and applies its normal sign-in and workspace policies.
+              </p>
+              <p>
+                Quotafern would not send agent turns or remember this connection. Disconnect would
+                stop Quotafern monitoring without signing out of Codex CLI. A native system dialog
+                would ask for confirmation before any Codex process starts.
+              </p>
+            </div>
+            <label class="codex-consent-check">
+              <input
+                type="checkbox"
+                bind:checked={connectConsent}
+                disabled={codexBusy || !CODEX_CONNECTION_AVAILABLE}
+              />
+              <span>I understand and want to continue to native confirmation.</span>
+            </label>
+            <Button
+              class="codex-connect-button"
+              variant="default"
+              onclick={connectCodex}
+              disabled={codexBusy || !connectConsent || !CODEX_CONNECTION_AVAILABLE}
+              aria-busy={codexBusy}
+              data-testid="connect-codex"
+            >
+              {#if codexBusy}<RefreshCw size={14} class="spin" aria-hidden="true" />{/if}
+              <span>
+                {codexBusy
+                  ? "Connecting"
+                  : CODEX_CONNECTION_AVAILABLE
+                    ? "Connect Codex session"
+                    : "Live connection unavailable"}
+              </span>
+            </Button>
+            {#if agedCodexSnapshot.connectionStatus !== "disconnected"}
+              <Button
+                class="codex-disconnect-button"
+                variant="outline"
+                onclick={disconnectCodex}
+                disabled={codexBusy}
+                aria-busy={codexBusy}
+                data-testid="disconnect-codex"
+              >
+                {codexBusy ? "Stopping monitoring" : "Disconnect"}
+              </Button>
+            {/if}
+          {:else}
+            <div class="codex-connected-details">
+              <p>Last successful read · {formatLiveReadAt(agedCodexSnapshot.fetchedAtMs)}</p>
+              {#if agedCodexSnapshot.dataStatus !== "current"}
+                <p class="codex-connection-help">{codexMessage(agedCodexSnapshot)}</p>
+              {/if}
+              <p>
+                Disconnect stops Quotafern monitoring. It leaves your Codex CLI session signed in.
+              </p>
+            </div>
             <Button
               class="codex-disconnect-button"
               variant="outline"
@@ -982,52 +1018,20 @@
               {codexBusy ? "Stopping monitoring" : "Disconnect"}
             </Button>
           {/if}
-        {:else}
-          <div class="codex-connected-details">
-            <p>Last successful read · {formatLiveReadAt(agedCodexSnapshot.fetchedAtMs)}</p>
-            {#if agedCodexSnapshot.dataStatus !== "current"}
-              <p class="codex-connection-help">{codexMessage(agedCodexSnapshot)}</p>
-            {/if}
-            <p>
-              Disconnect stops Quotafern monitoring. It leaves your Codex CLI session signed in.
-            </p>
-          </div>
-          <Button
-            class="codex-disconnect-button"
-            variant="outline"
-            onclick={disconnectCodex}
-            disabled={codexBusy}
-            aria-busy={codexBusy}
-            data-testid="disconnect-codex"
-          >
-            {codexBusy ? "Stopping monitoring" : "Disconnect"}
-          </Button>
-        {/if}
-      </section>
+        </section>
 
-      <section class="account-explainer codex-limits-explainer">
-        <h2>What Quotafern reads</h2>
-        <p>
-          Validated quota windows, optional credit/spending/reset metadata and daily token activity
-          returned by Codex. No inference, purchasing or reset redemption. Only appearance
-          preferences are saved in browser storage.
-        </p>
-        <Button variant="link" class="text-action" onclick={() => (activeTab = "overview")}
-          >View usage <span aria-hidden="true">→</span></Button
-        >
-      </section>
-      <AccountsPanel
-        state={{
-          metadata: { version: 1, accounts: [], workspaces: [], connections: [] },
-          connections: [],
-          sources: [],
-          identities: [],
-          removingAccountIds: [],
-        }}
-        nowMs={liveNowMs}
-        synthetic={false}
-        showHeading={false}
-      />
+        <section class="account-explainer codex-limits-explainer">
+          <h2>What Quotafern reads</h2>
+          <p>
+            Validated quota windows, optional credit/spending/reset metadata and daily token
+            activity returned by Codex. No inference, purchasing or reset redemption. Only
+            appearance preferences and non-sensitive local labels are saved in browser storage.
+          </p>
+          <Button variant="link" class="text-action" onclick={() => (activeTab = "overview")}
+            >View usage <span aria-hidden="true">→</span></Button
+          >
+        </section>
+      {/if}
     {/if}
   </Tabs.Content>
 
@@ -1165,15 +1169,16 @@
     <section class="settings-group">
       <h2>Account preferences</h2>
       <p>
-        Planned · account names and connection management will arrive in a reviewed update. No
-        sessions are remembered.
+        Manage local account and connection labels in Accounts with Demo off. Labels persist on this
+        device; sessions, authorization and usage do not.
       </p>
     </section>
 
     <section class="privacy-note">
       <span class="privacy-icon" aria-hidden="true"><Leaf size={15} strokeWidth={1.9} /></span>
       <p>
-        Quotafern stores no credentials or tokens. Only appearance preferences are saved locally.
+        Quotafern saves appearance preferences and non-sensitive local account metadata. Do not put
+        secrets in labels. No credentials, authorization or usage history are stored.
       </p>
     </section>
   </Tabs.Content>
