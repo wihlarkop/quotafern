@@ -22,11 +22,11 @@ An invalid Overview filter becomes All Accounts with a polite announcement and d
 
 These are genuine compiled Svelte captures at 380 × 660. The capture helper checks the selected tab, linked visible panel, heading, finished transitions and settled highlight before saving. Source-browser captures of palettes and edge fixtures are supplemental; no prototype or native GUI claim is made.
 
-| Accounts                                                   | Overview                                                   | Details                                                  |
-| ---------------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
-| *Screenshot removed from current repository* | *Screenshot removed from current repository* | *Screenshot removed from current repository* |
+| Accounts                                     | Overview                                     | Details                                      |
+| -------------------------------------------- | -------------------------------------------- | -------------------------------------------- |
+| _Screenshot removed from current repository_ | _Screenshot removed from current repository_ | _Screenshot removed from current repository_ |
 
-Direct connection navigation: *Screenshot removed from current repository*
+Direct connection navigation: _Screenshot removed from current repository_
 
 [Validation and reproduction](../validation/ux-02c.md) · [Focused review and dispositions](../reviews/ux-02c.md) · [Implementation plan](../plans/ux-02c.md).
 

@@ -10,19 +10,19 @@ Read AGENTS.md, CONTEXT.md, ACC-01 architecture/UX contract, UI roadmap, UX-02B 
 
 ## Local checks
 
-| Check                                    | Result                                                                                    |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Frozen Bun 1.4.4 install                 | Passed; lockfiles unchanged                                                               |
-| Oxlint                                   | Passed, no warnings                                                                       |
-| Oxfmt                                    | Passed (final check recorded with delivery)                                               |
-| Svelte diagnostics                       | Zero errors and warnings                                                                  |
-| Full frontend regression                 | 16 groups / 1,759 assertions; zero failures                                               |
-| Production frontend build                | Passed                                                                                    |
-| Source browser                           | 563 checks; zero failures; [JSON](../evidence/ux-02c/browser-results.json)                                   |
-| Compiled production browser              | 144 checks; zero failures; [JSON](../evidence/ux-02c/production-results.json)                                |
-| Rust formatting / Clippy / package check | Passed locally on Windows with locked dependencies and warnings denied                    |
-| Synthetic Rust regression                | Passed locally on Windows: 57 passed, zero failed, 4 ignored                              |
-| Impeccable mechanical detector           | Empty finding list for changed UI targets                                                 |
+| Check                                    | Result                                                                                               |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Frozen Bun 1.4.4 install                 | Passed; lockfiles unchanged                                                                          |
+| Oxlint                                   | Passed, no warnings                                                                                  |
+| Oxfmt                                    | Passed (final check recorded with delivery)                                                          |
+| Svelte diagnostics                       | Zero errors and warnings                                                                             |
+| Full frontend regression                 | 16 groups / 1,759 assertions; zero failures                                                          |
+| Production frontend build                | Passed                                                                                               |
+| Source browser                           | 563 checks; zero failures; [JSON](../evidence/ux-02c/browser-results.json)                           |
+| Compiled production browser              | 144 checks; zero failures; [JSON](../evidence/ux-02c/production-results.json)                        |
+| Rust formatting / Clippy / package check | Passed locally on Windows with locked dependencies and warnings denied                               |
+| Synthetic Rust regression                | Passed locally on Windows: 57 passed, zero failed, 4 ignored                                         |
+| Impeccable mechanical detector           | Empty finding list for changed UI targets                                                            |
 | Independent Luna High review             | Two P2 accessibility findings, both fixed and browser-verified; [dispositions](../reviews/ux-02c.md) |
 
 No native GUI acceptance is included. Hosted exact-HEAD status is recorded in the Draft PR and kept distinct from these local results.

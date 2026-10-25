@@ -10,7 +10,7 @@ Use original authored vector geometry, no external artwork, remote assets, stock
 
 ## Owner-selectable concepts
 
-*Screenshot removed from current repository*
+_Screenshot removed from current repository_
 
 Editable SVG study (archived visual removed). The raster proof is drawn from the same original geometry at each stated size; this is a design study, not a browser screenshot or OS acceptance.
 

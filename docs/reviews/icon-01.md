@@ -25,7 +25,7 @@ All **24 original installed asset hashes remain unchanged**. Four derived rows b
 
 ## Actual tray comparison and contrast
 
-*Screenshot removed from current repository*
+_Screenshot removed from current repository_
 
 The sheet composites the actual output PNG files at their native pixel sizes. It is static asset evidence, not a screenshot of any OS tray. It compares previous white and forest-jade masks with the new neutral fallback over near white, light gray, medium gray, graphite and near black. The original before/after sheet (archived visual removed) is retained unchanged as historical evidence of the original fallback limitation.
 

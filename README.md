@@ -4,7 +4,7 @@ Quotafern is a compact local-first system-tray app for remaining AI subscription
 
 ## Local accounts (ACC-04)
 
-With **Demo preview off**, Accounts lets users add, rename and remove provider-specific local accounts, optional workspaces and connection descriptors, including API-key *labels*. These records are not signed in and do not represent working integrations. There are no API-key, token or OAuth credential inputs; Overview never invents quotas for disconnected records.
+With **Demo preview off**, Accounts lets users add, rename and remove provider-specific local accounts, optional workspaces and connection descriptors, including API-key _labels_. These records are not signed in and do not represent working integrations. There are no API-key, token or OAuth credential inputs; Overview never invents quotas for disconnected records.
 
 Only validated non-sensitive IDs, aliases, ownership and mechanism descriptors are saved under the app-owned `quotafern.account-presentation.v1` localStorage key. All records restore disconnected, with no authorization, identities, quota or Activity snapshots. Do not put secrets in labels. The explicit Demo preview remains entirely separate and is never persisted as an account. See [ACC-04 implementation and boundaries](docs/specs/acc-04.md) and [ACC-01 ownership contracts](docs/specs/acc-01-architecture.md).
 

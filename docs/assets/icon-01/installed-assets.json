@@ -142,10 +142,7 @@
     "source_sha256": "cf448ce073dd481668178dbf4f8868ee02ef8136d70c850184bd500297a2394a",
     "destination": "src-tauri/icons/tray/fern-neutral-16.png",
     "sha256": "98a195a84327da44de5384faa549fe0bef80d30223611a450b7472eaf66bc6c1",
-    "dimensions": [
-      16,
-      16
-    ],
+    "dimensions": [16, 16],
     "operation": "approved per-size alpha; LANCZOS 8x; MaxFilter(15) dark underlay; light alpha-composite; LANCZOS to target; clear 1px exterior alpha; PNG compression 9"
   },
   {
@@ -153,10 +150,7 @@
     "source_sha256": "4d30eb3e5019fe9664cf4bf4e60ef33723d208c179663f584ebfa428721eb31d",
     "destination": "src-tauri/icons/tray/fern-neutral-20.png",
     "sha256": "90392f5bbd71f7a6d7fc79a858d24eed9a3f8bc464b5a858cdbc8337bbf2f8e4",
-    "dimensions": [
-      20,
-      20
-    ],
+    "dimensions": [20, 20],
     "operation": "approved per-size alpha; LANCZOS 8x; MaxFilter(15) dark underlay; light alpha-composite; LANCZOS to target; clear 1px exterior alpha; PNG compression 9"
   },
   {
@@ -164,10 +158,7 @@
     "source_sha256": "3dbb93c08ca55fa47bcb3db0c3b60dc54e2e4294048f8e27a191f0a1c4c85197",
     "destination": "src-tauri/icons/tray/fern-neutral-24.png",
     "sha256": "e8762e778e0b1b97a3119857424b4d50c62069b35472d9e204a287ba71a8d958",
-    "dimensions": [
-      24,
-      24
-    ],
+    "dimensions": [24, 24],
     "operation": "approved per-size alpha; LANCZOS 8x; MaxFilter(15) dark underlay; light alpha-composite; LANCZOS to target; clear 1px exterior alpha; PNG compression 9"
   },
   {
@@ -175,10 +166,7 @@
     "source_sha256": "a9a8cf9c0b510339728ca8fbaa80d2cb7fce88ddf72889f1e66273dc7ee9fbea",
     "destination": "src-tauri/icons/tray/fern-neutral-32.png",
     "sha256": "d8fa95e164add317f48f95856d1fd80efeab7e635e838aff1700a0991bd1903d",
-    "dimensions": [
-      32,
-      32
-    ],
+    "dimensions": [32, 32],
     "operation": "approved per-size alpha; LANCZOS 8x; MaxFilter(15) dark underlay; light alpha-composite; LANCZOS to target; clear 1px exterior alpha; PNG compression 9"
   }
 ]

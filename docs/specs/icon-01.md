@@ -40,7 +40,7 @@ Browser: Vite copies local files from `public/` to `dist/`. `index.html` declare
 
 ## Actual asset comparison
 
-*Screenshot removed from current repository*
+_Screenshot removed from current repository_
 
 This is a static composition of actual baseline and supplied image bytes, not a native application screenshot. Tray glyphs appear at actual 16/20/24/32px sizes, including both matching and mismatched backgrounds. Only the large app comparison and the Apple icon thumbnail are resized for the sheet. The baseline had no declared favicon.
 

@@ -23,7 +23,10 @@ async function checkLocalAccounts(page) {
   const dialog = () => page.getByRole("dialog");
   const alias = () => page.getByRole("textbox", { name: "Account alias", exact: true });
   const capture = async (name) => {
-    await page.screenshot({ path: `.tmp/qa/screenshots/acc-04/${prefix}-${name}.png`, scale: "css" });
+    await page.screenshot({
+      path: `.tmp/qa/screenshots/acc-04/${prefix}-${name}.png`,
+      scale: "css",
+    });
   };
   const menu = async (id, name) => {
     await page.locator(`[id="${id}"]`).click();

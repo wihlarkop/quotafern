@@ -94,7 +94,9 @@ export async function runIconRegression(): Promise<number> {
   for await (const path of new Bun.Glob("**/*.{md,json,txt,py}").scan(
     fileURLToPath(new URL("docs/assets/icon-01/", root)),
   )) {
-    const text = await file(new URL(`docs/assets/icon-01/${path.replaceAll("\\", "/")}`, root)).text();
+    const text = await file(
+      new URL(`docs/assets/icon-01/${path.replaceAll("\\", "/")}`, root),
+    ).text();
     assert(!/\b[a-z]:[\\/]|\/(?:Users|home)\//i.test(text), `portable documentation: ${path}`);
   }
   return assertions;

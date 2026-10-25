@@ -8,10 +8,10 @@ The existing production popup now uses the approved Hybrid A + B direction: soft
 
 Actual browser captures of the production Svelte UI at 380 × 660, with the same synthetic fixture. These are local Vite development renders of production components, not an installed native build or generated mockups. Details may sit below the fold and remain reachable through the single scrolling content region.
 
-| Before                                                          | After                                                         |
-| --------------------------------------------------------------- | ------------------------------------------------------------- |
-| *Screenshot removed from current repository*                 | *Screenshot removed from current repository*                 |
-| *Screenshot removed from current repository* | *Screenshot removed from current repository* |
+| Before                                       | After                                        |
+| -------------------------------------------- | -------------------------------------------- |
+| _Screenshot removed from current repository_ | _Screenshot removed from current repository_ |
+| _Screenshot removed from current repository_ | _Screenshot removed from current repository_ |
 
 [Validation and complete screenshot index](../validation/ux-02a.md) · [ICON-01 concepts and specification](icon-01-concepts.md) · [Independent review](../reviews/ux-02a.md) · [Implementation plan](../plans/ux-02a.md).
 

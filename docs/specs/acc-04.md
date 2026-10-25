@@ -48,9 +48,9 @@ The local controller has no native runtime ingestion API and never calls ACC-01'
 
 Compiled-production Svelte captures, not mockups or native GUI acceptance:
 
-| Local accounts                                             | Save failure                                                                | Corrupt metadata recovery                                                            |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| *Screenshot removed from current repository* | *Screenshot removed from current repository* | *Screenshot removed from current repository* |
+| Local accounts                               | Save failure                                 | Corrupt metadata recovery                    |
+| -------------------------------------------- | -------------------------------------------- | -------------------------------------------- |
+| _Screenshot removed from current repository_ | _Screenshot removed from current repository_ | _Screenshot removed from current repository_ |
 
 Additional source/production captures cover both palettes, light/dark, all 320/380/420 × 480/660 dialog sizes and source-specific demo navigation. [Validation](../validation/acc-04.md) · [Review dispositions](../reviews/acc-04.md).
 

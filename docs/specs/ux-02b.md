@@ -8,15 +8,15 @@ The production Svelte interface now presents the approved Hybrid A+B account hie
 
 Before images are actual baseline Svelte components served by Vite at 380 × 660. After images below are from the compiled production bundle, served locally with no native bridge. They are browser evidence, not prototype images or native GUI acceptance.
 
-| Screen       | Before                                                          | Production after                                                      |
-| ------------ | --------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Overview     | *Screenshot removed from current repository*         | *Screenshot removed from current repository*         |
-| Accounts     | *Screenshot removed from current repository*         | *Screenshot removed from current repository* |
-| Disconnected | *Screenshot removed from current repository* | *Screenshot removed from current repository*    |
+| Screen       | Before                                       | Production after                             |
+| ------------ | -------------------------------------------- | -------------------------------------------- |
+| Overview     | _Screenshot removed from current repository_ | _Screenshot removed from current repository_ |
+| Accounts     | _Screenshot removed from current repository_ | _Screenshot removed from current repository_ |
+| Disconnected | _Screenshot removed from current repository_ | _Screenshot removed from current repository_ |
 
-*Screenshot removed from current repository*
+_Screenshot removed from current repository_
 
-*Screenshot removed from current repository*
+_Screenshot removed from current repository_
 
 Full-content production captures temporarily expand only the browser popup height and scrolling for documentation; normal acceptance uses the unchanged bounded shell. No data or component markup is replaced: Accounts (archived visual removed), Overview (archived visual removed), Details (archived visual removed). These captures do not imply a taller native window.
 

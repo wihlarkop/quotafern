@@ -54,22 +54,22 @@ Computer Use stopped when it could not determine the active Windows browser URL 
 
 ## Screenshot index
 
-| Capture                           | Before                                                    | After                                                            |
-| --------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------- |
-| Demo, 380×660, jade/light         | Before (archived visual removed)                 | After (archived visual removed)                          |
-| Disconnected, 380×660, jade/light | Before (archived visual removed)         | After (archived visual removed)                  |
+| Capture                           | Before                                       | After                                      |
+| --------------------------------- | -------------------------------------------- | ------------------------------------------ |
+| Demo, 380×660, jade/light         | Before (archived visual removed)             | After (archived visual removed)            |
+| Disconnected, 380×660, jade/light | Before (archived visual removed)             | After (archived visual removed)            |
 | Settings, 380×660                 | Before, jade/light (archived visual removed) | After, zinc/dark (archived visual removed) |
 
-| Responsive / palette evidence  | Capture                                                                                                                 |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Demo, 320×480                  | Narrow (archived visual removed)                                                                          |
-| Demo, 380×480                  | Default short (archived visual removed)                                                                   |
-| Demo, 420×480                  | Wide short (archived visual removed)                                                                      |
-| Details, 320×480               | Details entry (archived visual removed)                                                                |
-| Activity, 320×480              | Calendar and keyboard focus (archived visual removed)                                                 |
-| Disconnected Accounts, 320×480 | Gates and catalog (archived visual removed)                                                    |
+| Responsive / palette evidence  | Capture                                                          |
+| ------------------------------ | ---------------------------------------------------------------- |
+| Demo, 320×480                  | Narrow (archived visual removed)                                 |
+| Demo, 380×480                  | Default short (archived visual removed)                          |
+| Demo, 420×480                  | Wide short (archived visual removed)                             |
+| Details, 320×480               | Details entry (archived visual removed)                          |
+| Activity, 320×480              | Calendar and keyboard focus (archived visual removed)            |
+| Disconnected Accounts, 320×480 | Gates and catalog (archived visual removed)                      |
 | Demo jade, 380×480             | Light (archived visual removed) / Dark (archived visual removed) |
-| Demo zinc, 380×480             | Light (archived visual removed) / Dark (archived visual removed)     |
+| Demo zinc, 380×480             | Light (archived visual removed) / Dark (archived visual removed) |
 
 Additional Settings captures at 420×480 are scrolled to appearance controls and live in screenshots/. They are not full-content renders.
 
