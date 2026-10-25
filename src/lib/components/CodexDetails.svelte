@@ -16,6 +16,7 @@
   type Position = { row: number; column: number };
   type Props = {
     source: "live" | "synthetic";
+    activityOnly?: boolean;
     monitoring: CodexMonitoring;
     windows?: readonly QuotaWindow[];
     dataStatus?: LiveCodexSnapshot["dataStatus"];
@@ -28,6 +29,7 @@
 
   let {
     source,
+    activityOnly = false,
     monitoring,
     windows = [],
     dataStatus = "unknown",
@@ -197,174 +199,175 @@
 </script>
 
 <div class="codex-details" data-testid="codex-details">
-  <div class="codex-details-source" class:synthetic={source === "synthetic"}>
-    <strong>
-      {source === "synthetic" ? "Demo preview · synthetic values" : "Codex subscription details"}
-    </strong>
-    <span>
-      {#if source === "synthetic"}
-        These examples are illustrative and do not represent a live Codex account.
-      {:else if connectionStatus !== "connected"}
-        Live details are unavailable. No connected Codex account is being monitored.
-      {:else if dataStatus === "stale"}
-        Showing the last reported quota details; the latest refresh is stale.
-      {:else if dataStatus === "error"}
-        The latest quota refresh failed; retained values are marked as last reported.
-      {:else if dataStatus === "unknown"}
-        Codex has not reported quota details in this session.
-      {:else}
-        Values are presented as reported by Codex.
-      {/if}
-    </span>
-  </div>
-
-  <section class="codex-detail-section" aria-labelledby="quota-windows-title">
-    <div class="codex-detail-heading">
-      <h2 id="quota-windows-title">Quota windows</h2>
-      <span class="detail-status" class:stale={dataStatus === "stale"}>
-        {source === "synthetic" ? "Demo" : dataStatus}
+  {#if !activityOnly}
+    <div class="codex-details-source" class:synthetic={source === "synthetic"}>
+      <strong>
+        {source === "synthetic" ? "Demo preview · synthetic values" : "Codex subscription details"}
+      </strong>
+      <span>
+        {#if source === "synthetic"}
+          These examples are illustrative and do not represent a live Codex account.
+        {:else if connectionStatus !== "connected"}
+          Live details are unavailable. No connected Codex account is being monitored.
+        {:else if dataStatus === "stale"}
+          Showing the last reported quota details; the latest refresh is stale.
+        {:else if dataStatus === "error"}
+          The latest quota refresh failed; retained values are marked as last reported.
+        {:else if dataStatus === "unknown"}
+          Codex has not reported quota details in this session.
+        {:else}
+          Values are presented as reported by Codex.
+        {/if}
       </span>
     </div>
-    {#if fetchedAtMs !== null}
-      <p class="codex-detail-caption">
-        {source === "synthetic" ? "Sample time" : "Last successful quota read"} ·
-        {formatReadAt(fetchedAtMs)}
-      </p>
-    {/if}
 
-    {#if windows.length > 0}
-      <div class="codex-detail-list">
-        {#each windows as window (window.id)}
-          <article class="codex-detail-row">
-            <div class="codex-detail-row-heading">
-              <strong>{window.name}</strong>
-              <span>{formatPercent(window.remainingPercent)} remaining</span>
-            </div>
-            <p>
-              Duration · {window.windowDurationMins === null ||
-              !Number.isFinite(window.windowDurationMins)
-                ? "Not reported"
-                : window.windowDurationMins + " min"}
-              <span aria-hidden="true"> · </span>
-              Reset · {formatAbsoluteTime(window.resetAtMs)}
-            </p>
-          </article>
-        {/each}
+    <section class="codex-detail-section" aria-labelledby="quota-windows-title">
+      <div class="codex-detail-heading">
+        <h2 id="quota-windows-title">Quota windows</h2>
+        <span class="detail-status" class:stale={dataStatus === "stale"}>
+          {source === "synthetic" ? "Demo" : dataStatus}
+        </span>
       </div>
-      <div class="codex-insight-list">
-        <p>
-          <strong>Lowest reported remaining</strong>
-          {#if lowestWindows.length > 0}
-            {#each lowestWindows as window, index (window.id)}
-              {#if index > 0}<span aria-hidden="true">, </span>{/if}
-              <span>{window.name} ({formatPercent(window.remainingPercent)})</span>
-            {/each}
-          {:else}
-            Not reported
-          {/if}
-        </p>
-        <p><strong>Reported next reset</strong> {formatAbsoluteTime(nextResetAtMs)}</p>
-      </div>
-      {#if dataStatus === "stale" || dataStatus === "error"}
+      {#if fetchedAtMs !== null}
         <p class="codex-detail-caption">
-          These values may have changed since the last successful read.
+          {source === "synthetic" ? "Sample time" : "Last successful quota read"} ·
+          {formatReadAt(fetchedAtMs)}
         </p>
       {/if}
-    {:else}
-      <p class="codex-detail-empty">
-        {source === "synthetic"
-          ? "No quota windows are included in this preview."
-          : "Quota windows are unavailable; no values are estimated."}
-      </p>
-    {/if}
-  </section>
 
-  <section class="codex-detail-section" aria-labelledby="funding-title">
-    <div class="codex-detail-heading">
-      <h2 id="funding-title">Credits and spending controls</h2>
-      {#if dataStatus === "stale" || dataStatus === "error"}<span class="detail-status stale"
-          >Stale · last reported</span
-        >{/if}
-    </div>
-    {#if monitoring.buckets.length > 0}
-      <div class="codex-detail-list">
-        {#each monitoring.buckets as bucket, index ("bucket-" + index)}
-          <article class="codex-detail-row">
-            <strong>{bucket.label || "Quota bucket"}</strong>
-            <div class="codex-funding-grid">
-              <div>
-                <span class="codex-detail-label">Credit balance</span>
-                <span class="codex-detail-value">{creditsSummary(bucket.credits)}</span>
-              </div>
-              <div>
-                <span class="codex-detail-label">Spending control</span>
-                {#if bucket.spending === null}
-                  <span class="codex-detail-value">Not reported</span>
-                {:else}
-                  <span class="codex-detail-value">
-                    Limit {spendingAmount(bucket.spending.limit)} · Used
-                    {spendingAmount(bucket.spending.used)}
-                  </span>
-                  <span class="codex-detail-caption">
-                    {bucket.spending.unit === null
-                      ? "Unit/currency not reported · no currency inferred"
-                      : "Unit not recognized · no currency inferred"}
-                    · remaining {formatPercent(bucket.spending.remainingPercent)}
-                  </span>
-                  <span class="codex-detail-caption">
-                    Reset · {formatAbsoluteTime(bucket.spending.resetAtMs)}
-                  </span>
-                {/if}
-              </div>
-            </div>
-          </article>
-        {/each}
-      </div>
-    {:else}
-      <p class="codex-detail-empty">
-        {source === "synthetic"
-          ? "No credit or spending examples are included in this preview."
-          : "Credits and spending controls are unavailable until Codex reports them."}
-      </p>
-    {/if}
-  </section>
-
-  <section class="codex-detail-section" aria-labelledby="earned-resets-title">
-    <div class="codex-detail-heading">
-      <h2 id="earned-resets-title">Earned reset credits</h2>
-      {#if dataStatus === "stale" || dataStatus === "error"}<span class="detail-status stale"
-          >Stale · last reported</span
-        >{/if}
-    </div>
-    {#if monitoring.earnedResets === null}
-      <p class="codex-detail-empty">Reset credit availability and expiry are not reported.</p>
-    {:else}
-      <p class="codex-reset-count">
-        <strong>Available</strong>
-        {formatCount(monitoring.earnedResets.availableCount)}
-      </p>
-      {#if monitoring.earnedResets.details === null || monitoring.earnedResets.details.length === 0}
-        <p class="codex-detail-empty">No per-credit expiry details were reported.</p>
-      {:else}
+      {#if windows.length > 0}
         <div class="codex-detail-list">
-          {#each monitoring.earnedResets.details as detail, index ("reset-" + index)}
+          {#each windows as window (window.id)}
             <article class="codex-detail-row">
               <div class="codex-detail-row-heading">
-                <strong>Reset credit {index + 1}</strong>
-                <span class="reset-status">{detail.status}</span>
+                <strong>{window.name}</strong>
+                <span>{formatPercent(window.remainingPercent)} remaining</span>
               </div>
-              <p>Granted · {formatAbsoluteTime(detail.grantedAtMs)}</p>
-              <p>Expires · {formatAbsoluteTime(detail.expiresAtMs)}</p>
+              <p>
+                Duration · {window.windowDurationMins === null ||
+                !Number.isFinite(window.windowDurationMins)
+                  ? "Not reported"
+                  : window.windowDurationMins + " min"}
+                <span aria-hidden="true"> · </span>
+                Reset · {formatAbsoluteTime(window.resetAtMs)}
+              </p>
             </article>
           {/each}
         </div>
+        <div class="codex-insight-list">
+          <p>
+            <strong>Lowest reported remaining</strong>
+            {#if lowestWindows.length > 0}
+              {#each lowestWindows as window, index (window.id)}
+                {#if index > 0}<span aria-hidden="true">, </span>{/if}
+                <span>{window.name} ({formatPercent(window.remainingPercent)})</span>
+              {/each}
+            {:else}
+              Not reported
+            {/if}
+          </p>
+          <p><strong>Reported next reset</strong> {formatAbsoluteTime(nextResetAtMs)}</p>
+        </div>
+        {#if dataStatus === "stale" || dataStatus === "error"}
+          <p class="codex-detail-caption">
+            These values may have changed since the last successful read.
+          </p>
+        {/if}
+      {:else}
+        <p class="codex-detail-empty">
+          {source === "synthetic"
+            ? "No quota windows are included in this preview."
+            : "Quota windows are unavailable; no values are estimated."}
+        </p>
       {/if}
-      <p class="codex-detail-caption">
-        Status and expiry only. Quotafern cannot redeem reset credits.
-      </p>
-    {/if}
-  </section>
+    </section>
 
+    <section class="codex-detail-section" aria-labelledby="funding-title">
+      <div class="codex-detail-heading">
+        <h2 id="funding-title">Credits and spending controls</h2>
+        {#if dataStatus === "stale" || dataStatus === "error"}<span class="detail-status stale"
+            >Stale · last reported</span
+          >{/if}
+      </div>
+      {#if monitoring.buckets.length > 0}
+        <div class="codex-detail-list">
+          {#each monitoring.buckets as bucket, index ("bucket-" + index)}
+            <article class="codex-detail-row">
+              <strong>{bucket.label || "Quota bucket"}</strong>
+              <div class="codex-funding-grid">
+                <div>
+                  <span class="codex-detail-label">Credit balance</span>
+                  <span class="codex-detail-value">{creditsSummary(bucket.credits)}</span>
+                </div>
+                <div>
+                  <span class="codex-detail-label">Spending control</span>
+                  {#if bucket.spending === null}
+                    <span class="codex-detail-value">Not reported</span>
+                  {:else}
+                    <span class="codex-detail-value">
+                      Limit {spendingAmount(bucket.spending.limit)} · Used
+                      {spendingAmount(bucket.spending.used)}
+                    </span>
+                    <span class="codex-detail-caption">
+                      {bucket.spending.unit === null
+                        ? "Unit/currency not reported · no currency inferred"
+                        : "Unit not recognized · no currency inferred"}
+                      · remaining {formatPercent(bucket.spending.remainingPercent)}
+                    </span>
+                    <span class="codex-detail-caption">
+                      Reset · {formatAbsoluteTime(bucket.spending.resetAtMs)}
+                    </span>
+                  {/if}
+                </div>
+              </div>
+            </article>
+          {/each}
+        </div>
+      {:else}
+        <p class="codex-detail-empty">
+          {source === "synthetic"
+            ? "No credit or spending examples are included in this preview."
+            : "Credits and spending controls are unavailable until Codex reports them."}
+        </p>
+      {/if}
+    </section>
+
+    <section class="codex-detail-section" aria-labelledby="earned-resets-title">
+      <div class="codex-detail-heading">
+        <h2 id="earned-resets-title">Earned reset credits</h2>
+        {#if dataStatus === "stale" || dataStatus === "error"}<span class="detail-status stale"
+            >Stale · last reported</span
+          >{/if}
+      </div>
+      {#if monitoring.earnedResets === null}
+        <p class="codex-detail-empty">Reset credit availability and expiry are not reported.</p>
+      {:else}
+        <p class="codex-reset-count">
+          <strong>Available</strong>
+          {formatCount(monitoring.earnedResets.availableCount)}
+        </p>
+        {#if monitoring.earnedResets.details === null || monitoring.earnedResets.details.length === 0}
+          <p class="codex-detail-empty">No per-credit expiry details were reported.</p>
+        {:else}
+          <div class="codex-detail-list">
+            {#each monitoring.earnedResets.details as detail, index ("reset-" + index)}
+              <article class="codex-detail-row">
+                <div class="codex-detail-row-heading">
+                  <strong>Reset credit {index + 1}</strong>
+                  <span class="reset-status">{detail.status}</span>
+                </div>
+                <p>Granted · {formatAbsoluteTime(detail.grantedAtMs)}</p>
+                <p>Expires · {formatAbsoluteTime(detail.expiresAtMs)}</p>
+              </article>
+            {/each}
+          </div>
+        {/if}
+        <p class="codex-detail-caption">
+          Status and expiry only. Quotafern cannot redeem reset credits.
+        </p>
+      {/if}
+    </section>
+  {/if}
   <section class="codex-detail-section activity-section" aria-labelledby="activity-title">
     <div class="codex-detail-heading">
       <h2 id="activity-title">Activity</h2>

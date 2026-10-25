@@ -120,3 +120,7 @@ See [implementation and screenshots](ux-02a/README.md), [actual validation and p
 Status: separate proposed design milestone; owner visual selection required.
 
 The current fern is provisional. Plan original browser favicon, Windows/macOS/Linux app icons, monochrome high-contrast tray glyphs, light/dark proofs and HiDPI variants. The [design specification and three concepts](ux-02a/icon-01.md) include actual-size 16/20/24/32px readability observations. No production icon asset is replaced in UX-02A. Select and refine a concept before a separately reviewed asset PR; no external unlicensed art, icon dependency or animated tray icon.
+
+## UX-02B: Account-aware production presentation
+
+Status: implemented for owner review in an isolated Draft PR. The [production Svelte screens](ux-02b/README.md) consume ACC-01 accounts/overview/details projections for explicit synthetic examples. The compact transient context selector supports All/provider/account/workspace/eligible connection scopes; advanced interactions stay with UX-02C. Lifecycle management and persistence remain ACC-04 work. Live Codex stays disabled, other adapters are Coming Soon, and native acceptance is deferred until ICON-01, UX-02B/C and ACC-04. See [actual validation](ux-02b/validation.md) and [review dispositions](ux-02b/review.md). Earlier milestone status paragraphs above are historical.

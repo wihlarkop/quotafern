@@ -43,3 +43,7 @@ The Hybrid A + B production refinement adds shared CSS geometry and motion witho
 - Layout: 56px header, 40px tab strip, 32px tab targets, one vertical scrolling panel. Activity columns flex to the available width; exact date/count and unknown/zero semantics remain independent of appearance.
 
 Account-first multi-account screens, ID-backed filters and management transitions remain deferred to UX-02B/C and ACC-04. The existing production application still has its single F3 context; styling must not imply otherwise.
+
+## UX-02B account hierarchy
+
+The [account-aware presentation](ux-02b/README.md) extends the existing Soft Native tokens: raised surfaces belong to independent sources, while Accounts uses semantic nested provider/account/connection lists and dividing rules. Local aliases lead; provider and connection names remain explicit. Freshness, lifecycle, identity and error text are independent. A single labeled native select carries transient ID-backed contexts, including provider/workspace scopes, without another control framework. Unknown values never render as zero. Per-source details reuse the established Activity grid with account/source keys and no cross-account content animation. The preceding UX-02B/C deferral described the earlier foundation; UX-02B now implements synthetic presentation only. Account lifecycle and persistence remain deferred.
