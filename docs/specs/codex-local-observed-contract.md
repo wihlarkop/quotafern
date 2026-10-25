@@ -8,7 +8,7 @@ This contract is **not** a live Codex connection, a supported third-party quota 
 
 1. **Never** start `codex`, `codex app-server`, a headless TUI or a background service just to obtain a passive source. Do not read Codex `auth.json`, keychains, CLI config, browser sessions or private REST APIs.
 2. User explicitly opens **Local observations** and grants a separate source-folder read. Nothing is scanned when browsing Accounts/Overview or launching Quotafern. Remembering a folder/automatic polling is **off** and needs its own later security approval.
-3. The authorized scan reads only already-written and eligible session/archived-session files with a bounded, Rust-owned parser. No provider network, file mutation, optional package download or local HTTP server. Never read transcript text *as a result field* or export it to the renderer.
+3. The authorized scan reads only already-written and eligible session/archived-session files with a bounded, Rust-owned parser. No provider network, file mutation, optional package download or local HTTP server. Never read transcript text _as a result field_ or export it to the renderer.
 4. Only verified-shaped, recent, source-specific **observations** may appear with label **Last observed** and exact `observedAt`. They are neither live, authenticated, nor guaranteed up-to-date.
 5. If the scope cannot be met on a platform or a source is ambiguous, report unavailable/source-unverified instead of relaxing it. Demo and live remain separate.
 
@@ -29,11 +29,12 @@ Proposed wire shape, **not implemented**:
 
 No account ID, user email, session UUID, absolute path, JWT, auth method, private event payload, prompt, project directory, model tool result, raw usage JSON or raw provider error crosses the Rust-to-renderer boundary. Avoid labels derived directly from file content that could reveal user identifiers.
 
-**Identity policy:** The local `sourceId` identifies the explicitly selected data source, **not the ChatGPT account currently logged into that directory**. The current user's `account` and `plan` must not be marked verified from a log. Even with an `observedPlan`, the compact account card must not render a current Free/Go/Plus/Pro badge unless a separately supported, current identity source exists. Historical details may eventually say *Observed plan (account unverified)*, but omission is preferred over ambiguity.
+**Identity policy:** The local `sourceId` identifies the explicitly selected data source, **not the ChatGPT account currently logged into that directory**. The current user's `account` and `plan` must not be marked verified from a log. Even with an `observedPlan`, the compact account card must not render a current Free/Go/Plus/Pro badge unless a separately supported, current identity source exists. Historical details may eventually say _Observed plan (account unverified)_, but omission is preferred over ambiguity.
 
 ## Parsing and coverage
 
 Pinned source references:
+
 - https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/protocol/src/protocol.rs (`TokenCountEvent`, `RateLimitSnapshot`)
 - https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/rollout/src/tests.rs (canonical `event_msg/token_count` fixture)
 - https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/core/src/session/mod.rs (`update_rate_limits`, `send_token_count_event`)
@@ -60,6 +61,7 @@ The implementation cannot promise **not to inspect** arbitrary line bytes becaus
 ## UI states and user comprehension
 
 Use existing Soft Native design, with no fabricated field:
+
 - **Local Codex observations** — `Last observed 2 minutes ago`; display observed quota windows and verified timestamps only. Account attribution unverified.
 - **No recent observation** — truthful status, not a 0% quota and not a fake `Connected` card.
 - **Expired observation** — keep optional last-observed timestamp; do not present the old remaining as a current remaining balance.
@@ -88,7 +90,7 @@ Data-source selector and source age are visible in details. A future real `live`
 - The log shape is version-pinned upstream implementation evidence, not a supported stability promise. A Codex update can change its structure.
 - This design does not clear auth/G1, app-server startup/G2, or all-OS process/G3 for future **live** connections.
 
-These unknowns are explicitly modeled as unavailable/last-observed rather than pending implementation decisions. **No more questions are required to implement a limited truthful *synthetic parser* if that work is later approved; native file-read consent and acceptance remain security gates.**
+These unknowns are explicitly modeled as unavailable/last-observed rather than pending implementation decisions. **No more questions are required to implement a limited truthful _synthetic parser_ if that work is later approved; native file-read consent and acceptance remain security gates.**
 
 ## References
 
