@@ -1,162 +1,88 @@
-# PLAN-01: Account plan, Free quota and subscription/billing display contract
+# PLAN-01: Optional plan, Free quota and billing display contract
 
-**Status:** Proposed documentation-only contract (2026-10-26). This file **does not implement** data fields, migrations, provider calls, persistence, reminders, background polling, payment access, or any live adapter. It extends ACC-01/ACC-04 conceptually without authorizing a runtime change.
+**Status:** Proposed documentation-only contract (2026-10-26). Nothing here authorizes network access, native integration, secret storage, data migration, reminders, automatic polling or live connections.
 
-## User outcome
+## Owner-approved display rule
 
-For **each distinct local account/workspace/connection context**, the user should understand:
+**Only display a field when it is available, trustworthy for the selected account/source, current enough for its meaning and semantically relevant. If the field cannot be established, OMIT THE FIELD.** Do not render "Unknown plan", "Not provided", "N/A", dashes, blank payment rows, empty billing panels, "Add manually", or a request for manual subscription dates as replacements.
 
-- Provider and editable local account alias, with separately verified provider identity if officially available.
-- **Plan display name** when verified (e.g., ChatGPT Plus, Copilot Free, Google AI Pro, Claude Pro). Use **Unknown plan** if no verified or explicitly manually designated plan is available.
-- **Entitlement / pricing category**: Free, subscription-paid, organization-provided, prepaid credits, pay-as-you-go, or unknown. These are not interchangeable.
-- Whether a numeric quota reading is available, unavailable, known zero, stale, blocked, unsupported, or based only on a static public allowance.
-- Relevant usage/quota windows and their next reset times.
-- **Subscription renewal**, **next payment**, **subscription access expiry**, and (separately) **credit / key expiry** when known. Do not conflate with usage reset or budget reset.
-- Evidence source, verification or manual provenance, freshness, and the billing owner that the data belongs to.
+Plan name, Free/Paid category, quota remaining, reset, renewal, next payment, subscription expiry, trial end, credit expiry and API-key expiry are **independent optional fields**. They may be shown individually. A verified plan does not prove a billing date; a quota reset does not imply a subscription renewal or charge. A quota value must have its own valid source and window.
+
+**One exception for honest application state:** show a separate provider/connection-level state such as Not connected, Coming Soon, Permission required or Unable to refresh when necessary to explain that monitoring is unavailable. This is not an optional plan/billing field and must never appear as a fake remaining quota or 0%. If a provider supports no verified quota reading, omit its numeric quota component while keeping the connection state comprehensible.
+
+The user has explicitly declined manual plan/payment-date entry as a fallback for missing provider information. **PLAN-01 introduces no manual entry flow, reminders, prediction, or persistence.** Future manual billing entry would require separate owner approval and a new security/data-minimization review.
 
 ## Identity and ownership
 
-The proposed plan attaches to a **provider-authoritative account or verified subscription entitlement** when evidenced, never to a local display alias alone. Usage attaches to its authoritative **quota source**. Billing dates attach to the verified **subscription / billing owner**, which may be a workspace or organization different from the local account.
+Keep ACC-01 boundaries: Provider, Account, optional Workspace, Connection and authoritative Quota/Billing Source are distinct. Local aliases are not verified identities. A plan belongs to an authorized provider account or entitlement source when evidenced. Usage belongs to a specific quota source. Billing dates belong to the provider-confirmed subscription/billing owner, which may be an organization rather than the account shown.
 
-A connection never constitutes proof of a paid subscription or access to billing. Two connections may use one underlying billing source; show that pool once only if sharing is provider-verified. An unverified relationship is unknown, not assumed separate or combined.
+Do not combine unrelated quotas, credits, currencies, subscription windows, or API metering. Two connections may share one source only after a provider-authorized read establishes that exact relationship. Duplicate aliases or matching plan names prove nothing.
 
-Plan name, quota, billing details, and credential/key expiry have **independent per-field provenance**. A plan label from one connection does not license displaying billing dates from a different account.
+## Proposed normalized concepts (not implementation)
 
-## Proposed types (TypeScript-like specification, not executable implementation)
+- `PlanKind`: `free | subscription | organization_provided | prepaid | pay_as_you_go | trial | unknown`.
+- `AccessState`: `active | trial | paused | cancellation_pending | expired | inactive | unknown`.
+- `DataAvailability`: `available | known_zero | unavailable | unsupported | permission_required | provider_blocked | stale | unknown`.
+- `Provenance`: `provider_verified | published_reference | unknown`. Published reference data **cannot** be promoted to a user's current balance.
+- `PlanSummary`: optional provider-observed `display_name`, `kind`, `access_state` and `billing_cadence`, independently tagged with provenance, source owner, observation time and availability.
+- `QuotaReading`: source-specific `unit`, optional `used`, `remaining`, `denominator`, provider-defined window, optional reset, source identity, freshness and data state. Calculate a percent only with an authoritative compatible denominator; `remaining=0` is valid only as an observed known-zero.
+- `BillingEvent`: provider-confirmed `meaning`, `occurs_at` (valid instant or precise zoned calendar date), verified `billing_owner_id`, `observed_at`, `source_connection_id` and source-specific accuracy/freshness. No inferred monthly recurrence.
 
-    PlanKind =
-      free | subscription | organization_provided | prepaid |
-      pay_as_you_go | trial | unknown
+Proposed `BillingEvent.meaning` values are `billing_period_start`, `billing_period_end`, `subscription_renewal`, `next_charge`, `invoice_issued`, `access_expires`, `cancellation_effective`, `promotional_credit_expires`, `prepaid_credit_expires`, `api_key_expires` and `budget_resets`. A quota reset is part of its usage window, **not** a billing event.
 
-    AccessState =
-      active | trial | paused | cancellation_pending |
-      expired | inactive | unknown
+These types are conceptual; exact TypeScript/Rust DTOs, IPC schema, size bounds, ownership mapping, migration and data retention need separate design review.
 
-    DataAvailability =
-      available | known_zero | unavailable | unsupported |
-      permission_required | provider_blocked | stale | unknown
+## Rendering and omission rules
 
-    Provenance =
-      provider_verified | user_entered | published_reference | unknown
+- **Plan/subscription name:** show only when a permitted provider read establishes the precise label. A user-entered alias or a static public price table is not proof. If absent, show no plan badge/row.
+- **Free/Paid/Organization-provided:** show only when verified for this account/entitlement; do not infer Free from zero spending, Free models, key-level free allowance or lack of payment dates. A Free account may have a real quota.
+- **Quota remaining:** show a number only when the current account-bound, provider-authorized, source-specific reading is valid. If absent, hide the numeric quota and percentage, not replace with 0%. Account/connection failure status stays visible when relevant.
+- **Quota reset:** show only the reset of a verified source/window. Never reuse a reset across accounts or subscriptions.
+- **Next payment / renewal / access expiry:** show only when an authorized, billing-authoritative response explicitly confirms that exact event for the correct billing owner. No static invoice anniversary, plan-price guess or calendar-month inference.
+- **Billing period, cancellation effective, trial end, credit expiry, API-key expiry and budget reset:** render only the evidenced event with the exact meaning. Key expiry is not subscription expiry; budget reset is not payment; trial end is not a guaranteed debit.
+- **Freshness:** only display a provider field as current if its source/generation remains valid. If stale, suppress its current-value card; an explicitly dated last-observed historical surface may be designed separately, never presented as current.
+- **No content:** hide the entire Plan or Subscription & Billing section when it has no eligible children. No manual-entry affordance and no forced whitespace.
+- **Presentation:** compact Overview with available plan label/category, source-specific quota and reset. Details progressively reveals only verified optional events. Maintain 320/380/420px usability, keyboard, focus, reduced motion, light/dark/system and both palettes.
 
-    DateMeaning =
-      quota_reset | billing_period_start | billing_period_end |
-      subscription_renewal | next_charge | invoice_issued |
-      access_expires | cancellation_effective |
-      promotional_credit_expires | prepaid_credit_expires |
-      api_key_expires | budget_resets
+## Truth cases
 
-    ObservedField<T> =
-      value: T | null
-      provenance: Provenance
-      observed_at: timestamp | null
-      source_connection_id: opaque ID | null
-      source_owner_id: opaque verified ID | null
-      availability: DataAvailability
-      reason_code: allowlisted non-secret code | null
+1. **Free with permitted current allowance:** show verified Free plus actual source quota and reset, if each is returned. Omit payment section unless an actual provider-authoritative event applies.
+2. **Free with no headless remaining-quota API:** show Free if independently verified; hide numeric quota. Surface a connection-level "quota not supported" status if necessary.
+3. **Unknown plan with valid API-key usage:** show usage from that key/source; omit plan name and Free/Paid badge. A key's `free_model_daily_requests` is not proof of the account's subscription tier.
+4. **Paid plan confirmed; no billing metadata:** show plan name; omit payment/renewal/expiry entirely.
+5. **Billing date verified, plan name unavailable:** show the verified event in Details, if the correct billing owner can be established; omit the plan label.
+6. **Employer-provided seat:** show it only with authorized entitlement evidence; do not copy company-level payment dates into the employee account.
+7. **Key expired while subscription is active:** show only verified key-expiry metadata; do not mark the subscription expired.
+8. **Prepaid API credit expired:** hide unsupported subscription billing and treat credits separately from subscription quota.
+9. **Revoked, errored or changed account:** suppress misleading numeric values and billing claims; show necessary monitoring state. Never fall back to Demo.
+10. **All fields unavailable:** show only the provider/account identity and truthful connection/availability state, with no empty Plan or Billing panel.
 
-    PlanSummary =
-      display_name: ObservedField<string>
-      kind: ObservedField<PlanKind>
-      access_state: ObservedField<AccessState>
-      billing_cadence: ObservedField<monthly | annual | usage_based | none | unknown>
-      entitlement_scope: account | workspace | organization | unknown
+## Security, privacy and correctness invariants
 
-    BillingEvent =
-      meaning: DateMeaning
-      occurs_at: ISO timestamp or calendar date with explicit zone/cadence
-      provenance: Provenance
-      owner_id: opaque verified billing owner ID or local manual owner ID
-      observed_at: timestamp | null
-      recurrence_policy: none | provider_supplied | user_declared_monthly | user_declared_annual
-      next_event_confirmed: boolean
+1. Renderer receives strictly sanitized, bounded typed data only, and cannot read tokens, raw provider responses, billing email, addresses, card/invoice information or arbitrary HTML.
+2. Source, account, connection generation, provider authorization and billing owner must match before displaying a value; stale or mismatched responses fail closed.
+3. The only accepted provider-derived field is one within the adapter's documented read-only authorization. An identity scope alone does not authorize a quota or billing read.
+4. Numeric quota values and plan metadata are distinct. "Known zero" must never equal "missing". Source-specific credits cannot be summed with requests, tokens or another wallet.
+5. Do not persist billing events or plan observations in ACC-04 localStorage. A separate data-minimization/storage/retention review must explicitly authorize any future persistence.
+6. No requests to billing endpoints solely to fill decorative fields, no email/account scraping, no billing prediction, and no user key import before independent credential and provider scope review.
+7. Neither these design fields nor provider research alters the closed Codex live flags, native consent, native cleanup or security gates.
+8. No additional credentials, admin scopes, inference capabilities or external services are justified merely to show a plan name or date.
 
-    QuotaReading =
-      quota_source_id: opaque ID
-      unit: requests | tokens | credits | currency | percentage | other
-      denominator: number | null
-      remaining: number | null
-      used: number | null
-      quota_window: provider-defined window | null
-      reset_event: BillingEvent | null  # only meaning quota_reset
-      availability: DataAvailability
-      observed_at: timestamp | null
+## Required future acceptance scenarios
 
-These are proposed design notions, **not a persistence/schema migration**. Exact fields, allowed identifiers, bounds and Rust DTOs require separate architectural review. A static public allowance may be presented as a clearly labelled reference value but **never** inserted as an observed account balance.
+- Account A has Free + current 20-of-50 quota; account B Free but quota unavailable; C paid with only plan name; D has only API key usage.
+- No verified billing events, only renewal, only next payment, only expiry, and all three independently: absent rows and empty sections disappear without placeholders.
+- An API-key expiry and subscription-expiry on different dates; a verified quota reset matching a billing date by coincidence; budget reset and credit expiry remain separate.
+- Multiple connections share verified billing pool; unverified shared identity remains unknown; duplicate aliases; switching account while refresh is in flight.
+- Unauthorized 401/403, absent plan, missing window, known zero, invalid or out-of-range date, stale response, revoked consent, source removal and malformed DTO.
+- UI snapshots for 320/380/420px, all palettes/appearance modes, navigation/focus/accessibility, with no empty Plan/Billing panels.
+- All checks use synthetic fixtures; no real credentials or live provider processes. Owner native acceptance remains separate.
 
-## UI truth table
+## Delivery gates
 
-| Condition                                                 | Plan label                                        | Remaining                                   | Payment / renewal                                                  |
-| --------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
-| Verified Free account with current permitted usage result | Free / verified name                              | Actual returned Free quota                  | No subscription charge **only if confirmed**; otherwise Unknown    |
-| Verified Free account with no machine-readable usage      | Free                                              | Quota unavailable, not 0%                   | No payment estimate                                                |
-| No provider plan evidence and no manual selection         | Unknown plan                                      | Not connected / unavailable                 | Unknown                                                            |
-| Provider reports planType but not billing                 | Report observed plan and its source               | Only observed source quota                  | Unknown; usage planType is not an invoice authority                |
-| User sets plan manually                                   | Manually set: [name]                              | Never manufactured from name                | Only explicitly user-entered dates, marked Manual                  |
-| Paid account with a provider-confirmed future charge      | Verified paid plan                                | Current quota if available                  | Next payment date with provider source                             |
-| Annual subscription / team seat managed by employer       | Verified seat / organization-provided if observed | Own verified entitlement                    | Billing date may be not applicable to seat holder, else Unknown    |
-| Provider reports expired API key                          | Do not mark whole subscription expired            | Key-related source unavailable              | Label **API key expires/expired**, not subscription                |
-| Prepaid API credits                                       | Prepaid / pay-as-you-go if evidenced              | Credit balance only, not subscription quota | Credit expiry if returned, next charge unknown                     |
-| Connection revoked, source stale or changed               | Last known label with stale marker or Unknown     | Never current                               | Manual dates can remain as Manual; provider observations are stale |
+1. PROVIDER-01 official source, authorized provider terms and read-only permission review.
+2. Typed DTO and source binding, omission/provenance review, then synthetic UI tests.
+3. Native connection coordinator, consent and process cleanup under ACC-02; OS-protected app-owned secrets under ACC-03 for key-based providers.
+4. Provider-specific owner acceptance before enabling one approved live adapter; F4 Codex gates remain closed independently.
 
-## Date semantics and manual entry
-
-**Provider-verified dates:** only accept direct authoritative read or a specifically documented provider response explicitly about that event and billing owner. Keep UTC instant and source timezone, or original calendar date with timezone and day precision. The renderer uses the user's locale for display, but must not mutate the underlying event.
-
-**Manual entry (optional future UX):** support explicit local-only user-entered subscription label, cadence (monthly/annual/custom), billing anniversary/next charge, renewal, and access expiry. Each field is labelled **Manually added · Not provider verified** and can be edited/cleared. No mailbox scan, invoice parsing, bank access, automatic card charge, or remote sync. A user-specified recurring day such as the 31st requires an explicit last-day policy before any reminder calculation. Do not silently create next monthly charge predictions on unspecified 29–31 day behavior or after cancellation.
-
-**Potentially sensitive:** billing cadence/dates and manually entered plan names are non-secret in type but reveal purchase patterns. Any storage requires a separate data-minimization, consent, corruption-recovery, retention/removal, and quota-limits review before adjusting ACC-04 localStorage. No invoice number, card, transaction ID, billing email, provider account secret, full API key, or billing-address field.
-
-**Expiry distinctions:**
-
-- Subscription expiry: loss of entitlement at an access end date, if evidenced.
-- Cancellation effective date: automatic renewal stops or access ends depending on provider terms; not automatically the next invoice date.
-- Renewal: contract/entitlement rollover; may not result in a payment (e.g., employer-paid).
-- Next charge: future bill or debit; not the same as plan quota reset.
-- Trial end: may transition to paid only if provider confirms; no invented charge.
-- API-key expiry: a connection credential becomes invalid, but provider account may be active.
-- Credit expiry: a balance may lapse; not subscription termination.
-- Budget reset: limit reopens, not an actual payment.
-
-### Billing date presentation
-
-Default card should stay compact: **Plan · Free/Paid/Unknown**, main quota with reset if observed. Details may contain **Subscription & billing** with four separately labelled rows: Next payment, Renewal, Access expires, Billing period; plus optional Credit/key expiry under their own headings. If no values are available, prefer **Not provided by provider** with an optional future **Add manually** affordance rather than an invented date. If no subscription exists, use **No subscription** only if established; otherwise **Unknown**.
-
-No badge or alarm should say payment due merely because resetAt is near. Free plans with usage limits still have a quota area. If billing has no meaning (Free with verified no subscription), omit the payment rows rather than showing a misleading $0 monthly charge.
-
-## Security, freshness, and consistency invariants
-
-1. Plan, account identity, billing owner, quota source and source freshness are tracked independently.
-2. **Provider-observed** does not mean billing-authoritative. Classify every source contract by fields and scopes.
-3. Renderer accepts sanitized bounded field names and dates only; no raw auth payload, tokens, emails from other apps, card details or arbitrary HTML.
-4. Missing values remain unknown. Do not auto-calculate a percentage when denominator is unknown or divide credits in differing units.
-5. Renderer cannot forge native cleanup, grant permissions or override the closed live connection gate.
-6. A manually entered plan must **never** be auto-promoted to verified; a future provider observation can be displayed alongside it with an explicit source distinction.
-7. On account removal, remove only permitted local manual records owned by that stable account ID after cleanup rules are satisfied; do not delete unrelated provider metadata.
-8. Stale data cannot be used to infer current subscription or payment. Last-observed information must be clearly dated if displayed.
-9. Do not reuse account A's billing events when selecting account B, even with duplicate aliases.
-10. All display/action states must work in 320/380/420px widths, light/dark/system, both palettes, keyboard, IME, long aliases and reduced motion.
-
-## Acceptance scenarios required for future implementation
-
-- Free account with actual 20-of-50 quota, Free without any quota endpoint, and Free with static published limit only.
-- Paid name known, renewal unknown; renewal known but next charge unknown; next charge known with billing owner; annual prepaid and org-paid seat.
-- Same-date quota reset and payment only by coincidence: fields remain distinct.
-- Reset at UTC midnight while user is in Asia/Jakarta; calendar day/month boundary, DST and local display are correct.
-- API key expires while subscription remains active; credit expires while subscription remains active.
-- Billing cadence monthly on day 29/30/31, including February and cancellation.
-- Multiple keys share verified wallet, with one shared source; unknown relationship stays unknown.
-- Duplicate account aliases, account switching while refresh is in flight, stale data, removed sources, corrupt manual metadata, storage-write failure, and native-managed account removal blocked.
-- Manual/provider conflict and provenance switch: never silently overwrite or claim verified.
-- Unauthorized, 401/403, data unavailable, malformed timestamp, wildly future/out-of-range dates, missing reset, and known-zero quotas remain fail-closed.
-- All source tests synthetic; no use of developer/CI user credentials. Native owner acceptance and explicit approval before live use.
-
-## Dependency and delivery
-
-1. PROVIDER-01 and independent security review select one technically **and legally** eligible adapter.
-2. Approve typed source-specific normalized DTO and migration/per-field provenance.
-3. Approve manual-billing preference persistence separately; preserve ACC-04 bounded local metadata contract until then.
-4. ACC-02 native multi-account coordinator; ACC-03 credential ownership and OS storage if needed.
-5. UI in distinct reviewable slice; source/browser/native tests; no automatic reminders, mail sync, payments or provider connection in this documentation milestone.
-
-**Reference:** [PROVIDER-01 assessment](../plans/provider-01-official-capability-matrix.md), [ACC-01 account model](acc-01-architecture.md), [ACC-04 local metadata](acc-04.md), [Security roadmap](../plans/security-roadmap.md).
+**References:** [PROVIDER-01 matrix](../plans/provider-01-official-capability-matrix.md), [ACC-01 architecture](acc-01-architecture.md), [ACC-04 metadata](acc-04.md), and [Security roadmap](../plans/security-roadmap.md).
