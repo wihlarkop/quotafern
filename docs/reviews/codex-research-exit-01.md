@@ -72,6 +72,14 @@ The current Quotafern Unix implementation, `src-tauri/src/codex/process_unix.rs`
 
 **Overall: RESEARCH COMPLETE / NO-GO LIVE.** The absence of an authorized path is a legitimate terminal research outcome for the currently published release. Further attempts to bypass the blocked gates are not appropriate.
 
+## ATM discovery: passive local observations (2026-10-26)
+
+Comparative research found a **separate, potentially safer non-live data source** that the original direct app-server/OAuth assessment did not evaluate: Codex v0.164.0 emits `TokenCountEvent.rate_limits` into its persisted rollout `event_msg` records. This is supported by the pinned protocol and rollout parser test. An explicitly consented, narrowly scoped local scanner may later be able to show **last-observed** quota windows and a historical plan classification **without spawning app-server, touching Codex authentication or making any network call**.
+
+See [CODEX-ATM-01 competitor and local source analysis](codex-atm-competitor-benchmark.md). This does **not** change the live verdict or establish any verified **current account identity**. Rollout files contain sensitive prompts/code, the log schema may change, and readings can be stale or past their reset boundary. The `local-observed` source is therefore **RESEARCH-CANDIDATE / NOT IMPLEMENTATION-APPROVED**, not a live fallback.
+
+A future implementation must keep user-selected local source attribution distinct from authenticated personal account identity, require explicit file-read consent, use a bounded Rust-only sanitizer and hard fail closed on unknown or expired readings. No access to `auth.json`, shared keychain, browser cookies or undocumented API is permitted.
+
 ## What could be implemented later, only after owner authorizes Codex
 
 - **CODEX-SYN-01:** Rust-to-Svelte optional sanitized plan label for personal Free/Go/Plus/Pro on synthetic `account/read` results, with unsupported-variant omission, account-change invalidation, zero-vs-null semantics, no billing placeholders, tests and no credential reads; keep both live flags false.
