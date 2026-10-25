@@ -65,14 +65,14 @@ F1 has no unit-test suite. As product features are added, include the regression
 
 `bun run regression` runs the committed, deterministic smoke assertions against synthetic snapshots and native security configuration. It needs no credentials, network, or test framework and runs in the Frontend quality CI job. `bun run regression:rust` adds focused popup-placement checks using Rust's built-in runner in each desktop CI job; these calculations do not establish native tray interaction acceptance.
 
-## Documentation guide
+## Project notes
 
-**Architecture and account contracts:** [Architecture](docs/architecture.md), [ACC-01 ownership](docs/acc-01-architecture.md), [UX contract](docs/acc-01-ux-contract.md), [ACC-04 local account management](docs/acc-04/README.md).
-
-**Security and providers:** [Current boundaries](docs/security.md), [Security roadmap](docs/security-roadmap.md), [Codex integration](docs/codex-integration.md), [F3 startup blocker](docs/f3-startup-security-investigation.md), [Provider roadmap](docs/provider-connections-roadmap.md), [ChatGPT authentication](docs/chatgpt-auth-decision.md).
-
-**Visual design:** [Design system](docs/design-system.md), [UX-01 exploration](docs/ux-01/README.md), [UX-02A](docs/ux-02a/README.md), [UX-02B](docs/ux-02b/README.md), [UX-02C](docs/ux-02c/README.md), [ICON-01 assets](docs/icon-01/README.md).
-
-**Historical acceptance and audit evidence:** [F1](docs/f1-validation.md), [F2](docs/f2-validation.md), [F3](docs/f3-validation.md), [ACC-04](docs/acc-04/validation.md), and [Superpowers implementation plans](docs/superpowers/plans/2026-10-24-f1-foundation.md). Scenario screenshots and result matrices should remain available for audit.
-
-Documentation is organized by milestone rather than runtime importance. An older document may still be necessary to reproduce tests or explain a security decision. Do not infer that an unlinked screenshot or duplicate image is disposable: source-browser and compiled-production captures can intentionally have identical pixels but distinct provenance.
+- [Architecture](docs/architecture.md)
+- [Design system](docs/design-system.md)
+- [Security boundaries](docs/security.md)
+- [F1 validation and owner acceptance](docs/f1-validation.md)
+- [F2 validation and native acceptance checklist](docs/f2-validation.md)
+- [F3 validation and launch-policy blocker](docs/f3-validation.md)
+- [Codex integration research](docs/codex-integration.md)
+- [Sign in with ChatGPT authorization decision](docs/chatgpt-auth-decision.md)
+- [Security roadmap](docs/security-roadmap.md)
