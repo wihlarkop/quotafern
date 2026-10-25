@@ -179,8 +179,8 @@ are established; otherwise omit the field and any empty section**.
    non-null `rateLimitsByLimitId`: preserve source separation,
    reject malformed rather than falling back to unrelated fields.
 6. Real observed zero remains zero. Invalid, NaN, negative or
-   >100% usage, missing dates, future overflow, permission denied
-   and stale data must not turn into an invented numeric reading.
+   > 100% usage, missing dates, future overflow, permission denied
+   > and stale data must not turn into an invented numeric reading.
 7. Account A refresh returns after B becomes current: no A value
    in B's row, even when aliases are equal.
 8. Disconnect while child startup/read pending, denied native
