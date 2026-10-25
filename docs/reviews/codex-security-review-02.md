@@ -199,6 +199,10 @@ are established; otherwise omit the field and any empty section**.
 All fixtures must be synthetic and run with both live gates false;
 no real Codex process is needed for acceptance of these tests.
 
+## Final research disposition
+
+[CODEX-RESEARCH-EXIT-01](codex-research-exit-01.md) closes the 2026-10-26 public-source research for pinned v0.164.0: **NO-GO live**, with explicit official authorization, safe startup and native child-containment blockers and evidence-based restart triggers. Further CodeX implementation remains a separate owner-approved decision, including synthetic-only work. Nothing in this first-pass security review is an approval to turn on Codex or access a real account.
+
 ## Next engineering slices, all blocked from live
 
 1. **CODEX-02A:** compare release-tag source and official docs for
