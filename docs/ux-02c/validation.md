@@ -16,10 +16,10 @@ Read AGENTS.md, CONTEXT.md, ACC-01 architecture/UX contract, UI roadmap, UX-02B 
 | Oxlint                                   | Passed, no warnings                                                                       |
 | Oxfmt                                    | Passed (final check recorded with delivery)                                               |
 | Svelte diagnostics                       | Zero errors and warnings                                                                  |
-| Full frontend regression                 | 16 groups / 1,747 assertions; zero failures                                               |
+| Full frontend regression                 | 16 groups / 1,759 assertions; zero failures                                               |
 | Production frontend build                | Passed                                                                                    |
-| Source browser                           | 547 checks; zero failures; [JSON](browser-results.json)                                   |
-| Compiled production browser              | 134 checks; zero failures; [JSON](production-results.json)                                |
+| Source browser                           | 563 checks; zero failures; [JSON](browser-results.json)                                   |
+| Compiled production browser              | 144 checks; zero failures; [JSON](production-results.json)                                |
 | Rust formatting / Clippy / package check | Passed locally on Windows with locked dependencies and warnings denied                    |
 | Synthetic Rust regression                | Passed locally on Windows: 57 passed, zero failed, 4 ignored                              |
 | Impeccable mechanical detector           | Empty finding list for changed UI targets                                                 |
@@ -54,3 +54,13 @@ Canonical `after-*-380.png` files are compiled-production screenshots. Palette c
 No Rust implementation, capability, permission, CSP, IPC, process containment, workflow, dependency, lockfile or ICON-01 asset changed. `LIVE_CONNECTION_ENABLED = false` and `CODEX_CONNECTION_AVAILABLE = false` remain unchanged. No credentials, external keychains, real provider account, app-server, OAuth, API input/storage, polling/reconnection, network request or new persistence is introduced. Native Escape handling is unchanged; browser Escape checks cannot prove OS hide behavior.
 
 Actual assistive-technology speech, 200% OS text scaling, native tray/Show/Hide/Quit/focus, DPI and monitor acceptance are pending. Combined owner Windows native acceptance follows UX-02B/C, ACC-04 and ICON-01; macOS/Linux native interaction remains NOT RUN until suitable devices exist. SEC-01/02 and F4 blockers remain open. No release/deployment/merge was performed.
+
+## Final Details context consistency fix
+
+Follow-up to reviewed HEAD `1983c6d73ebf6553cb3df206daed9c522c0e8892`. Its hosted run 40211231349 subsequently completed all four jobs successfully; that historical result does not establish the follow-up commit's CI. The new exact HEAD and hosted status are recorded in PR #12.
+
+Root cause: the selector used the originating Overview projection while Details rendered a separate account target. A pure `selectorSelection` presentation helper now chooses the Details selection while open, leaving the saved Overview filter untouched. The displayed value/title/described status agree; a removed owner uses a disabled unavailable option, and a disconnected source retains its actual owner label with unavailable readings. No App navigation, ACC-01 ownership/lifecycle, CSS/animation or native implementation changed.
+
+The final frontend suite passed 16 groups / 1,759 assertions; source browser 563 checks and compiled production 144 checks passed with zero failures. Tests cover All Accounts and provider filters through account Details and Back, workspace and direct connection Details, changing context while open, duplicate account aliases, disconnected/removed sources, and cleared quota/activity after switching. Local Rust format/Clippy/check passed; synthetic Rust tests: 57 passed, zero failures, 4 ignored.
+
+Affected Details/Activity screenshots were regenerated from real source and compiled-production Svelte after the existing settled tab/panel/heading/highlight assertions. Unaffected images retain their original UX-02C provenance. The corrected compiled screenshot `after-details-380.png` now visibly selects “Codex · Personal”. Security restrictions remain unchanged; owner native acceptance stays deferred until ACC-04, and no merge/release/deployment is authorized.

@@ -21,6 +21,11 @@ export const initialNavigation = (): AccountNavigation => ({
   overviewReturn: null,
 });
 
+/** Details owns the visible context; selection remains the separate Overview return filter. */
+export function selectorSelection(state: AccountState, navigation: AccountNavigation): Selection {
+  return navigation.detail?.selection ?? resolveSelection(state, navigation.selection);
+}
+
 export function selectionKey(selection: Selection): string {
   switch (selection.kind) {
     case "all":

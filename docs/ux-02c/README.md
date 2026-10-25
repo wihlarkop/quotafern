@@ -10,6 +10,8 @@ The production Svelte interface now preserves transient ACC-01 context across Ac
 
 The existing native selector offers All Accounts, provider, account, workspace and connection contexts. Its full label is visible immediately below it and available through its title. Duplicate ordinals come from complete owning lists, including narrowed Details. Unicode aliases wrap without losing accessible names. No extra always-visible filter row or routing dependency is introduced.
 
+While Details is open, the selector and its accessible description identify the Details target. The originating Overview filter remains separate in transient navigation state, so Back restores All Accounts, provider, account or workspace filtering exactly. Changing the selector exits Details. If its owner is removed, a disabled “Selection unavailable” option retains the missing target instead of displaying an unrelated filter.
+
 Details always names its source and observing connection(s) before the readings. Quota, credits, spending, earned resets and the 84-day Activity calendar stay tied to that source. Shared verified sources appear once; unknown billing relationships remain explicitly unknown. A context change replaces the prior readings/grid synchronously and resets scrolling. No outgoing account values animate.
 
 Back from an Overview source restores that source button and reading position. Back from an Accounts connection returns directly to its connection action. Accounts → Overview → Details supports two Back steps. If an originating control is hidden under a collapsed provider, focus returns to the disclosure; if removed, it returns to the context selector or Accounts heading. Ordinary tab visits preserve the selected context and reading position.

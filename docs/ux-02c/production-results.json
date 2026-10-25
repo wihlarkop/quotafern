@@ -1,5 +1,5 @@
 {
-  "checks": 134,
+  "checks": 144,
   "failures": [],
   "results": [
     {
@@ -331,6 +331,38 @@
       "passed": true
     },
     {
+      "label": "Details selector value and title identify Codex · Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details announcement and 84-day activity match Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details Back restores original filter, focus and scroll",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work",
+      "passed": true
+    },
+    {
+      "label": "Provider Details Back restores provider filter and source opener",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace",
+      "passed": true
+    },
+    {
+      "label": "Workspace Details Back restores workspace ID",
+      "passed": true
+    },
+    {
+      "label": "Changing Details context exits Details and clears outgoing quota/activity",
+      "passed": true
+    },
+    {
       "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
@@ -408,6 +440,14 @@
     },
     {
       "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace / Work session",
+      "passed": true
+    },
+    {
+      "label": "Direct Accounts Details selector uses connection ID",
       "passed": true
     },
     {

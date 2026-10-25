@@ -5,6 +5,7 @@ import {
   initialNavigation,
   reconcileNavigation,
   selectionKey,
+  selectorSelection,
 } from "../src/lib/accounts/navigation";
 import { detailsView, overviewView } from "../src/lib/accounts/views";
 
@@ -69,6 +70,73 @@ export function runAccountNavigationRegression(): number {
     "Details label retains global ordinal",
   );
   const multi = createAccountDemo("multi", now);
+  const personalSource = multi.sources[0];
+  const personal = {
+    kind: "account" as const,
+    providerId: personalSource.providerId,
+    accountId: personalSource.accountId,
+  };
+  for (const origin of [
+    { kind: "all" as const },
+    { kind: "provider" as const, providerId: "codex" },
+  ]) {
+    const navigation = {
+      ...initialNavigation(),
+      selection: origin,
+      detail: { selection: personal, sourceId: personalSource.id },
+    };
+    const before = JSON.stringify(multi);
+    assert(
+      selectionKey(selectorSelection(multi, navigation)) === personal.accountId,
+      "Details selector shows Personal rather than its Overview origin",
+    );
+    assert(
+      selectionKey(navigation.selection) === selectionKey(origin),
+      "Opening Details preserves Overview filter separately",
+    );
+    assert(
+      selectionKey(selectorSelection(multi, { ...navigation, detail: null })) ===
+        selectionKey(origin),
+      "Back restores All/provider filter",
+    );
+    assert(
+      JSON.stringify(multi) === before,
+      "Selector projection cannot change source values or lifecycle",
+    );
+  }
+  const duplicateSource = duplicate.sources[1];
+  const duplicateTarget = {
+    kind: "account" as const,
+    providerId: duplicateSource.providerId,
+    accountId: duplicateSource.accountId,
+  };
+  const retained = {
+    ...initialNavigation(),
+    detail: { selection: duplicateTarget, sourceId: duplicateSource.id },
+  };
+  assert(
+    contextLabel(duplicate, selectorSelection(duplicate, retained)).includes("account 2"),
+    "Duplicate Details selector uses stable owner ID and ordinal",
+  );
+  assert(
+    selectionKey(selectorSelection(createAccountDemo("empty", now), retained)) ===
+      duplicateTarget.accountId,
+    "Missing Details owner never displays an unrelated All context",
+  );
+  const disconnectedTarget = {
+    ...initialNavigation(),
+    detail: { selection: personal, sourceId: personalSource.id },
+  };
+  assert(
+    selectionKey(selectorSelection(createAccountDemo("disconnected", now), disconnectedTarget)) ===
+      personal.accountId,
+    "Disconnected source retains its actual owner in selector",
+  );
+  assert(
+    detailsView(createAccountDemo("disconnected", now), personal, now, "synthetic")?.sources
+      .length === 0,
+    "Unavailable source keeps Details values empty",
+  );
   const workspace = contextOptions(multi).find(
     (o) => o.selection.kind === "account" && o.selection.workspaceId,
   )!;

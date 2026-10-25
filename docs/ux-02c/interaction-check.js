@@ -20,6 +20,65 @@ async function checkNavigation(page, { tab }, assert, development) {
   await tab("Overview");
   if (await back().isVisible()) await back().click();
   await select().selectOption("all");
+  const personalDetails = page.getByRole("button", {
+    name: "View Codex Personal Desktop session details",
+    exact: true,
+  });
+  const workDetails = page.getByRole("button", {
+    name: "View Codex Work Work session details",
+    exact: true,
+  });
+  const contextMatches = async (label) => {
+    assert(
+      (await select().locator("option:checked").innerText()) === label &&
+        (await select().getAttribute("title")) === label,
+      `Details selector value and title identify ${label}`,
+    );
+  };
+  await personalDetails.scrollIntoViewIfNeeded();
+  const overviewScroll = await panel().evaluate((e) => e.scrollTop);
+  await personalDetails.click();
+  await contextMatches("Codex · Personal");
+  assert(
+    (await page.locator(".context-announcement").innerText()).includes("Codex · Personal") &&
+      (await page.getByRole("gridcell").count()) === 84,
+    "All Accounts Details announcement and 84-day activity match Personal",
+  );
+  await back().click();
+  assert(
+    (await select().inputValue()) === "all" &&
+      (await focused(personalDetails)) &&
+      Math.abs((await panel().evaluate((e) => e.scrollTop)) - overviewScroll) <= 1,
+    "All Accounts Details Back restores original filter, focus and scroll",
+  );
+  await select().selectOption({ label: "Codex · all accounts" });
+  await workDetails.click();
+  await contextMatches("Codex · Work");
+  await back().click();
+  assert(
+    (await select().inputValue()) === "provider:codex" && (await focused(workDetails)),
+    "Provider Details Back restores provider filter and source opener",
+  );
+  await select().selectOption({ label: "Codex · Work / Studio workspace" });
+  const workspaceKey = await select().inputValue();
+  await workDetails.click();
+  await contextMatches("Codex · Work / Studio workspace");
+  await back().click();
+  assert(
+    (await select().inputValue()) === workspaceKey,
+    "Workspace Details Back restores workspace ID",
+  );
+  await select().selectOption("all");
+  await personalDetails.click();
+  await select().selectOption({ label: "Codex · Work" });
+  assert(
+    (await page.locator(".owned-detail-readings").count()) === 0 &&
+      (await page.getByRole("gridcell").count()) === 0 &&
+      (await page.locator(".owned-source").count()) === 1 &&
+      !(await page.locator(".owned-source").innerText()).includes("72%"),
+    "Changing Details context exits Details and clears outgoing quota/activity",
+  );
+  await select().selectOption("all");
   await tab("Accounts");
   const disclosure = page.getByRole("button", { name: "Codex · 2 accounts", exact: true });
   assert(
@@ -95,6 +154,11 @@ async function checkNavigation(page, { tab }, assert, development) {
   const detailScroll = await panel().evaluate((e) => e.scrollTop);
   await direct.focus();
   await page.keyboard.press("Enter");
+  await contextMatches("Codex · Work / Studio workspace / Work session");
+  assert(
+    (await select().inputValue()).startsWith("connection_"),
+    "Direct Accounts Details selector uses connection ID",
+  );
   assert(
     (await page.getByRole("gridcell").count()) === 84,
     "Accounts connection opens 84-day source-owned Details",
@@ -250,6 +314,7 @@ async function checkNavigation(page, { tab }, assert, development) {
       "Disconnected Details clears quota and activity without choosing another source",
     );
     await capture("unavailable-details-380", "Codex Details");
+    await contextMatches("Codex · Personal");
     await back().click();
     assert(await focused(select()), "Missing source opener falls back to selector");
     await tab("Settings");
@@ -267,6 +332,21 @@ async function checkNavigation(page, { tab }, assert, development) {
     );
     await back().click();
     await tab("Settings");
+    await tab("Overview");
+    await select().selectOption("all");
+    await page
+      .getByRole("button", {
+        name: "View Codex Personal · account 2 Connection details",
+        exact: true,
+      })
+      .click();
+    await contextMatches("Codex · Personal · account 2");
+    await back().click();
+    assert(
+      (await select().inputValue()) === "all",
+      "Duplicate alias Details Back restores All rather than another same-name account",
+    );
+    await tab("Settings");
     await scenario.selectOption("multi");
     await tab("Accounts");
     await page.getByRole("button", { name: "Open Codex Work overview", exact: true }).click();
@@ -280,6 +360,11 @@ async function checkNavigation(page, { tab }, assert, development) {
       (await page.getByRole("heading", { name: "Selection unavailable", exact: true }).count()) ===
         1,
       "Removed Details owner stays unavailable",
+    );
+    assert(
+      (await select().locator("option:checked").innerText()) === "Selection unavailable" &&
+        (await select().inputValue()) !== "all",
+      "Removed Details owner has explicit unavailable selection without falling back to All",
     );
     await back().click();
     assert(await focused(select()), "Removed Details source falls back to selector");

@@ -1,5 +1,5 @@
 {
-  "checks": 547,
+  "checks": 563,
   "failures": [],
   "results": [
     {
@@ -1887,6 +1887,38 @@
       "passed": true
     },
     {
+      "label": "Details selector value and title identify Codex · Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details announcement and 84-day activity match Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details Back restores original filter, focus and scroll",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work",
+      "passed": true
+    },
+    {
+      "label": "Provider Details Back restores provider filter and source opener",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace",
+      "passed": true
+    },
+    {
+      "label": "Workspace Details Back restores workspace ID",
+      "passed": true
+    },
+    {
+      "label": "Changing Details context exits Details and clears outgoing quota/activity",
+      "passed": true
+    },
+    {
       "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
@@ -1964,6 +1996,14 @@
     },
     {
       "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace / Work session",
+      "passed": true
+    },
+    {
+      "label": "Direct Accounts Details selector uses connection ID",
       "passed": true
     },
     {
@@ -2127,6 +2167,10 @@
       "passed": true
     },
     {
+      "label": "Details selector value and title identify Codex · Personal",
+      "passed": true
+    },
+    {
       "label": "Missing source opener falls back to selector",
       "passed": true
     },
@@ -2147,6 +2191,22 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Personal · account 2",
+      "passed": true
+    },
+    {
+      "label": "Duplicate alias Details Back restores All rather than another same-name account",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
@@ -2160,6 +2220,10 @@
     },
     {
       "label": "Removed Details owner stays unavailable",
+      "passed": true
+    },
+    {
+      "label": "Removed Details owner has explicit unavailable selection without falling back to All",
       "passed": true
     },
     {

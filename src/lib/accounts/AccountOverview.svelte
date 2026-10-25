@@ -10,6 +10,7 @@
     contextOptions,
     selectionInvalid,
     selectionKey,
+    selectorSelection,
     type AccountNavigation,
     type DetailTarget,
   } from "./navigation";
@@ -42,10 +43,11 @@
   let detailOwnership = $derived(
     detail && detailSource
       ? `Source ${detail.sources.findIndex((s) => s.id === detailSource.id) + 1} of ${detail.sources.length} · ${detailSource.association.connectionIds.map((connectionId) => contextLabel(accountState, { kind: "connection", providerId: detail!.providerId, accountId: detail!.accountId, connectionId })).join("; ")}`
-      : "Selection unavailable",
+      : `${contextLabel(accountState, selectedDetail?.selection ?? navigation.selection)} · Selection unavailable`,
   );
   let options = $derived(contextOptions(accountState));
-  let selectedKey = $derived(selectionKey(projected.selection));
+  let displayedSelection = $derived(selectorSelection(accountState, navigation));
+  let selectedKey = $derived(selectionKey(displayedSelection));
   let invalid = $derived(selectionInvalid(accountState, navigation.selection));
   function changeContext(event: Event) {
     oncontext(
@@ -84,9 +86,12 @@
   <label for="account-context">Account context</label><select
     id="account-context"
     value={selectedKey}
-    title={contextLabel(accountState, projected.selection)}
+    title={contextLabel(accountState, displayedSelection)}
+    aria-describedby="account-context-status"
     onchange={changeContext}
-    >{#each options as option (option.key)}<option value={option.key}>{option.label}</option
+    >{#if !options.some((option) => option.key === selectedKey)}<option value={selectedKey} disabled
+        >Selection unavailable</option
+      >{/if}{#each options as option (option.key)}<option value={option.key}>{option.label}</option
       >{/each}</select
   >
 </div>
