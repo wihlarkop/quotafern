@@ -86,18 +86,18 @@ These are proposed design notions, **not a persistence/schema migration**. Exact
 
 ## UI truth table
 
-| Condition | Plan label | Remaining | Payment / renewal |
-| --- | --- | --- | --- |
-| Verified Free account with current permitted usage result | Free / verified name | Actual returned Free quota | No subscription charge **only if confirmed**; otherwise Unknown |
-| Verified Free account with no machine-readable usage | Free | Quota unavailable, not 0% | No payment estimate |
-| No provider plan evidence and no manual selection | Unknown plan | Not connected / unavailable | Unknown |
-| Provider reports planType but not billing | Report observed plan and its source | Only observed source quota | Unknown; usage planType is not an invoice authority |
-| User sets plan manually | Manually set: [name] | Never manufactured from name | Only explicitly user-entered dates, marked Manual |
-| Paid account with a provider-confirmed future charge | Verified paid plan | Current quota if available | Next payment date with provider source |
-| Annual subscription / team seat managed by employer | Verified seat / organization-provided if observed | Own verified entitlement | Billing date may be not applicable to seat holder, else Unknown |
-| Provider reports expired API key | Do not mark whole subscription expired | Key-related source unavailable | Label **API key expires/expired**, not subscription |
-| Prepaid API credits | Prepaid / pay-as-you-go if evidenced | Credit balance only, not subscription quota | Credit expiry if returned, next charge unknown |
-| Connection revoked, source stale or changed | Last known label with stale marker or Unknown | Never current | Manual dates can remain as Manual; provider observations are stale |
+| Condition                                                 | Plan label                                        | Remaining                                   | Payment / renewal                                                  |
+| --------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
+| Verified Free account with current permitted usage result | Free / verified name                              | Actual returned Free quota                  | No subscription charge **only if confirmed**; otherwise Unknown    |
+| Verified Free account with no machine-readable usage      | Free                                              | Quota unavailable, not 0%                   | No payment estimate                                                |
+| No provider plan evidence and no manual selection         | Unknown plan                                      | Not connected / unavailable                 | Unknown                                                            |
+| Provider reports planType but not billing                 | Report observed plan and its source               | Only observed source quota                  | Unknown; usage planType is not an invoice authority                |
+| User sets plan manually                                   | Manually set: [name]                              | Never manufactured from name                | Only explicitly user-entered dates, marked Manual                  |
+| Paid account with a provider-confirmed future charge      | Verified paid plan                                | Current quota if available                  | Next payment date with provider source                             |
+| Annual subscription / team seat managed by employer       | Verified seat / organization-provided if observed | Own verified entitlement                    | Billing date may be not applicable to seat holder, else Unknown    |
+| Provider reports expired API key                          | Do not mark whole subscription expired            | Key-related source unavailable              | Label **API key expires/expired**, not subscription                |
+| Prepaid API credits                                       | Prepaid / pay-as-you-go if evidenced              | Credit balance only, not subscription quota | Credit expiry if returned, next charge unknown                     |
+| Connection revoked, source stale or changed               | Last known label with stale marker or Unknown     | Never current                               | Manual dates can remain as Manual; provider observations are stale |
 
 ## Date semantics and manual entry
 
