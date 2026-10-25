@@ -2,6 +2,8 @@
 
 Status: Planned. Documentation only. Owner-approved product direction.
 
+**Current product scope (owner decision 2026-10-26):** Quotafern is for **one individual user**, with their own personal accounts and personal API-key connections only. Organization, Team, Business, Enterprise, seat administration, admin analytics and company billing are not product targets across **any** provider. A single owner may still configure multiple personal accounts and keys. See [personal-only product scope](personal-only-product-scope.md). Codex and Claude Code are the only active provider research tracks; the other listed providers are **paused** until explicitly resumed. Historical notes below are architecture context, not approval to build organization features. No live provider is authorized.
+
 Quotafern follows a local-first, consent-first connection model for every supported provider. The standard onboarding flow is Detect locally, Connect with explicit consent, optionally Remember connection, and Disconnect. This roadmap does not enable any connection or credential access.
 
 ## Provider coverage
