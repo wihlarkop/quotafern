@@ -1,9 +1,14 @@
 <script lang="ts">
+  import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+  import ChevronDown from "@lucide/svelte/icons/chevron-down";
   import Command from "@lucide/svelte/icons/command";
   import Layers from "@lucide/svelte/icons/layers";
 
+  import { Button } from "../components/ui/button";
   import type { AccountState } from "./model";
+  import type { DetailTarget } from "./navigation";
   import { contextualAlias, sampleTime } from "./presentation";
+  import type { Selection } from "./views";
   import { accountsView, overviewView } from "./views";
 
   let {
@@ -11,7 +16,18 @@
     nowMs,
     synthetic = true,
     showHeading = true,
-  }: { state: AccountState; nowMs: number; synthetic?: boolean; showHeading?: boolean } = $props();
+    collapsedProviders = $bindable([]),
+    onoverview,
+    ondetails,
+  }: {
+    state: AccountState;
+    nowMs: number;
+    synthetic?: boolean;
+    showHeading?: boolean;
+    collapsedProviders?: string[];
+    onoverview?: (selection: Selection, controlId: string) => void;
+    ondetails?: (target: DetailTarget, controlId: string) => void;
+  } = $props();
   let providers = $derived(
     accountsView(state).sort(
       (a, b) => Number(b.accounts.length > 0) - Number(a.accounts.length > 0),
@@ -24,7 +40,7 @@
 
 {#if showHeading}<div class="view-heading">
     <div>
-      <h1>Accounts</h1>
+      <h1 tabindex="-1">Accounts</h1>
       <p>{synthetic ? "Local names, independent connections" : "No accounts configured"}</p>
     </div>
   </div>{/if}
@@ -52,7 +68,22 @@
               size={16}
             />{/if}</span
         >
-        <h2>{provider.displayName}</h2>
+        <h2>
+          {#if provider.accounts.length > 0}<button
+              type="button"
+              class="provider-disclosure"
+              aria-expanded={!collapsedProviders.includes(provider.providerId)}
+              aria-controls={`provider-accounts-${provider.providerId}`}
+              aria-label={`${provider.displayName} · ${provider.accounts.length} accounts`}
+              onclick={() => {
+                collapsedProviders = collapsedProviders.includes(provider.providerId)
+                  ? collapsedProviders.filter((id) => id !== provider.providerId)
+                  : [...collapsedProviders, provider.providerId];
+              }}
+            >
+              {provider.displayName}<ChevronDown size={14} aria-hidden="true" />
+            </button>{:else}{provider.displayName}{/if}
+        </h2>
         <span class="system-chip"
           >{provider.availability === "gated" ? "Live disabled" : "Coming Soon"}</span
         >
@@ -64,16 +95,69 @@
             : "Supported read-only monitoring is not implemented."}
         </p>
       {:else}
-        <ul class="owned-account-list">
+        <ul
+          class="owned-account-list"
+          id={`provider-accounts-${provider.providerId}`}
+          hidden={collapsedProviders.includes(provider.providerId)}
+        >
           {#each provider.accounts as account, accountIndex (account.accountId)}
             <li class="owned-account" data-account-id={account.accountId}>
               <div class="owned-account-heading">
-                <h3>{contextualAlias(provider.accounts, accountIndex, "account")}</h3>
+                <h3>
+                  {#if onoverview}<button
+                      type="button"
+                      class="account-navigation-link"
+                      id={`account-overview-${account.accountId}`}
+                      aria-label={`Open ${provider.displayName} ${contextualAlias(provider.accounts, accountIndex, "account")} overview`}
+                      onclick={() =>
+                        onoverview?.(
+                          {
+                            kind: "account",
+                            providerId: provider.providerId,
+                            accountId: account.accountId,
+                          },
+                          `account-overview-${account.accountId}`,
+                        )}
+                    >
+                      <span>{contextualAlias(provider.accounts, accountIndex, "account")}</span
+                      ><ArrowUpRight size={13} aria-hidden="true" />
+                    </button>{:else}{contextualAlias(
+                      provider.accounts,
+                      accountIndex,
+                      "account",
+                    )}{/if}
+                </h3>
                 <span class="account-kind">Local alias</span>
               </div>
               {#if account.state === "removing"}<p class="account-pending" role="status">
                   Removal pending · monitoring cleanup could not be confirmed.
                 </p>{/if}
+              {#if onoverview && account.workspaces.length > 0}<div
+                  class="workspace-navigation"
+                  aria-label="Workspace contexts"
+                >
+                  {#each account.workspaces as workspace (workspace.workspaceId)}<button
+                      type="button"
+                      class="account-navigation-link"
+                      id={`workspace-overview-${workspace.workspaceId}`}
+                      aria-label={`Open ${provider.displayName} ${contextualAlias(provider.accounts, accountIndex, "account")} ${workspace.alias} workspace overview`}
+                      onclick={() =>
+                        onoverview?.(
+                          {
+                            kind: "account",
+                            providerId: provider.providerId,
+                            accountId: account.accountId,
+                            workspaceId: workspace.workspaceId,
+                          },
+                          `workspace-overview-${workspace.workspaceId}`,
+                        )}
+                    >
+                      <span>{workspace.alias} workspace</span><ArrowUpRight
+                        size={12}
+                        aria-hidden="true"
+                      /></button
+                    >{/each}
+                </div>{/if}
               <ul
                 class="owned-connection-list"
                 aria-label={`${provider.displayName} ${contextualAlias(provider.accounts, accountIndex, "account")} connections`}
@@ -92,6 +176,7 @@
                         )}</strong
                       ><span
                         class="connection-state-text"
+                        class:connection-unavailable={connection.runtime.lifecycle !== "connected"}
                         class:connection-problem={connection.runtime.lifecycle === "error" ||
                           connection.runtime.lifecycle === "auth-required"}
                         >{account.state === "removing"
@@ -132,6 +217,30 @@
                             ? "Cleanup confirmation pending."
                             : "Sample read failed; this connection has no values."}
                       </p>{/if}
+                    {#if ondetails}{#each connectionSources as source (source.id)}<Button
+                          variant="ghost"
+                          size="sm"
+                          class="connection-details-link"
+                          id={`connection-details-${connection.connectionId}-${source.id}`}
+                          aria-label={`View ${provider.displayName} ${contextualAlias(provider.accounts, accountIndex, "account")} ${contextualAlias(account.connections, connectionIndex, "connection")} source ${connectionSources.indexOf(source) + 1} details`}
+                          onclick={() =>
+                            ondetails?.(
+                              {
+                                selection: {
+                                  kind: "connection",
+                                  providerId: provider.providerId,
+                                  accountId: account.accountId,
+                                  connectionId: connection.connectionId,
+                                },
+                                sourceId: source.id,
+                              },
+                              `connection-details-${connection.connectionId}-${source.id}`,
+                            )}
+                        >
+                          {connectionSources.length > 1
+                            ? `Source ${connectionSources.indexOf(source) + 1} details`
+                            : "View details"}<ArrowUpRight size={12} aria-hidden="true" />
+                        </Button>{/each}{/if}
                   </li>
                 {/each}
               </ul>

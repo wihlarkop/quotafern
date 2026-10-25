@@ -2171,6 +2171,60 @@ button.activity-cell {
   line-height: 1.6;
 }
 /* Account changes replace data synchronously, including the reused heatmap. */
+.provider-disclosure,
+.account-navigation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: start;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.provider-disclosure svg,
+.account-navigation-link svg {
+  flex-shrink: 0;
+}
+.account-navigation-link span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.connection-state-text.connection-unavailable {
+  color: var(--muted);
+}
+.connection-state-text.connection-problem {
+  color: var(--critical-ink);
+}
+.provider-disclosure[aria-expanded="false"] svg {
+  transform: rotate(-90deg);
+}
+.account-navigation-link,
+.connection-details-link {
+  color: var(--accent);
+}
+.provider-disclosure:hover,
+.account-navigation-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.workspace-navigation {
+  display: grid;
+  margin-top: 6px;
+  font-size: 11px;
+}
+.connection-details-link {
+  height: auto;
+  min-height: 28px;
+  margin-top: 4px;
+  padding: 4px 0;
+  white-space: normal;
+}
 .owned-detail-readings ~ .codex-details {
   animation: none;
 }

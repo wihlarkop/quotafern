@@ -1,0 +1,582 @@
+{
+  "checks": 144,
+  "failures": [],
+  "results": [
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Production starts disconnected",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Development fixture control excluded from production",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --text on --surface contrast 14.56",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --text on --surface-raised contrast 15.69",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --text on --surface-inset contrast 13.55",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --muted on --surface contrast 6.07",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --muted on --surface-raised contrast 6.54",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --muted on --surface-inset contrast 5.65",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --normal-ink on --normal-wash contrast 7.16",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --low-ink on --low-wash contrast 7.30",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --critical-ink on --critical-wash contrast 6.88",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --unknown-ink on --unknown-wash contrast 6.38",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Light: --accent on --accent-soft contrast 5.63",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --text on --surface contrast 14.49",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --text on --surface-raised contrast 12.54",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --text on --surface-inset contrast 13.40",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --muted on --surface contrast 8.68",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --muted on --surface-raised contrast 7.51",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --muted on --surface-inset contrast 8.03",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --normal-ink on --normal-wash contrast 8.20",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --low-ink on --low-wash contrast 7.59",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --critical-ink on --critical-wash contrast 7.25",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --unknown-ink on --unknown-wash contrast 6.61",
+      "passed": true
+    },
+    {
+      "label": "Graphite & Jade/Dark: --accent on --accent-soft contrast 7.84",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --text on --surface contrast 13.88",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --text on --surface-raised contrast 15.11",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --text on --surface-inset contrast 12.84",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --muted on --surface contrast 6.34",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --muted on --surface-raised contrast 6.90",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --muted on --surface-inset contrast 5.87",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --normal-ink on --normal-wash contrast 7.16",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --low-ink on --low-wash contrast 7.30",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --critical-ink on --critical-wash contrast 6.88",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --unknown-ink on --unknown-wash contrast 6.38",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Light: --accent on --accent-soft contrast 5.88",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --text on --surface contrast 14.94",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --text on --surface-raised contrast 13.23",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --text on --surface-inset contrast 13.74",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --muted on --surface contrast 8.70",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --muted on --surface-raised contrast 7.71",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --muted on --surface-inset contrast 8.01",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --normal-ink on --normal-wash contrast 8.20",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --low-ink on --low-wash contrast 7.59",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --critical-ink on --critical-wash contrast 7.25",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --unknown-ink on --unknown-wash contrast 6.61",
+      "passed": true
+    },
+    {
+      "label": "Zinc & Signal/Dark: --accent on --accent-soft contrast 7.22",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Production Demo has independent accounts and connections",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Production Demo has four independent sources",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Production Details has 84 activity dates",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Production reload does not restore synthetic accounts or consent",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Original tab transitions respect reduced motion: reduce",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Original tab transitions respect reduced motion: no-preference",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details announcement and 84-day activity match Personal",
+      "passed": true
+    },
+    {
+      "label": "All Accounts Details Back restores original filter, focus and scroll",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work",
+      "passed": true
+    },
+    {
+      "label": "Provider Details Back restores provider filter and source opener",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace",
+      "passed": true
+    },
+    {
+      "label": "Workspace Details Back restores workspace ID",
+      "passed": true
+    },
+    {
+      "label": "Changing Details context exits Details and clears outgoing quota/activity",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Configured provider starts expanded",
+      "passed": true
+    },
+    {
+      "label": "Space collapses provider and hides descendants",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Disclosure survives tab round trip",
+      "passed": true
+    },
+    {
+      "label": "Account navigation focuses Overview heading",
+      "passed": true
+    },
+    {
+      "label": "Account navigation uses account ID",
+      "passed": true
+    },
+    {
+      "label": "Accounts opens only Work sources",
+      "passed": true
+    },
+    {
+      "label": "New account context starts at top",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Account context survives Settings round trip",
+      "passed": true
+    },
+    {
+      "label": "Overview Back restores Accounts opener focus",
+      "passed": true
+    },
+    {
+      "label": "Overview Back restores Accounts scroll",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Workspace link uses workspace ID",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details selector value and title identify Codex · Work / Studio workspace / Work session",
+      "passed": true
+    },
+    {
+      "label": "Direct Accounts Details selector uses connection ID",
+      "passed": true
+    },
+    {
+      "label": "Accounts connection opens 84-day source-owned Details",
+      "passed": true
+    },
+    {
+      "label": "Connection Details names workspace and excludes other identity",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Details target survives tab round trip",
+      "passed": true
+    },
+    {
+      "label": "Direct Details Back restores connection opener focus",
+      "passed": true
+    },
+    {
+      "label": "Direct Details Back restores Accounts scroll",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Nested Details Back restores Overview source opener",
+      "passed": true
+    },
+    {
+      "label": "Second Back restores Accounts origin",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Native selector retains keyboard focus on context change",
+      "passed": true
+    },
+    {
+      "label": "Owned select Escape does not hide popup",
+      "passed": true
+    },
+    {
+      "label": "Tab reaches first source action from selector",
+      "passed": true
+    },
+    {
+      "label": "Keyboard source action opens Details",
+      "passed": true
+    },
+    {
+      "label": "ArrowRight moves tab selection to Accounts",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Keyboard tab round trip retains selection",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Back from Details restores collapsed provider disclosure instead of hidden opener",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Changing source within account announces the specific source and connection before readings",
+      "passed": true
+    },
+    {
+      "label": "Unconsumed Escape reaches popup hide path (browser disclosure)",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Demo cycle discards selection and Details",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Reload starts disconnected without remembered demo or context",
+      "passed": true
+    }
+  ]
+}

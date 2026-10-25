@@ -15,6 +15,7 @@ import {
   formatRemainingPercent,
   type DemoScenario,
 } from "../src/lib/quota";
+import { runAccountNavigationRegression } from "./account-navigation-regression";
 import { runAccountUiRegression } from "./account-ui-regression";
 import { runAccountsRegression } from "./accounts-regression";
 import { runActivityRegression } from "./activity-regression";
@@ -575,6 +576,10 @@ await check("ACC-01 account architecture, metadata, ownership and selection", ()
 
 await check("UX-02B synthetic account presentation and activity ownership", () => {
   assertionCount += runAccountUiRegression();
+});
+
+await check("UX-02C transient navigation, invalidation and source isolation", () => {
+  assertionCount += runAccountNavigationRegression();
 });
 
 await check("screenshot tab/panel state and transition consistency", () => {

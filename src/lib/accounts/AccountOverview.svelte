@@ -1,102 +1,59 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
-  import { tick } from "svelte";
 
   import CodexDetails from "../components/CodexDetails.svelte";
   import { Button } from "../components/ui/button";
-  import type { AccountState, SourceId } from "./model";
+  import type { AccountState } from "./model";
+  import {
+    contextLabel,
+    contextOptions,
+    selectionInvalid,
+    selectionKey,
+    selectorSelection,
+    type AccountNavigation,
+    type DetailTarget,
+  } from "./navigation";
   import { activityMonitoring, contextualAlias, providerName, sampleTime } from "./presentation";
   import SourceReadings from "./SourceReadings.svelte";
   import { accountsView, detailsView, overviewView, type Selection } from "./views";
 
-  let { state: accountState, nowMs }: { state: AccountState; nowMs: number } = $props();
-  type DetailSelection = Exclude<Selection, { kind: "all" } | { kind: "provider" }>;
-  let selection = $state<Selection>({ kind: "all" });
-  let selectedDetail = $state<{ selection: DetailSelection; sourceId: SourceId } | null>(null);
-  let openerSourceId: SourceId | null = null;
-  let projected = $derived(overviewView(accountState, selection, nowMs, "synthetic"));
+  let {
+    state: accountState,
+    nowMs,
+    navigation,
+    oncontext,
+    ondetails,
+    onback,
+  }: {
+    state: AccountState;
+    nowMs: number;
+    navigation: AccountNavigation;
+    oncontext: (selection: Selection) => void;
+    ondetails: (target: DetailTarget, controlId: string) => void;
+    onback: () => void;
+  } = $props();
+  let selectedDetail = $derived(navigation.detail);
+  let projected = $derived(overviewView(accountState, navigation.selection, nowMs, "synthetic"));
   let providers = $derived(accountsView(accountState));
   let detail = $derived(
     selectedDetail ? detailsView(accountState, selectedDetail.selection, nowMs, "synthetic") : null,
   );
   let detailSource = $derived(detail?.sources.find((s) => s.id === selectedDetail?.sourceId));
-  let options = $derived([
-    { key: "all", label: "All accounts", selection: { kind: "all" } as Selection },
-    ...providers
-      .filter((p) => p.accounts.length > 0)
-      .flatMap((p) => [
-        {
-          key: `provider:${p.providerId}`,
-          label: `${p.displayName} · all accounts`,
-          selection: { kind: "provider", providerId: p.providerId } as Selection,
-        },
-        ...p.accounts.flatMap((a, i) => [
-          {
-            key: a.accountId,
-            label: `${p.displayName} · ${contextualAlias(p.accounts, i, "account")}`,
-            selection: {
-              kind: "account",
-              providerId: p.providerId,
-              accountId: a.accountId,
-            } as Selection,
-          },
-          ...a.workspaces.map((w) => ({
-            key: w.workspaceId,
-            label: `${p.displayName} · ${contextualAlias(p.accounts, i, "account")} / ${w.alias} workspace`,
-            selection: {
-              kind: "account",
-              providerId: p.providerId,
-              accountId: a.accountId,
-              workspaceId: w.workspaceId,
-            } as Selection,
-          })),
-          ...(a.connections.length > 1
-            ? a.connections.map((c, j) => ({
-                key: c.connectionId,
-                label: `${p.displayName} · ${contextualAlias(p.accounts, i, "account")} / ${contextualAlias(a.connections, j, "connection")}`,
-                selection: {
-                  kind: "connection",
-                  providerId: p.providerId,
-                  accountId: a.accountId,
-                  connectionId: c.connectionId,
-                } as Selection,
-              }))
-            : []),
-        ]),
-      ]),
-  ]);
-  let selectedKey = $derived(
-    projected.selection.kind === "account"
-      ? (projected.selection.workspaceId ?? projected.selection.accountId)
-      : projected.selection.kind === "connection"
-        ? projected.selection.connectionId
-        : projected.selection.kind === "provider"
-          ? `provider:${projected.selection.providerId}`
-          : "all",
+  let detailOwnership = $derived(
+    detail && detailSource
+      ? `Source ${detail.sources.findIndex((s) => s.id === detailSource.id) + 1} of ${detail.sources.length} · ${detailSource.association.connectionIds.map((connectionId) => contextLabel(accountState, { kind: "connection", providerId: detail!.providerId, accountId: detail!.accountId, connectionId })).join("; ")}`
+      : `${contextLabel(accountState, selectedDetail?.selection ?? navigation.selection)} · Selection unavailable`,
   );
-
+  let options = $derived(contextOptions(accountState));
+  let displayedSelection = $derived(selectorSelection(accountState, navigation));
+  let selectedKey = $derived(selectionKey(displayedSelection));
+  let invalid = $derived(selectionInvalid(accountState, navigation.selection));
   function changeContext(event: Event) {
-    // Clear before replacing context. No outgoing transition, delayed load or retained monitoring.
-    selectedDetail = null;
-    selection = options.find((o) => o.key === (event.currentTarget as HTMLSelectElement).value)
-      ?.selection ?? { kind: "all" };
-  }
-  async function openDetails(next: DetailSelection, sourceId: SourceId) {
-    selectedDetail = null;
-    openerSourceId = sourceId;
-    selectedDetail = { selection: next, sourceId };
-    await tick();
-    document.getElementById("owned-details-title")?.focus();
-  }
-  async function back() {
-    selectedDetail = null;
-    await tick();
-    const opener = document.querySelector<HTMLButtonElement>(
-      `[data-source-id="${openerSourceId}"] .owned-details-button`,
+    oncontext(
+      options.find((o) => o.key === (event.currentTarget as HTMLSelectElement).value)
+        ?.selection ?? { kind: "all" },
     );
-    if (opener) opener.focus();
-    else document.getElementById("account-context")?.focus();
   }
   function aliasFor(providerId: string, accountId: string) {
     const accounts = providers.find((p) => p.providerId === providerId)?.accounts ?? [];
@@ -107,7 +64,7 @@
 
 <div class="view-heading">
   <div>
-    <h1 id="owned-details-title" tabindex="-1">
+    <h1 id="owned-details-title" tabindex="-1" aria-describedby="account-context-status">
       {selectedDetail
         ? `${detail ? providerName(detail.providerId) : "Account"} Details`
         : "Usage overview"}
@@ -116,8 +73,10 @@
       {selectedDetail ? "Quota, credits and activity" : "Each source belongs to its own account"}
     </p>
   </div>
-  {#if selectedDetail}<Button variant="outline" size="sm" onclick={back}
-      ><ArrowLeft size={13} aria-hidden="true" />Back</Button
+  {#if selectedDetail || navigation.overviewReturn}<Button
+      variant="outline"
+      size="sm"
+      onclick={onback}><ArrowLeft size={13} aria-hidden="true" />Back</Button
     >{/if}
 </div>
 <div class="account-demo-notice" role="note">
@@ -127,14 +86,29 @@
   <label for="account-context">Account context</label><select
     id="account-context"
     value={selectedKey}
+    title={contextLabel(accountState, displayedSelection)}
+    aria-describedby="account-context-status"
     onchange={changeContext}
-    >{#each options as option (option.key)}<option value={option.key}>{option.label}</option
+    >{#if !options.some((option) => option.key === selectedKey)}<option value={selectedKey} disabled
+        >Selection unavailable</option
+      >{/if}{#each options as option (option.key)}<option value={option.key}>{option.label}</option
       >{/each}</select
   >
 </div>
-<p class="context-announcement" role="status" aria-live="polite">
-  {options.find((o) => o.key === selectedKey)?.label ?? "All accounts"}{selectedDetail && detail
-    ? ` · ${aliasFor(detail.providerId, detail.accountId)} details`
+<p
+  id="account-context-status"
+  class="context-announcement"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+>
+  {selectedDetail
+    ? ""
+    : navigation.notice || (invalid ? "Selection removed; showing All accounts." : "")}
+  {selectedDetail
+    ? detailOwnership
+    : contextLabel(accountState, projected.selection)}{selectedDetail
+    ? " · details"
     : " · independent sources"}
 </p>
 
@@ -152,11 +126,12 @@
         {#each detail.connections.filter( (c) => detailSource.association.connectionIds.includes(c.connectionId) ) as connection (connection.connectionId)}<p
             class="owned-detail-connection"
           >
-            {contextualAlias(
-              detail.connections,
-              detail.connections.findIndex((c) => c.connectionId === connection.connectionId),
-              "connection",
-            )} · {connection.verifiedIdentity
+            {contextLabel(accountState, {
+              kind: "connection",
+              providerId: detail.providerId,
+              accountId: detail.accountId,
+              connectionId: connection.connectionId,
+            })} · {connection.verifiedIdentity
               ? `Verified identity · ${connection.verifiedIdentity} (synthetic)`
               : "Identity not verified"}
           </p>{/each}
@@ -247,13 +222,23 @@
           variant="ghost"
           size="sm"
           class="owned-details-button"
+          id={`source-details-${source.id}`}
           aria-label={`View ${providerName(source.providerId)} ${aliasFor(source.providerId, source.accountId)} ${connectionLabel} details`}
           onclick={() =>
-            openDetails(
-              projected.selection.kind === "connection" || projected.selection.kind === "account"
-                ? projected.selection
-                : { kind: "account", providerId: source.providerId, accountId: source.accountId },
-              source.id,
+            ondetails(
+              {
+                selection:
+                  projected.selection.kind === "connection" ||
+                  projected.selection.kind === "account"
+                    ? projected.selection
+                    : {
+                        kind: "account",
+                        providerId: source.providerId,
+                        accountId: source.accountId,
+                      },
+                sourceId: source.id,
+              },
+              `source-details-${source.id}`,
             )}>View details <ArrowUpRight size={14} aria-hidden="true" /></Button
         >
       </article>
