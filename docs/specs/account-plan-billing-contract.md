@@ -108,6 +108,7 @@ These are proposed design notions, **not a persistence/schema migration**. Exact
 **Potentially sensitive:** billing cadence/dates and manually entered plan names are non-secret in type but reveal purchase patterns. Any storage requires a separate data-minimization, consent, corruption-recovery, retention/removal, and quota-limits review before adjusting ACC-04 localStorage. No invoice number, card, transaction ID, billing email, provider account secret, full API key, or billing-address field.
 
 **Expiry distinctions:**
+
 - Subscription expiry: loss of entitlement at an access end date, if evidenced.
 - Cancellation effective date: automatic renewal stops or access ends depending on provider terms; not automatically the next invoice date.
 - Renewal: contract/entitlement rollover; may not result in a payment (e.g., employer-paid).
