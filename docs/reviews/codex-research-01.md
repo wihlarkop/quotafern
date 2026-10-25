@@ -67,6 +67,10 @@ F3 is merged, dormant and **live disabled**. The Rust bridge implements fixed JS
 
 Provider contracts and version-specific source can change; reverify before any implementation. This research **does not lift F4, SEC-01 or SEC-02 gates**.
 
+## Research exit decision (2026-10-26)
+
+See [CODEX-RESEARCH-EXIT-01](codex-research-exit-01.md): public-source research is **complete** for pinned v0.164.0, with **NO-GO live** because monitoring authorization, safe quota-only startup and Unix forced-parent child containment remain unresolved. Optional plan and quota mapping are ready for separately owner-approved **synthetic-only** implementation by Codex; there is no production authorization, current-plan billing API, payment-date fallback, authenticated test or safe live startup claim. Pause at this research boundary until the owner separately approves implementation.
+
 ## Follow-up security decision (2026-10-26)
 
 The version-pinned [CODEX-SEC-REVIEW-02](codex-security-review-02.md) confirms that the stable Codex 0.164.0 release still does not establish a supported quota-only app-server startup mode. The documented rate-limit RPC is technically suitable for synthetic normalization, but persisted Remote Control restoration, startup cloud/model refresh, monitoring authorization and Unix forced-parent cleanup are independent live blockers. The managed daemon's disable-remote-control operation mutates daemon settings and is not a safe substitute for a per-launch monitor policy. All live flags remain false. Future scope in this Codex-only PR is security evidence and synthetic acceptance; no authenticated API call or CLI launch is approved.
