@@ -47,7 +47,7 @@ Manual dates are acceptable as an explicitly marked user-maintained reminder, **
 
 ## Security gating & provider candidate decision
 
-### OpenRouter: highest-priority *feasibility research*, not live authorization
+### OpenRouter: highest-priority _feasibility research_, not live authorization
 
 - Data proof: document exact GET /api/v1/key fields for free quota, paid key caps, per-key usage, optional budgets and expiry.
 - **Open blocker:** ordinary API keys can authorize inference; a telemetry-only intent does not constrain a stolen key. Research officially supported limited-scope key/authorization and whether these reads can be performed with monitoring-only grants.
@@ -59,7 +59,7 @@ Manual dates are acceptable as an explicitly marked user-maintained reminder, **
 ### GitHub: independent alternative
 
 - Account-paid user AI credit usage appears available with official Plan(read) token permission, subject to account eligibility and API verification. A user with an org-assigned Copilot seat must not be shown personal spend from the incorrect payer.
-- Determine exactly what remaining quota can be *verified* with current entitlement APIs. Historical credits spent alone are not enough without the included allotment and correctly assigned billing owner.
+- Determine exactly what remaining quota can be _verified_ with current entitlement APIs. Historical credits spent alone are not enough without the included allotment and correctly assigned billing owner.
 - Free eligibility and API access remain separately unverified. Do not infer paid status from successful GitHub sign-in.
 
 ### Codex remains blocked
