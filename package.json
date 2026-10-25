@@ -13,7 +13,7 @@
     "lint:ux": "bun --bun oxlint --deny-warnings qa/prototypes/ux-01",
     "lint:fix": "bun --bun oxlint --fix src scripts vite.config.ts svelte.config.js",
     "fmt": "bun --bun oxfmt --write .",
-    "fmt:check": "bun --bun oxfmt --write docs/plans/provider-01-official-capability-matrix.md docs/specs/account-plan-billing-contract.md && printf '\\nQF_START_ONE\\n' && base64 -w0 docs/plans/provider-01-official-capability-matrix.md && printf '\\nQF_END_ONE\\nQF_START_TWO\\n' && base64 -w0 docs/specs/account-plan-billing-contract.md && printf '\\nQF_END_TWO\\n'",
+    "fmt:check": "bun --bun oxfmt --check .",
     "check": "bun --bun svelte-check --tsconfig ./tsconfig.json",
     "regression": "bun run scripts/regression.ts",
     "regression:rust": "cargo test --locked --manifest-path src-tauri/Cargo.toml --lib --features native-regression",
