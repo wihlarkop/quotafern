@@ -1,13 +1,13 @@
 # CODEX-RESEARCH-EXIT-01: Final provider feasibility decision
 
-**Research closed:** 2026-10-26. **Scope:** Codex personal/ChatGPT plan monitoring in Quotafern. **Verdict:** **NO-GO for production live integration** with Codex CLI v0.164.0. **GO for a separately approved synthetic-only implementation slice** that never launches Codex or reads credentials. This document is a research decision, not implementation approval, independent platform acceptance, or a claim that OpenAI has explicitly forbidden every local integration.
+**Research closed:** 2026-10-26. **Scope:** **one individual user's personal ChatGPT Free, Go, Plus and Pro Codex accounts only**. Multiple individually owned accounts are permitted; teams, organizations, company-paid seats and Enterprise administration are excluded. **Verdict:** **NO-GO for production live integration** with Codex CLI v0.164.0. **GO for a separately approved synthetic-only implementation slice** that never launches Codex or reads credentials. This document is a research decision, not implementation approval, independent platform acceptance, or a claim that OpenAI has explicitly forbidden every local integration.
 
 ## What has been established
 
 - OpenAI documents Codex on ChatGPT Free and Go as well as paid plans; **Free supports Codex**, with usage restrictions. Cloud Codex eligibility is separately limited. Neither a public plan table nor the mere presence of an installed CLI proves that a particular account has a given plan or a current numeric balance.
 - Codex app-server v2 publishes `account/read` with an account object, ChatGPT `planType` and optional email; `account/rateLimits/read` with source-specific quota windows, `usedPercent`, `windowDurationMins`, `resetsAt`, credits and earned reset details; and optional `account/usage/read` for token activity.
 - The **exact pinned** account schema is `codex-rs/app-server-protocol/src/protocol/v2/account.rs`, where `Account::Chatgpt { email, plan_type }` serializes as `{ "type": "chatgpt", "planType": ... }`. The `planType` is an account-plan classification, **not** a billing/renewal date, paid invoice, or separate proof of subscription ownership.
-- The **exact pinned** `PlanType` enum in `codex-rs/protocol/src/account.rs` uses `#[serde(rename_all = "lowercase")]` for normal variants. Confirmed variants include `free`, `go`, `plus`, `pro`, `prolite`, `promax`, `team`, `business`, `enterprise`, `edu`, `ent26`, `sci`, and explicit snake-case enterprise/education/business variants. `unknown` exists. An implementation must use an explicit reviewed finite mapping, preserve meaningful plan variants, and **omit unsupported/unknown plan labels**, not invent a marketing tier. In particular `prolite` and `promax` must not silently be rewritten to `pro`.
+- The **exact pinned** `PlanType` enum in `codex-rs/protocol/src/account.rs` uses `#[serde(rename_all = "lowercase")]` for normal variants. **Quotafern's supported product allowlist is personal `free`, `go`, `plus` and `pro` only.** The upstream enum also contains many other values (including organization and internal tiers), but those are recognized exclusively for **fail-closed rejection/omission**, not as a commitment to implement them. Unknown values, `prolite` and `promax` must not be relabelled as `pro`.
 - For a valid current `usedPercent` in 0–100, the Quotafern F3 presentation computes `remainingPercent = 100 - usedPercent` within the **same provider-reported source window**. A known zero remaining is legitimate; a missing or malformed value is not zero. More than one `limitId` means separate buckets rather than a summed quota.
 - The documented reset timestamp is a quota-window reset. Earned `rateLimitResetCredits.credits[].expiresAt` is the expiry of a reset credit. Neither is the next subscription payment, subscription renewal, or access expiry. No approved field/source for those subscription billing dates was established: **omit those fields and empty sections**.
 - The official plan-usage guidance directs users to ChatGPT/Codex usage settings and to `/status` in an existing interactive Codex session. That is a user-visible fallback, **not** an approved headless third-party API.
@@ -52,11 +52,9 @@ These measure organization/project **API billing and token spend**, not individu
 
 **Decision:** OUT OF SCOPE for Codex subscription remaining, and must not be silently substituted.
 
-### Path F — Enterprise/Compliance/Analytics API
+### Path F — Organization and Enterprise APIs
 
-Official workspace-level Analytics and Compliance surfaces exist, including Codex activity. The unified Daily Usage Analytics API requires a workspace-scoped Admin key with `enterprise.analytics.usage.read`; a separate Codex Enterprise Analytics scope is documented. These are **admin/workspace reporting** surfaces, not a least-privilege Free/Go/Plus/Pro local individual's remaining Codex quota API. Compliance audit events are not current quota entitlements.
-
-**Decision:** OUT OF SCOPE for the current personal Codex adapter. Organization admins and service access require their own future product, authorization and privacy review; no fallback to admin keys.
+**Excluded by product scope.** Quotafern is strictly single-user/personal across all providers. Do not pursue enterprise analytics, compliance APIs, admin keys, organization seats, workspace billing or organization entitlement reads, even as a fallback for individual quotas.
 
 ## Separate native process-safety blocker
 
@@ -76,7 +74,7 @@ The current Quotafern Unix implementation, `src-tauri/src/codex/process_unix.rs`
 
 ## What could be implemented later, only after owner authorizes Codex
 
-- **CODEX-SYN-01:** Rust-to-Svelte optional sanitized plan label on synthetic `account/read` results, with account-change invalidation, zero-vs-null semantics, no billing placeholders, exact allowlisted plan variants, tests and no credential reads; keep both live flags false.
+- **CODEX-SYN-01:** Rust-to-Svelte optional sanitized plan label for personal Free/Go/Plus/Pro on synthetic `account/read` results, with unsupported-variant omission, account-change invalidation, zero-vs-null semantics, no billing placeholders, tests and no credential reads; keep both live flags false.
 - **CODEX-SYN-02:** independent native process-lifecycle design and synthetic forced-exit tests for Linux/macOS/Windows where realistically testable, without spawning the real Codex binary or touching user auth; no claim that tests prove live readiness.
 - **CODEX-LIVE:** **DO NOT START** until G1, G2 and G3 have documented independent resolutions, review, native proofs, and a separate owner approval.
 
@@ -94,8 +92,6 @@ At each trigger, compare actual release-tag source to documented API and check a
 - Codex across ChatGPT plans and official usage-page fallback: https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan
 - Sign in with ChatGPT distinctions: https://learn.chatgpt.com/docs/sign-in-with-chatgpt
 - SIWC open-source cookbook: https://learn.chatgpt.com/cookbook/articles/sign-in-with-chatgpt
-- Workspace Analytics API access: https://learn.chatgpt.com/docs/enterprise/analytics-api
-- Compliance API scope: https://learn.chatgpt.com/docs/enterprise/compliance-api
 - GitHub Codex stable release: https://github.com/openai/codex/releases/tag/rust-v0.164.0
 - v0.164.0 CLI source, startup selection near line 1315: https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/cli/src/main.rs
 - Internal remote-control marker near line 87: https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/app-server-transport/src/transport/remote_control/mod.rs
