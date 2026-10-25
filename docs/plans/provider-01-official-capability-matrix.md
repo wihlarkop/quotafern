@@ -25,8 +25,8 @@ Identify the first provider with an **officially documented, permitted, appropri
 
 1. **Free is a plan/entitlement classification, not a quota measurement.** An account can be Free with a numeric allowance, Free with a rolling/rate-limited allotment, or Free with no authorized machine-readable remaining balance.
 2. Only show numeric remaining when its **current, account-bound, source-specific** value is actually returned by a permitted read and valid for the window.
-3. A published static allowance such as Gemini CLI 1,000 requests/day is a plan-level maximum or documentation value, **not** account-specific remaining; label it as reference-only if ever displayed.
-4. A Free user is not a zero-quota user. Show **Free · Quota unavailable**, **Free · No permission**, or a verified actual Free quota instead of inventing a zero or percent.
+3. A published static allowance such as Gemini CLI 1,000 requests/day is a plan-level maximum or documentation value, **not** account-specific remaining. Do not use a public maximum to manufacture a user quota card.
+4. A Free user is not a zero-quota user. Display the **Free** label only if verified for that account, and display actual quota only when verified. Hide unavailable numeric quota fields; show an appropriate separate monitoring or permission status when needed.
 5. Do not mislabel a key's free-model daily requests as whole-account subscription remaining; do not treat a Free model as proof of a Free account.
 6. Missing, blocked, expired, stale, no grant, not offered, and genuinely known-zero are separate outcomes.
 
@@ -43,7 +43,7 @@ The following are **independent concepts** and must never be inferred from each 
 - API-key expiration date
 - Workspace budget reset date
 
-Manual dates are acceptable as an explicitly marked user-maintained reminder, **not** provider verified fact. Never infer next charge from a quota reset, plan label, or calendar-month boundary.
+**Owner-approved omission rule:** show each plan, Free/Paid classification, subscription renewal, next payment, access expiry, credit expiry or key expiry only if an authorized source establishes that exact field and owner. Otherwise omit the field, including its empty row or section; do not show placeholders or offer manual date entry. Connection failure/permission state may remain visible to explain unavailable quota. Never infer a charge from quota reset, plan label or calendar-month boundary.
 
 ## Security gating & provider candidate decision
 
@@ -51,7 +51,7 @@ Manual dates are acceptable as an explicitly marked user-maintained reminder, **
 
 - Data proof: document exact GET /api/v1/key fields for free quota, paid key caps, per-key usage, optional budgets and expiry.
 - **Open blocker:** ordinary API keys can authorize inference; a telemetry-only intent does not constrain a stolen key. Research officially supported limited-scope key/authorization and whether these reads can be performed with monitoring-only grants.
-- **Open blocker:** account-level credits require management-key authority in docs; **do not** accept a management key solely to show dashboard balance without an explicit separate security review.
+- **Open blocker:** account-level credits require management-key authority in docs; **do not** accept a management key solely to show dashboard balance. It can confer broader key-management authority than monitoring requires. Security review must validate an exact least-privilege alternative or keep this field hidden.
 - **Open blocker:** ACC-03 app-owned OS-protected credential storage and native coordinator are not yet implemented. No renderer storage, logs, environment harvesting, or borrowing another app's credentials.
 - **Open blocker:** per-key limit, account credits, and free-model daily quota must not be presented as one source or counted twice.
 - **Decision:** candidate for first eligible adapter **only after** documented privilege/consent/storage approval. If read-only least-privilege grant cannot be achieved, stay disabled.
@@ -60,7 +60,7 @@ Manual dates are acceptable as an explicitly marked user-maintained reminder, **
 
 - Account-paid user AI credit usage appears available with official Plan(read) token permission, subject to account eligibility and API verification. A user with an org-assigned Copilot seat must not be shown personal spend from the incorrect payer.
 - Determine exactly what remaining quota can be _verified_ with current entitlement APIs. Historical credits spent alone are not enough without the included allotment and correctly assigned billing owner.
-- Free eligibility and API access remain separately unverified. Do not infer paid status from successful GitHub sign-in.
+- Free eligibility and API access remain separately unverified. Do not infer paid status from successful GitHub sign-in. GitHub's user billing usage endpoint explicitly excludes seats billed to organizations/enterprises; org-level reporting requires separate privileged authorization and billing-owner mapping.
 
 ### Codex remains blocked
 
@@ -69,7 +69,7 @@ The F3 dormant app-server protocol and native consent/security tests do not sett
 ## Next gated work items
 
 1. **PROVIDER-01 acceptance:** independent review of official sources, Free/paid distinctions, capability classification, specific required permission(s), prohibited methods, and owner approval of Go/No-Go candidates.
-2. **PLAN-01 schema/UX:** model optional provider-observed plan, free/paid/unverified classification, per-source quota availability, billing/expiry separately, evidence/source timestamp and manual reminder. See [the companion contract](../specs/account-plan-billing-contract.md).
+2. **PLAN-01 schema/UX:** model independently optional provider-observed plan, Free/Paid classification, source-specific quota and separately verified billing/expiry fields. Hide unverified or unsupported fields and empty sections, without manual entry. See [the companion contract](../specs/account-plan-billing-contract.md).
 3. **SEC/provider authorization ADR:** for a selected first provider document exact read-only credential grants, negative tests, network/IPC boundaries, and whether a monitoring-only key exists. No connection if privileges are broader than accepted.
 4. **ACC-02A:** Rust-owned multi-connection coordinator, generation invalidation, cancellation and native cleanup, tested with synthetic fixtures only.
 5. **ACC-03A:** separately reviewed OS-protected secret lifecycle before any key-based provider is enabled.
