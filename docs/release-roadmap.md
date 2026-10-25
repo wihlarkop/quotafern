@@ -7,6 +7,7 @@ The project must have a deterministic, auditable app-version policy before the f
 ## Current baseline
 
 As audited after UX-02B PR #10:
+
 - `src-tauri/tauri.conf.json`: `version: "0.1.0"`
 - `src-tauri/Cargo.toml`: package `version = "0.1.0"`
 - `package.json`: `version: "0.1.0"`
@@ -35,6 +36,7 @@ Status: Deferred. No implementation approval.
 Tauri 2 offers an official updater plugin; do not build an update downloader from scratch. The updater is distinct from base app versioning and is **not installed or configured** by this roadmap.
 
 Before any future updater implementation:
+
 - Define supported installers, operating systems/architectures, stable/beta channel mapping and authoritative HTTPS update endpoints.
 - Require genuine signed updater artifacts, public-key verification and **private signing keys stored only in a protected release environment**; never check keys into Git, read external CLI credentials, or expose secrets to the webview.
 - Define explicit user-consented update check/install, failure handling, restart behavior, rollback/recovery and no forced/silent downloads without owner-approved policy.
