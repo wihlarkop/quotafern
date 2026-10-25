@@ -1,7 +1,23 @@
 {
-  "checks": 324,
+  "checks": 462,
   "failures": [],
   "results": [
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
     {
       "label": "Graphite & Jade/Light/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
       "passed": true
@@ -11,11 +27,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Light/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -47,6 +71,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
       "passed": true
     },
@@ -55,11 +83,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Light/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -91,6 +127,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
       "passed": true
     },
@@ -99,11 +139,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Light/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -135,11 +183,19 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Light/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -151,11 +207,23 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Light/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -175,7 +243,15 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -187,11 +263,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Light/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -223,6 +307,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
@@ -231,11 +319,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Light/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Light/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -267,6 +363,14 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
       "passed": true
     },
@@ -275,11 +379,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Dark/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -311,6 +423,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
       "passed": true
     },
@@ -319,11 +435,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Dark/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -355,6 +479,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
       "passed": true
     },
@@ -363,11 +491,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Dark/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -399,11 +535,19 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Dark/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -415,11 +559,23 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Dark/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -439,7 +595,15 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -451,11 +615,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Dark/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -487,6 +659,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
@@ -495,11 +671,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Graphite & Jade/Dark/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -531,6 +715,14 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
       "passed": true
     },
@@ -539,11 +731,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Light/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -575,6 +775,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
       "passed": true
     },
@@ -583,11 +787,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Light/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -619,6 +831,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
       "passed": true
     },
@@ -627,11 +843,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Light/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -663,11 +887,19 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Light/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -679,11 +911,23 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Light/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -703,7 +947,15 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -715,11 +967,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Light/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -751,6 +1011,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
@@ -759,11 +1023,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Light/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Light/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -795,6 +1067,14 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/320x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":775}",
       "passed": true
     },
@@ -803,11 +1083,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/320x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Dark/320x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -839,6 +1127,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/320x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":775}",
       "passed": true
     },
@@ -847,11 +1139,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/320x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Dark/320x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -883,6 +1183,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/380x480/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":756}",
       "passed": true
     },
@@ -891,11 +1195,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/380x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Dark/380x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -927,11 +1239,19 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/380x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Dark/380x660/Settings: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -943,11 +1263,23 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/380x660/Overview: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1656}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Dark/380x660/Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -967,7 +1299,15 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/380x660: Back restores opener focus",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -979,11 +1319,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/420x480/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Dark/420x480/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1015,6 +1363,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/420x660/Settings: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":756}",
       "passed": true
     },
@@ -1023,11 +1375,19 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark/420x660/Accounts: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":527,\"scrollHeight\":1169}",
       "passed": true
     },
     {
       "label": "Zinc & Signal/Dark/420x660/Accounts: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1059,11 +1419,23 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "single/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":978}",
       "passed": true
     },
     {
       "label": "single/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1075,11 +1447,23 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "two-accounts/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1105}",
       "passed": true
     },
     {
       "label": "two-accounts/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1091,11 +1475,23 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "two-keys/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1074}",
       "passed": true
     },
     {
       "label": "two-keys/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1107,11 +1503,23 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "shared/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1074}",
       "passed": true
     },
     {
       "label": "shared/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1135,11 +1543,31 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "mixed/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1342}",
       "passed": true
     },
     {
       "label": "mixed/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1151,11 +1579,27 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "unicode/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1843}",
       "passed": true
     },
     {
       "label": "unicode/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1167,11 +1611,27 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "duplicates/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1285}",
       "passed": true
     },
     {
       "label": "duplicates/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1187,11 +1647,27 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "removing/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1338}",
       "passed": true
     },
     {
       "label": "removing/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1203,11 +1679,23 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "empty/Accounts/320x480: no horizontal overflow {\"docOverflow\":false,\"panelOverflow\":false,\"overflowing\":[],\"headings\":1,\"height\":347,\"scrollHeight\":1038}",
       "passed": true
     },
     {
       "label": "empty/Accounts/320x480: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1223,11 +1711,27 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Provider scope selects both Codex accounts",
       "passed": true
     },
     {
       "label": "Workspace scope retains owner and source",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1259,11 +1763,47 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "System dark updates live",
       "passed": true
     },
     {
       "label": "System light updates live",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1275,7 +1815,15 @@
       "passed": true
     },
     {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Demo OFF has no synthetic accounts",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -1284,6 +1832,10 @@
     },
     {
       "label": "Demo OFF Overview: one screen heading and usable scroll area",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {

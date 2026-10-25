@@ -1,0 +1,287 @@
+{
+  "reviewedHead": "ece2528544b24f08ff2688b28825809b760c0dcb",
+  "sourceBrowser": [
+    {
+      "phase": "after semantic switch",
+      "selected": ["Overview"],
+      "tabs": [
+        {
+          "name": "Overview",
+          "state": "active",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 0,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 0,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Accounts",
+          "state": "inactive",
+          "background": "rgb(255, 255, 255)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 0,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 0,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Settings",
+          "state": "inactive",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": []
+        }
+      ],
+      "panels": [
+        {
+          "id": "bits-c6",
+          "labelledBy": "bits-c3",
+          "heading": "Usage overview",
+          "linked": true
+        }
+      ]
+    },
+    {
+      "phase": "first painted frame",
+      "selected": ["Overview"],
+      "tabs": [
+        {
+          "name": "Overview",
+          "state": "active",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 0,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 0,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Accounts",
+          "state": "inactive",
+          "background": "rgb(255, 255, 255)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 0,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 0,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Settings",
+          "state": "inactive",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": []
+        }
+      ],
+      "panels": [
+        {
+          "id": "bits-c6",
+          "labelledBy": "bits-c3",
+          "heading": "Usage overview",
+          "linked": true
+        }
+      ]
+    },
+    {
+      "phase": "after transitions finish",
+      "selected": ["Overview"],
+      "tabs": [
+        {
+          "name": "Overview",
+          "state": "active",
+          "background": "rgb(255, 255, 255)",
+          "animations": []
+        },
+        {
+          "name": "Accounts",
+          "state": "inactive",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": []
+        },
+        {
+          "name": "Settings",
+          "state": "inactive",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": []
+        }
+      ],
+      "panels": [
+        {
+          "id": "bits-c6",
+          "labelledBy": "bits-c3",
+          "heading": "Usage overview",
+          "linked": true
+        }
+      ]
+    }
+  ],
+  "compiledProduction": [
+    {
+      "phase": "after semantic switch",
+      "selected": ["Overview"],
+      "tabs": [
+        {
+          "name": "Overview",
+          "state": "active",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 0,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 0,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Accounts",
+          "state": "inactive",
+          "background": "rgb(255, 255, 255)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 0,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 0,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Settings",
+          "state": "inactive",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": []
+        }
+      ],
+      "panels": [
+        {
+          "id": "bits-c6",
+          "labelledBy": "bits-c3",
+          "heading": "Usage overview",
+          "linked": true
+        }
+      ]
+    },
+    {
+      "phase": "first painted frame",
+      "selected": ["Overview"],
+      "tabs": [
+        {
+          "name": "Overview",
+          "state": "active",
+          "background": "rgba(255, 255, 255, 0.216)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 16.172999996389326,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 16.172999996389326,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Accounts",
+          "state": "inactive",
+          "background": "rgb(250, 252, 250)",
+          "animations": [
+            {
+              "property": "background-color",
+              "time": 16.172999996389326,
+              "state": "running"
+            },
+            {
+              "property": "color",
+              "time": 16.172999996389326,
+              "state": "running"
+            }
+          ]
+        },
+        {
+          "name": "Settings",
+          "state": "inactive",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": []
+        }
+      ],
+      "panels": [
+        {
+          "id": "bits-c6",
+          "labelledBy": "bits-c3",
+          "heading": "Usage overview",
+          "linked": true
+        }
+      ]
+    },
+    {
+      "phase": "after transitions finish",
+      "selected": ["Overview"],
+      "tabs": [
+        {
+          "name": "Overview",
+          "state": "active",
+          "background": "rgb(255, 255, 255)",
+          "animations": []
+        },
+        {
+          "name": "Accounts",
+          "state": "inactive",
+          "background": "rgb(234, 240, 233)",
+          "animations": []
+        },
+        {
+          "name": "Settings",
+          "state": "inactive",
+          "background": "rgba(0, 0, 0, 0)",
+          "animations": []
+        }
+      ],
+      "panels": [
+        {
+          "id": "bits-c6",
+          "labelledBy": "bits-c3",
+          "heading": "Usage overview",
+          "linked": true
+        }
+      ]
+    }
+  ]
+}

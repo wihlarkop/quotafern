@@ -19,6 +19,7 @@ import { runAccountUiRegression } from "./account-ui-regression";
 import { runAccountsRegression } from "./accounts-regression";
 import { runActivityRegression } from "./activity-regression";
 import { runIconRegression } from "./icon-regression";
+import { runTabCaptureRegression } from "./tab-capture-regression";
 
 type JsonObject = Record<string, unknown>;
 
@@ -574,6 +575,10 @@ await check("ACC-01 account architecture, metadata, ownership and selection", ()
 
 await check("UX-02B synthetic account presentation and activity ownership", () => {
   assertionCount += runAccountUiRegression();
+});
+
+await check("screenshot tab/panel state and transition consistency", () => {
+  assertionCount += runTabCaptureRegression();
 });
 
 await check("ICON-01 approved asset integrity and local integration", async () => {

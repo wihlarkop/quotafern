@@ -1,13 +1,37 @@
 {
-  "checks": 50,
+  "checks": 80,
   "failures": [],
   "results": [
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
     {
       "label": "Production starts disconnected",
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Development fixture control excluded from production",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -55,6 +79,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Graphite & Jade/Dark: --text on --surface contrast 14.49",
       "passed": true
     },
@@ -96,6 +124,10 @@
     },
     {
       "label": "Graphite & Jade/Dark: --accent on --accent-soft contrast 7.84",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -143,6 +175,10 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Zinc & Signal/Dark: --text on --surface contrast 14.94",
       "passed": true
     },
@@ -187,7 +223,27 @@
       "passed": true
     },
     {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Production Demo has independent accounts and connections",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
       "passed": true
     },
     {
@@ -195,11 +251,75 @@
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Production Details has 84 activity dates",
       "passed": true
     },
     {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Settings tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
       "label": "Production reload does not restore synthetic accounts or consent",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Original tab transitions respect reduced motion: reduce",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Overview tab/panel/heading/highlight settled",
+      "passed": true
+    },
+    {
+      "label": "Original tab transitions respect reduced motion: no-preference",
+      "passed": true
+    },
+    {
+      "label": "Accounts tab/panel/heading/highlight settled",
       "passed": true
     }
   ]

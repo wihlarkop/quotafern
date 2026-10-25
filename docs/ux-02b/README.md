@@ -44,3 +44,7 @@ The development-only scenario selector also covers one account, two Codex accoun
 ## Deferred work
 
 UX-02C owns advanced filtering and interactions. ACC-04 owns Add/Rename/Disconnect/Remove, local account management and persistence review. SEC-01/SEC-02, F4 startup safety and Unix forced-parent-termination blockers remain open. Windows combined native acceptance follows ICON-01, UX-02B/C and ACC-04; macOS/Linux native interaction remains **NOT RUN** until devices are available. Native compilation and browser screenshots do not close those gates.
+
+## Screenshot timing correction
+
+The final captures now wait for real tab transitions and assert selected tab, linked visible panel, heading and settled highlight. The prior Overview/Accounts visual mismatch was a mid-transition capture, not a runtime selection defect. [Frame diagnosis and updated validation](validation.md#final-screenshot-consistency-follow-up). Production animation and reduced-motion code remain unchanged.

@@ -11,3 +11,7 @@ The reviewer inspected the early actual Svelte screenshots, ACC-01 contract, sou
 | Evidence incomplete at review time: only early 380px captures and an unchecked plan were visible | Completed afterward: 324 browser checks, source UI responsive/theme/Unicode/short captures, and 50 compiled-production checks/captures are recorded in validation.md and JSON evidence. This is author verification after the one review, not a claim that the reviewer reviewed the later matrix.                                     |
 
 No unaddressed material finding remains from that review. Actual speech-reader and native OS acceptance remain pending as documented. No second independent review is claimed.
+
+## Subsequent independent PR screenshot finding
+
+The owner supplied the [independent PR review of exact HEAD ece2528](https://github.com/wihlarkop/quotafern/pull/10#pullrequestreview-5643755124). Its architecture/security assessment passed the intended synthetic scope and it requested focused screenshot verification. The follow-up confirmed correct semantic tab/panel state alongside an unfinished visual transition. Both capture flows now share a transition-completion and tab/panel/heading/highlight guard; regenerated screenshots and deterministic regressions are recorded in validation.md. This follow-up did not commission another agent review or change production animations.

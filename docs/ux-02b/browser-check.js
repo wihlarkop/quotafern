@@ -7,7 +7,8 @@ async function checkAccountUi(page) {
     results.push({ label, passed: Boolean(ok) });
     if (!ok) failures.push(label);
   };
-  const tab = async (name) => page.getByRole("tab", { name, exact: true }).click();
+  // The Bun run-ui-check runner injects the shared capture helper into the CLI VM.
+  const { tab, ready } = await createTabCapture(page, assert);
   const back = async () => {
     if (await page.getByRole("button", { name: "Back", exact: true }).isVisible())
       await page.getByRole("button", { name: "Back", exact: true }).click();
@@ -45,14 +46,20 @@ async function checkAccountUi(page) {
     );
   };
   const capture = async (name, full = false) => {
+    const heading =
+      name.includes("details") || name.includes("activity")
+        ? "Codex Details"
+        : name.includes("accounts")
+          ? "Accounts"
+          : name.includes("settings")
+            ? "Settings"
+            : "Usage overview";
+    await ready(heading);
     await page.evaluate(() =>
       document.querySelectorAll('[role="tabpanel"]').forEach((p) => (p.scrollTop = 0)),
     );
-    await page.screenshot({
-      path: `docs/ux-02b/screenshots/${name}.png`,
-      scale: "css",
-      fullPage: full,
-    });
+    const target = full ? page.locator(".popup") : page;
+    await target.screenshot({ path: `docs/ux-02b/screenshots/${name}.png`, scale: "css" });
   };
   await tab("Settings");
   await page.getByRole("checkbox", { name: "Show synthetic quota examples" }).check();

@@ -4,9 +4,21 @@ async function checkProductionUi(page) {
     results.push({ label, passed: Boolean(ok) });
     if (!ok) throw new Error(label);
   };
-  const tab = async (name) => page.getByRole("tab", { name, exact: true }).click();
-  const capture = async (name) =>
-    page.screenshot({ path: `docs/ux-02b/screenshots/${name}.png`, scale: "css" });
+  // The Bun run-ui-check runner injects the shared capture helper into the CLI VM.
+  const { tab, ready } = await createTabCapture(page, assert);
+  const capture = async (name, full = false) => {
+    const heading =
+      name.includes("details") || name.includes("activity")
+        ? "Codex Details"
+        : name.includes("accounts")
+          ? "Accounts"
+          : name.includes("settings")
+            ? "Settings"
+            : "Usage overview";
+    await ready(heading);
+    const target = full ? page.locator(".popup") : page;
+    await target.screenshot({ path: `docs/ux-02b/screenshots/${name}.png`, scale: "css" });
+  };
   await page.setViewportSize({ width: 380, height: 660 });
   assert((await page.locator(".owned-source").count()) === 0, "Production starts disconnected");
   await capture("after-disconnected-380");
@@ -106,17 +118,12 @@ async function checkProductionUi(page) {
     await tab(screen);
     if (screen === "Overview")
       await page.getByRole("button", { name: "Back", exact: true }).click();
-    await page.locator(".popup").screenshot({
-      path: `docs/ux-02b/screenshots/after-${screen.toLowerCase()}-full-380.png`,
-      scale: "css",
-    });
+    await capture(`after-${screen.toLowerCase()}-full-380`, true);
   }
   await page
     .getByRole("button", { name: "View Codex Personal Desktop session details", exact: true })
     .click();
-  await page
-    .locator(".popup")
-    .screenshot({ path: "docs/ux-02b/screenshots/after-details-full-380.png", scale: "css" });
+  await capture("after-details-full-380", true);
   await expanded.evaluate((e) => e.remove());
   await tab("Settings");
   await page.getByRole("checkbox", { name: "Show synthetic quota examples" }).uncheck();
@@ -126,5 +133,23 @@ async function checkProductionUi(page) {
     (await page.locator(".owned-account").count()) === 0,
     "Production reload does not restore synthetic accounts or consent",
   );
+  for (const reducedMotion of ["reduce", "no-preference"]) {
+    await page.emulateMedia({ reducedMotion });
+    await tab("Overview");
+    const transitionDurations = await page
+      .locator('[role="tab"]')
+      .evaluateAll((tabs) =>
+        tabs.flatMap((item) =>
+          getComputedStyle(item).transitionDuration.split(",").map(parseFloat),
+        ),
+      );
+    assert(
+      reducedMotion === "reduce"
+        ? transitionDurations.every((duration) => duration === 0)
+        : transitionDurations.some((duration) => duration > 0),
+      `Original tab transitions respect reduced motion: ${reducedMotion}`,
+    );
+    await tab("Accounts");
+  }
   return { checks: results.length, failures: [], results };
 }
