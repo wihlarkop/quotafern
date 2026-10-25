@@ -201,6 +201,14 @@ are established; otherwise omit the field and any empty section**.
 All fixtures must be synthetic and run with both live gates false;
 no real Codex process is needed for acceptance of these tests.
 
+## S-06 — Passive local rollout reading (candidate, not live)
+
+A source-audited alternative to starting Codex may exist: `TokenCountEvent.rate_limits` in local `rollout-*.jsonl` session records. The upstream v0.164.0 parser test verifies the event shape, not that every session includes a quota event or that the log format is a supported stable monitoring API.
+
+**Security review is not yet approved for implementation.** These files may contain prompts, code, private filesystem paths or sensitive outputs. An eventual opt-in scanner requires native-only bounded parsing of validated event types, no exposure of raw lines/other fields, strict realpath/symlink/junction containment, no credentials/network/spawn, per-source event ages and no unverified account association. Any `resets_at` in the past invalidates active remaining quota. A source that is not fresh cannot be called `live` or silently substituted for an authenticated reading.
+
+See [CODEX-ATM-01](codex-atm-competitor-benchmark.md) for the competitor-method comparison, explicit exclusions and proposed acceptance requirements.
+
 ## Final research disposition
 
 [CODEX-RESEARCH-EXIT-01](codex-research-exit-01.md) closes the 2026-10-26 public-source research for pinned v0.164.0: **NO-GO live**, with explicit official authorization, safe startup and native child-containment blockers and evidence-based restart triggers. Further CodeX implementation remains a separate owner-approved decision, including synthetic-only work. Nothing in this first-pass security review is an approval to turn on Codex or access a real account.
