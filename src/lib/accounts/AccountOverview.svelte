@@ -25,6 +25,7 @@
     oncontext,
     ondetails,
     onback,
+    synthetic = true,
   }: {
     state: AccountState;
     nowMs: number;
@@ -32,12 +33,17 @@
     oncontext: (selection: Selection) => void;
     ondetails: (target: DetailTarget, controlId: string) => void;
     onback: () => void;
+    synthetic?: boolean;
   } = $props();
   let selectedDetail = $derived(navigation.detail);
-  let projected = $derived(overviewView(accountState, navigation.selection, nowMs, "synthetic"));
+  let projected = $derived(
+    overviewView(accountState, navigation.selection, nowMs, synthetic ? "synthetic" : "live"),
+  );
   let providers = $derived(accountsView(accountState));
   let detail = $derived(
-    selectedDetail ? detailsView(accountState, selectedDetail.selection, nowMs, "synthetic") : null,
+    selectedDetail
+      ? detailsView(accountState, selectedDetail.selection, nowMs, synthetic ? "synthetic" : "live")
+      : null,
   );
   let detailSource = $derived(detail?.sources.find((s) => s.id === selectedDetail?.sourceId));
   let detailOwnership = $derived(
@@ -79,9 +85,11 @@
       onclick={onback}><ArrowLeft size={13} aria-hidden="true" />Back</Button
     >{/if}
 </div>
-<div class="account-demo-notice" role="note">
-  <strong>SYNTHETIC DEMO</strong><span>Illustrative values. No live account is connected.</span>
-</div>
+{#if synthetic}<div class="account-demo-notice" role="note">
+    <strong>SYNTHETIC DEMO</strong><span>Illustrative values. No live account is connected.</span>
+  </div>{:else}<p class="account-screen-note">
+    Local metadata only · disconnected. No provider identity, quota or activity is available.
+  </p>{/if}
 <div class="account-context-control">
   <label for="account-context">Account context</label><select
     id="account-context"
@@ -255,7 +263,8 @@
       </p>
     </section>{/if}
   <p class="account-screen-note">
-    Independent sources · no combined quota or balance. Demo connections never establish real
-    provider support.
+    Independent sources · no combined quota or balance. {synthetic
+      ? "Demo connections never establish real provider support."
+      : "Local labels never establish provider support or sign-in."}
   </p>
 {/if}

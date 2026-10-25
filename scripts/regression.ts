@@ -20,6 +20,7 @@ import { runAccountUiRegression } from "./account-ui-regression";
 import { runAccountsRegression } from "./accounts-regression";
 import { runActivityRegression } from "./activity-regression";
 import { runIconRegression } from "./icon-regression";
+import { runLocalAccountsRegression } from "./local-accounts-regression";
 import { runTabCaptureRegression } from "./tab-capture-regression";
 
 type JsonObject = Record<string, unknown>;
@@ -584,6 +585,10 @@ await check("UX-02C transient navigation, invalidation and source isolation", ()
 
 await check("screenshot tab/panel state and transition consistency", () => {
   assertionCount += runTabCaptureRegression();
+});
+
+await check("ACC-04 durable local metadata, recovery and fail-closed removal", () => {
+  assertionCount += runLocalAccountsRegression();
 });
 
 await check("ICON-01 approved asset integrity and local integration", async () => {
