@@ -2,6 +2,13 @@
 
 Quotafern documentation is grouped by purpose; use the links below instead of searching old PR-specific folders.
 
+## Current research (not implemented)
+
+- [PROVIDER-01 official monitoring feasibility matrix](plans/provider-01-official-capability-matrix.md): Codex, Claude, Gemini, Copilot, OpenRouter and OpenCode; free-tier monitoring, permissions, billing-data gaps and per-provider Go/No-Go blockers.
+- [PLAN-01 account plan and billing display contract](specs/account-plan-billing-contract.md): plan name, Free/Paid classification, source provenance, quota reset vs renewal/payment/expiry, and explicit manual-date fallback.
+
+## Reference library
+
 - [Specifications](specs/): architecture, ACC-01 contracts, account management, visual design and ICON-01.
 - [Implementation plans](plans/): UX, security, provider sequencing and milestone plans.
 - [Security decisions](security/): current boundaries, Codex constraints, authorization and independent review.
