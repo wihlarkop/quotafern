@@ -11,7 +11,7 @@ The [independent review](https://github.com/wihlarkop/quotafern/pull/9#pullreque
 
 ## Exact deterministic derivation
 
-[derive-tray.py](derive-tray.py) is an offline asset compiler using Python and Pillow 12.3.0, not an application/runtime dependency. It reads only repository-relative approved source masks and writes four neutral PNGs, the installed inventory and static contrast evidence. It never rewrites the source masks, app icons or favicons. Reproduce with `python docs/icon-01/derive-tray.py` in an offline environment with the recorded Pillow encoder stack, then use `bun run fmt` for JSON formatting. PNG byte hashes identify the actual committed encoder output.
+derive-tray.py (archived visual removed) is an offline asset compiler using Python and Pillow 12.3.0, not an application/runtime dependency. It reads only repository-relative approved source masks and writes four neutral PNGs, the installed inventory and static contrast evidence. It never rewrites the source masks, app icons or favicons. Reproduce with `python docs/icon-01/derive-tray.py` in an offline environment with the recorded Pillow encoder stack, then use `bun run fmt` for JSON formatting. PNG byte hashes identify the actual committed encoder output.
 
 For each of 16/20/24/32px:
 
@@ -19,19 +19,19 @@ For each of 16/20/24/32px:
 - LANCZOS upscale the alpha by 8. Apply a square MaxFilter(15), a 7/8 = 0.875px dark expansion around the supplied mask, including leaf gaps.
 - Put the expanded alpha under RGB `(23,40,34)`. Composite the unchanged upscaled source alpha as the light interior RGB `(248,249,246)`.
 - LANCZOS downsample to the original target size; clear only the exterior one-pixel alpha border to remove resampling fringe. Retain the original canvas/padding and transparent exterior rather than adding an opaque tile.
-- Save RGBA PNG with compression level 9, optimization disabled. Record the exact source SHA-256, destination SHA-256, dimensions and operation in [installed-assets.json](installed-assets.json).
+- Save RGBA PNG with compression level 9, optimization disabled. Record the exact source SHA-256, destination SHA-256, dimensions and operation in installed-assets.json (archived visual removed).
 
-All **24 original installed asset hashes remain unchanged**. Four derived rows bring the installed inventory to **28**. The [source inventory](source-inventory.json) still describes the original **41** owner-supplied files, with a portable root label; derived assets are deliberately not misrepresented as supplied originals.
+All **24 original installed asset hashes remain unchanged**. Four derived rows bring the installed inventory to **28**. The [source inventory](../assets/icon-01/source-inventory.json) still describes the original **41** owner-supplied files, with a portable root label; derived assets are deliberately not misrepresented as supplied originals.
 
 ## Actual tray comparison and contrast
 
-![Three actual tray variants, four sizes and five background colors](tray-contrast.png)
+*Screenshot removed from current repository*
 
-The sheet composites the actual output PNG files at their native pixel sizes. It is static asset evidence, not a screenshot of any OS tray. It compares previous white and forest-jade masks with the new neutral fallback over near white, light gray, medium gray, graphite and near black. The original [before/after sheet](before-after.png) is retained unchanged as historical evidence of the original fallback limitation.
+The sheet composites the actual output PNG files at their native pixel sizes. It is static asset evidence, not a screenshot of any OS tray. It compares previous white and forest-jade masks with the new neutral fallback over near white, light gray, medium gray, graphite and near black. The original before/after sheet (archived visual removed) is retained unchanged as historical evidence of the original fallback limitation.
 
 At 20/24/32px the neutral outline and light interior keep the fern leaf/stem direction recognizable across these flat backgrounds. At 16px the leaf gaps are less distinct and antialiasing softens the edge; this is the bounded trade-off for one static asset. The dark edge separates the silhouette on light backgrounds; the light interior separates it on dark backgrounds. It remains visually consistent with the supplied fern shape, without a tile, decorative shadow or animation. This is improved coverage across tested backgrounds, not a claim of universal contrast over arbitrary textured/translucent panels or OS scaling.
 
-Relative luminance is computed from sRGB using the standard piecewise transfer function and weights 0.2126/0.7152/0.0722; ratio is `(Lmax + 0.05) / (Lmin + 0.05)`. [Metrics](tray-contrast.json) include ideal opaque fill/edge ratios plus the actual alpha-composited raster peak/counts at each size. Antialiased edge pixels have lower contrast than ideal opaque colors; a peak ratio does not describe the complete silhouette or establish native visibility or accessibility compliance.
+Relative luminance is computed from sRGB using the standard piecewise transfer function and weights 0.2126/0.7152/0.0722; ratio is `(Lmax + 0.05) / (Lmin + 0.05)`. [Metrics](../evidence/icon-01/tray-contrast.json) include ideal opaque fill/edge ratios plus the actual alpha-composited raster peak/counts at each size. Antialiased edge pixels have lower contrast than ideal opaque colors; a peak ratio does not describe the complete silhouette or establish native visibility or accessibility compliance.
 
 | Background    | Opaque light interior ratio | Opaque dark edge ratio | Actual 16px peak ratio |
 | ------------- | --------------------------- | ---------------------- | ---------------------- |
@@ -83,4 +83,4 @@ Combined Windows native acceptance remains scheduled **after ICON-01, UX-02B/C a
 - `src-tauri/icons/tray/fern-neutral-32.png`
 - `src-tauri/src/lib.rs`
 
-[changed-files.txt](changed-files.txt) lists the complete PR scope against its verified main baseline. The exact final HEAD and hosted run snapshot are recorded in the Draft PR description so this source file does not attempt to embed its own commit hash. Keep PR #9 Draft and unmerged; stop after owner handoff.
+[changed-files.txt](../evidence/icon-01/changed-files.txt) lists the complete PR scope against its verified main baseline. The exact final HEAD and hosted run snapshot are recorded in the Draft PR description so this source file does not attempt to embed its own commit hash. Keep PR #9 Draft and unmerged; stop after owner handoff.
