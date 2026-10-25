@@ -1,0 +1,169 @@
+{
+  "pillow": "12.3.0",
+  "scale": 8,
+  "outline_radius_px": 0.875,
+  "fill_rgb": [248, 249, 246],
+  "edge_rgb": [23, 40, 34],
+  "backgrounds": [
+    {
+      "label": "Near white",
+      "rgb": [250, 250, 250],
+      "opaque_fill_ratio": 1.012,
+      "opaque_edge_ratio": 14.761,
+      "rasters": [
+        {
+          "size": 16,
+          "visible_pixels": 177,
+          "pixels_ratio_ge_3": 37,
+          "peak_ratio": 7.625
+        },
+        {
+          "size": 20,
+          "visible_pixels": 275,
+          "pixels_ratio_ge_3": 68,
+          "peak_ratio": 11.821
+        },
+        {
+          "size": 24,
+          "visible_pixels": 394,
+          "pixels_ratio_ge_3": 113,
+          "peak_ratio": 9.861
+        },
+        {
+          "size": 32,
+          "visible_pixels": 614,
+          "pixels_ratio_ge_3": 171,
+          "peak_ratio": 12.391
+        }
+      ]
+    },
+    {
+      "label": "Light gray",
+      "rgb": [214, 214, 214],
+      "opaque_fill_ratio": 1.375,
+      "opaque_edge_ratio": 10.6,
+      "rasters": [
+        {
+          "size": 16,
+          "visible_pixels": 177,
+          "pixels_ratio_ge_3": 22,
+          "peak_ratio": 5.718
+        },
+        {
+          "size": 20,
+          "visible_pixels": 275,
+          "pixels_ratio_ge_3": 42,
+          "peak_ratio": 8.49
+        },
+        {
+          "size": 24,
+          "visible_pixels": 394,
+          "pixels_ratio_ge_3": 76,
+          "peak_ratio": 7.278
+        },
+        {
+          "size": 32,
+          "visible_pixels": 614,
+          "pixels_ratio_ge_3": 134,
+          "peak_ratio": 9.027
+        }
+      ]
+    },
+    {
+      "label": "Medium gray",
+      "rgb": [128, 128, 128],
+      "opaque_fill_ratio": 3.737,
+      "opaque_edge_ratio": 3.901,
+      "rasters": [
+        {
+          "size": 16,
+          "visible_pixels": 177,
+          "pixels_ratio_ge_3": 6,
+          "peak_ratio": 3.515
+        },
+        {
+          "size": 20,
+          "visible_pixels": 275,
+          "pixels_ratio_ge_3": 14,
+          "peak_ratio": 3.911
+        },
+        {
+          "size": 24,
+          "visible_pixels": 394,
+          "pixels_ratio_ge_3": 43,
+          "peak_ratio": 3.949
+        },
+        {
+          "size": 32,
+          "visible_pixels": 614,
+          "pixels_ratio_ge_3": 104,
+          "peak_ratio": 3.949
+        }
+      ]
+    },
+    {
+      "label": "Dark graphite",
+      "rgb": [40, 44, 47],
+      "opaque_fill_ratio": 13.323,
+      "opaque_edge_ratio": 1.094,
+      "rasters": [
+        {
+          "size": 16,
+          "visible_pixels": 177,
+          "pixels_ratio_ge_3": 59,
+          "peak_ratio": 12.418
+        },
+        {
+          "size": 20,
+          "visible_pixels": 275,
+          "pixels_ratio_ge_3": 97,
+          "peak_ratio": 13.909
+        },
+        {
+          "size": 24,
+          "visible_pixels": 394,
+          "pixels_ratio_ge_3": 137,
+          "peak_ratio": 14.079
+        },
+        {
+          "size": 32,
+          "visible_pixels": 614,
+          "pixels_ratio_ge_3": 221,
+          "peak_ratio": 14.079
+        }
+      ]
+    },
+    {
+      "label": "Near black",
+      "rgb": [12, 12, 12],
+      "opaque_fill_ratio": 18.511,
+      "opaque_edge_ratio": 1.27,
+      "rasters": [
+        {
+          "size": 16,
+          "visible_pixels": 177,
+          "pixels_ratio_ge_3": 64,
+          "peak_ratio": 17.1
+        },
+        {
+          "size": 20,
+          "visible_pixels": 275,
+          "pixels_ratio_ge_3": 111,
+          "peak_ratio": 19.325
+        },
+        {
+          "size": 24,
+          "visible_pixels": 394,
+          "pixels_ratio_ge_3": 161,
+          "peak_ratio": 19.562
+        },
+        {
+          "size": 32,
+          "visible_pixels": 614,
+          "pixels_ratio_ge_3": 249,
+          "peak_ratio": 19.562
+        }
+      ]
+    }
+  ]
+}

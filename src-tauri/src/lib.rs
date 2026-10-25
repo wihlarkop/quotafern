@@ -146,11 +146,15 @@ fn hide_main_window(app: &tauri::AppHandle) {
     }
 }
 
+// AppKit templates need the original monochrome mask, without the derived outline.
+#[cfg(target_os = "macos")]
+const TRAY_ICON_BYTES: &[u8] = include_bytes!("../icons/tray/fern-dark-32.png");
+// A static light core / dark edge keeps separation without guessing shell theme.
+#[cfg(not(target_os = "macos"))]
+const TRAY_ICON_BYTES: &[u8] = include_bytes!("../icons/tray/fern-neutral-32.png");
+
 fn tray_icon() -> Image<'static> {
-    // White glyph: owner-selected fixed fallback for dark taskbars. Window theme
-    // does not reliably describe the Windows/Linux tray background.
-    Image::from_bytes(include_bytes!("../icons/tray/fern-dark-32.png"))
-        .expect("the embedded Quotafern tray icon must be valid PNG")
+    Image::from_bytes(TRAY_ICON_BYTES).expect("the embedded Quotafern tray icon must be valid PNG")
 }
 
 pub fn run() {
@@ -290,6 +294,85 @@ pub fn run() {
             }
         }
     });
+}
+
+#[cfg(test)]
+mod tray_icon_regression {
+    use tauri::image::Image;
+
+    #[test]
+    fn all_tray_sizes_decode_with_transparent_exteriors_and_expected_color_roles() {
+        let assets: [(&[u8], u32, bool); 12] = [
+            (include_bytes!("../icons/tray/fern-dark-16.png"), 16, true),
+            (include_bytes!("../icons/tray/fern-dark-20.png"), 20, true),
+            (include_bytes!("../icons/tray/fern-dark-24.png"), 24, true),
+            (include_bytes!("../icons/tray/fern-dark-32.png"), 32, true),
+            (include_bytes!("../icons/tray/fern-light-16.png"), 16, true),
+            (include_bytes!("../icons/tray/fern-light-20.png"), 20, true),
+            (include_bytes!("../icons/tray/fern-light-24.png"), 24, true),
+            (include_bytes!("../icons/tray/fern-light-32.png"), 32, true),
+            (
+                include_bytes!("../icons/tray/fern-neutral-16.png"),
+                16,
+                false,
+            ),
+            (
+                include_bytes!("../icons/tray/fern-neutral-20.png"),
+                20,
+                false,
+            ),
+            (
+                include_bytes!("../icons/tray/fern-neutral-24.png"),
+                24,
+                false,
+            ),
+            (
+                include_bytes!("../icons/tray/fern-neutral-32.png"),
+                32,
+                false,
+            ),
+        ];
+        for (bytes, size, monochrome) in assets {
+            let image = Image::from_bytes(bytes).expect("tray PNG decodes");
+            assert_eq!((image.width(), image.height()), (size, size));
+            let pixels: Vec<_> = image.rgba().as_chunks::<4>().0.iter().collect();
+            assert!(pixels.iter().any(|p| p[3] == 255));
+            for (i, pixel) in pixels.iter().enumerate() {
+                let x = i as u32 % size;
+                let y = i as u32 / size;
+                if x == 0 || y == 0 || x == size - 1 || y == size - 1 {
+                    assert_eq!(pixel[3], 0, "transparent exterior border");
+                }
+            }
+            let visible: Vec<_> = pixels.iter().filter(|p| p[3] > 0).collect();
+            if monochrome {
+                assert!(visible.iter().all(|p| p[..3] == visible[0][..3]));
+            } else {
+                assert!(visible.iter().any(|p| p[0] > 220 && p[3] > 127));
+                assert!(visible.iter().any(|p| p[0] < 70 && p[3] > 127));
+            }
+        }
+    }
+
+    #[test]
+    fn compiled_tray_selection_preserves_platform_color_contract() {
+        let image = super::tray_icon();
+        assert_eq!((image.width(), image.height()), (32, 32));
+        let visible: Vec<_> = image
+            .rgba()
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .filter(|p| p[3] > 0)
+            .collect();
+        #[cfg(target_os = "macos")]
+        assert!(visible.iter().all(|p| p[..3] == [255, 255, 255]));
+        #[cfg(not(target_os = "macos"))]
+        {
+            assert!(visible.iter().any(|p| p[0] > 220 && p[3] > 127));
+            assert!(visible.iter().any(|p| p[0] < 70 && p[3] > 127));
+        }
+    }
 }
 
 #[cfg(test)]
