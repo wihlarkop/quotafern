@@ -7,19 +7,20 @@ if (mode !== "browser" && mode !== "production") throw new Error("Use browser or
 const session = Bun.argv[3] ?? "quotafern-ux02b-fix";
 const milestone = Bun.argv[4] ?? "ux-02b";
 if (!["ux-02b", "ux-02c", "acc-04"].includes(milestone)) throw new Error("Unknown UI milestone");
-const checkPath = `docs/${milestone}/${mode === "browser" || milestone === "acc-04" ? "browser" : "production"}-check.js`;
+const checkPath = `qa/browser/${milestone}/${mode === "browser" || milestone === "acc-04" ? "browser" : "production"}-check.js`;
 const helper = new Bun.Transpiler({ loader: "ts" })
   .transformSync(await Bun.file("scripts/tab-capture.ts").text())
   .replace(/^export /gm, "");
 const check = await Bun.file(checkPath).text();
 const start = check.indexOf("{") + 1;
-await mkdir(".tmp", { recursive: true });
+await mkdir(".tmp/qa/screenshots/" + milestone, { recursive: true });
+await mkdir(".tmp/qa/results/" + milestone, { recursive: true });
 const bundledPath = `.tmp/${milestone}-${mode}-check-with-tab-capture.js`;
 const interactions =
   milestone === "ux-02c" || milestone === "acc-04"
-    ? (await Bun.file("docs/ux-02c/interaction-check.js").text()).replaceAll(
-        "docs/ux-02c/screenshots/",
-        `docs/${milestone}/screenshots/`,
+    ? (await Bun.file("qa/browser/ux-02c/interaction-check.js").text()).replaceAll(
+        ".tmp/qa/screenshots/ux-02c/",
+        `.tmp/qa/screenshots/${milestone}/`,
       )
     : "";
 await Bun.write(
@@ -49,7 +50,7 @@ if (index < 0) throw new Error("Browser check returned no result");
 const result = JSON.parse(lines[index + 1]) as { checks: number; failures: string[] };
 if (result.failures.length > 0) throw new Error(JSON.stringify(result));
 await Bun.write(
-  `docs/${milestone}/${mode === "browser" ? "browser" : "production"}-results.json`,
+  `.tmp/qa/results/${milestone}/${mode === "browser" ? "browser" : "production"}-results.json`,
   JSON.stringify(result, null, 2) + "\n",
 );
 console.log(`${mode}: ${result.checks} checks passed; ${result.failures.length} failures`);

@@ -11,8 +11,8 @@ import json
 import PIL
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-ROOT = Path(__file__).resolve().parents[2]
-DOC = ROOT / "docs/icon-01"
+ROOT = Path(__file__).resolve().parents[3]
+DOC = ROOT / "docs/assets/icon-01"
 TRAY = ROOT / "src-tauri/icons/tray"
 SIZES = (16, 20, 24, 32)
 SCALE = 8
@@ -115,8 +115,10 @@ def evidence():
                                            "peak_ratio": round(max(ratios), 3)})
         report["backgrounds"].append(row)
     draw.text((28, 1230), "No opaque tile. Antialiasing softens the 0.875px outline; 16px leaf gaps are less distinct.", font=small, fill="#173328")
-    sheet.save(DOC / "tray-contrast.png", optimize=False, compress_level=9)
-    (DOC / "tray-contrast.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    output = ROOT / ".tmp/qa/icon-01"
+    output.mkdir(parents=True, exist_ok=True)
+    sheet.save(output / "tray-contrast.png", optimize=False, compress_level=9)
+    (output / "tray-contrast.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

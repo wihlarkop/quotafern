@@ -17,7 +17,7 @@ async function checkProductionUi(page) {
             : "Usage overview";
     await ready(heading);
     const target = full ? page.locator(".popup") : page;
-    await target.screenshot({ path: `docs/ux-02b/screenshots/${name}.png`, scale: "css" });
+    await target.screenshot({ path: `.tmp/qa/screenshots/ux-02b/${name}.png`, scale: "css" });
   };
   await page.setViewportSize({ width: 380, height: 660 });
   assert((await page.locator(".owned-source").count()) === 0, "Production starts disconnected");

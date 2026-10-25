@@ -8,7 +8,7 @@ async function checkNavigation(page, { tab }, assert, development) {
     const { ready } = await createTabCapture(page, assert);
     await ready(heading);
     await page.screenshot({
-      path: `docs/ux-02c/screenshots/${development ? "source" : "production"}-${name}.png`,
+      path: `.tmp/qa/screenshots/ux-02c/${development ? "source" : "production"}-${name}.png`,
       scale: "css",
     });
   };

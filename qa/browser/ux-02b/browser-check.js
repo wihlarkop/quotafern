@@ -59,7 +59,7 @@ async function checkAccountUi(page) {
       document.querySelectorAll('[role="tabpanel"]').forEach((p) => (p.scrollTop = 0)),
     );
     const target = full ? page.locator(".popup") : page;
-    await target.screenshot({ path: `docs/ux-02b/screenshots/${name}.png`, scale: "css" });
+    await target.screenshot({ path: `.tmp/qa/screenshots/ux-02b/${name}.png`, scale: "css" });
   };
   await tab("Settings");
   await page.getByRole("checkbox", { name: "Show synthetic quota examples" }).check();
