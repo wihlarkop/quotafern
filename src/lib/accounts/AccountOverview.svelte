@@ -163,12 +163,18 @@
               accountId: detail.accountId,
               connectionId: connection.connectionId,
             })} · {connection.verifiedIdentity
-              ? `Verified identity · ${connection.verifiedIdentity} (synthetic)`
+              ? `Verified identity · ${connection.verifiedIdentity}${synthetic ? " (synthetic)" : ""}`
               : "Identity not verified"}
           </p>{/each}
-        <p class="source-freshness">
-          {detailSource.freshness} sample · {sampleTime(detailSource.fetchedAtMs)}
-        </p>
+        {#if detailSource.origin === "synthetic" || detailSource.freshness !== "unknown" || detailSource.fetchedAtMs !== null}<p
+            class="source-freshness"
+          >
+            {detailSource.freshness}
+            {detailSource.origin === "synthetic"
+              ? "sample"
+              : "reading"}{#if detailSource.origin === "synthetic" || detailSource.fetchedAtMs !== null}
+              · {sampleTime(detailSource.fetchedAtMs)}{/if}
+          </p>{/if}
       </section>
       <article class="owned-detail-readings">
         <h2>
@@ -229,9 +235,10 @@
                 : "API metering"}
             </p>
           </div>
-          <span class="source-freshness" class:source-stale={source.freshness === "stale"}
-            >{source.freshness}</span
-          >
+          {#if source.origin === "synthetic" || source.freshness !== "unknown"}<span
+              class="source-freshness"
+              class:source-stale={source.freshness === "stale"}>{source.freshness}</span
+            >{/if}
         </div>
         <p class="owned-source-connection">
           {connections

@@ -60,7 +60,8 @@
 {#if source.data.plan}<p class="source-freshness">{source.data.plan} plan</p>{/if}
 {#if detailed || source.data.subscription.length === 0 || (source.origin === "live" && source.data.credits)}
   <dl class="owned-measures">
-    {#if source.data.apiMetering}<div>
+    {#if source.data.apiMetering && (source.origin === "synthetic" || source.data.apiMetering.value !== null)}<div
+      >
         <dt>API metering</dt>
         <dd>
           {source.data.apiMetering.value === null
@@ -69,7 +70,8 @@
           {source.data.apiMetering.unit}
         </dd>
       </div>{/if}
-    {#if source.origin === "synthetic" || source.data.credits}<div>
+    {#if source.origin === "synthetic" || (source.data.credits && (source.data.credits.unlimited === true || source.data.credits.balance !== null))}<div
+      >
         <dt>Credits</dt>
         <dd>
           {source.data.credits?.unlimited === true
@@ -77,22 +79,29 @@
             : (source.data.credits?.balance ?? "Unknown")} <span>provider credits</span>
         </dd>
       </div>{/if}
-    {#if source.origin === "synthetic" || source.data.spending}<div>
+    {#if source.origin === "synthetic" || (source.data.spending && source.data.spending.used !== null)}<div
+      >
         <dt>Spending</dt>
         <dd>
           {source.data.spending?.used ?? "Unknown"}
-          <span>{source.data.spending?.currency ?? "unit unknown"}</span>
+          {#if source.origin === "synthetic" || source.data.spending?.currency}<span
+              >{source.data.spending?.currency ?? "unit unknown"}</span
+            >{/if}
         </dd>
       </div>{/if}
-    {#if detailed && (source.origin === "synthetic" || source.data.spending)}<div>
+    {#if detailed && (source.origin === "synthetic" || (source.data.spending && source.data.spending.limit !== null))}<div
+      >
         <dt>Spending limit</dt>
         <dd>
           {source.data.spending?.limit ?? "Unknown"}
-          <span>{source.data.spending?.currency ?? "unit unknown"}</span>
+          {#if source.origin === "synthetic" || source.data.spending?.currency}<span
+              >{source.data.spending?.currency ?? "unit unknown"}</span
+            >{/if}
         </dd>
       </div>
     {/if}
-    {#if detailed && (source.origin === "synthetic" || source.data.entitlements)}<div>
+    {#if detailed && (source.origin === "synthetic" || (source.data.entitlements && source.data.entitlements.earnedResets !== null))}<div
+      >
         <dt>Earned resets</dt>
         <dd>{source.data.entitlements?.earnedResets ?? "Unknown"}</dd>
       </div>{/if}

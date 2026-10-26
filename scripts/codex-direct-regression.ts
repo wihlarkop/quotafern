@@ -2,6 +2,7 @@ import {
   CODEX_DIRECT_CONNECTION_AVAILABLE,
   createDirectController,
   directKind,
+  directMessage,
   directSource,
   validDirectSnapshot,
   type DirectSnapshot,
@@ -63,6 +64,16 @@ export async function runCodexDirectRegression(): Promise<number> {
     diagnostic: null,
     ...changes,
   });
+  const launcherMessage = directMessage(
+    snapshot(a.id, {
+      connectionStatus: "unavailable",
+      diagnostic: "directUnsupportedLauncher",
+    }),
+  );
+  assert(
+    /codex\.exe.*PATH/.test(launcherMessage) && /Install.*restart/.test(launcherMessage),
+    "unsupported Windows launcher gives native CLI install and restart guidance",
+  );
   assert(!CODEX_DIRECT_CONNECTION_AVAILABLE, "production renderer gate remains closed");
   assert(
     new Set(initial.metadata.accounts.map((x) => x.id)).size === 3,

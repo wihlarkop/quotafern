@@ -54,7 +54,13 @@
 {#if showHeading}<div class="view-heading">
     <div>
       <h1 tabindex="-1">Accounts</h1>
-      <p>{synthetic ? "Local names, independent connections" : "No accounts configured"}</p>
+      <p>
+        {synthetic
+          ? "Local names, independent connections"
+          : state.metadata.accounts.length
+            ? "Local accounts and connections"
+            : "No accounts configured"}
+      </p>
     </div>
   </div>{/if}
 {#if synthetic}
@@ -340,24 +346,32 @@
                           ? "API key label"
                           : connection.mechanism === "oauth-grant"
                             ? "OAuth grant label"
-                            : "CLI session label"}{#if !synthetic}
+                            : "CLI session label"}{#if !synthetic && connection.runtime.lifecycle === "disconnected" && connectionSources.length === 0}
                         · Descriptor only{/if}{#if connection.workspaceId}
                         · {account.workspaces.find((w) => w.workspaceId === connection.workspaceId)
                           ?.alias}{/if}
                     </p>
                     <p>
                       {connection.verifiedIdentity
-                        ? `Verified identity · ${connection.verifiedIdentity} (synthetic)`
+                        ? `Verified identity · ${connection.verifiedIdentity}${synthetic ? " (synthetic)" : ""}`
                         : "Identity not verified"}
                     </p>
-                    {#each connectionSources as source (source.id)}<p class="connection-freshness">
-                        {source.freshness === "stale"
-                          ? "Stale"
-                          : source.freshness === "current"
-                            ? "Current"
-                            : "Unknown"} sample · {sampleTime(source.fetchedAtMs)}
-                      </p>{/each}
-                    {#if connectionSources.length === 0}<p>No quota source · Unknown</p>{/if}
+                    {#each connectionSources as source (source.id)}{#if source.origin === "synthetic" || source.freshness !== "unknown" || source.fetchedAtMs !== null}<p
+                          class="connection-freshness"
+                        >
+                          {source.freshness === "stale"
+                            ? "Stale"
+                            : source.freshness === "current"
+                              ? "Current"
+                              : "Unknown"}
+                          {source.origin === "synthetic"
+                            ? "sample"
+                            : "reading"}{#if source.origin === "synthetic" || source.fetchedAtMs !== null}
+                            · {sampleTime(source.fetchedAtMs)}{/if}
+                        </p>{/if}{/each}
+                    {#if connectionSources.length === 0}<p>
+                        {synthetic ? "No quota source · Unknown" : "No quota source"}
+                      </p>{/if}
                     {#if CODEX_DIRECT_CONNECTION_AVAILABLE && presentations[connection.connectionId]?.message}<p
                         class="connection-freshness"
                         role="status"
@@ -369,10 +383,14 @@
                         class="connection-problem"
                       >
                         {connection.runtime.diagnostic === "authentication-expired"
-                          ? "Sample authorization expired; this connection has no values."
+                          ? synthetic
+                            ? "Sample authorization expired; this connection has no values."
+                            : "Authorization expired. Sign in to Codex again, then reconnect."
                           : connection.runtime.diagnostic === "cleanup-failed"
                             ? "Cleanup confirmation pending."
-                            : "Sample read failed; this connection has no values."}
+                            : synthetic
+                              ? "Sample read failed; this connection has no values."
+                              : "Usage could not be read. Try connecting again."}
                       </p>{/if}
                     {#if ondetails}{#each connectionSources as source (source.id)}<Button
                           variant="ghost"

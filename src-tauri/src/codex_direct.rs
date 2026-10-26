@@ -111,6 +111,7 @@ enum Failure {
     Schema,
     Cancelled,
     LoginFailed,
+    UnsupportedLauncher,
 }
 impl Failure {
     fn diagnostic(self) -> &'static str {
@@ -130,6 +131,7 @@ impl Failure {
             Self::Schema => "directSchemaIncompatible",
             Self::Cancelled => "directOperationCancelled",
             Self::LoginFailed => "directLoginFailed",
+            Self::UnsupportedLauncher => "directUnsupportedLauncher",
         }
     }
     fn status(self) -> &'static str {
@@ -137,6 +139,7 @@ impl Failure {
             Self::AuthRequired | Self::IdentityChanged => "auth-required",
             Self::UnsupportedAuth => "unsupported",
             Self::Schema => "incompatible",
+            Self::UnsupportedLauncher => "unavailable",
             _ => "error",
         }
     }
@@ -1121,7 +1124,13 @@ fn run_login(bridge: &DirectBridge, operation: &Operation) -> Result<(), Failure
         return Err(Failure::UnsupportedAuth);
     }
     check_cancel(&operation.cancelled)?;
-    let executable = crate::codex::direct_login_executable().ok_or(Failure::LoginFailed)?;
+    let executable = crate::codex::direct_login_executable().map_err(|diagnostic| {
+        if diagnostic == "unsupportedLauncher" {
+            Failure::UnsupportedLauncher
+        } else {
+            Failure::LoginFailed
+        }
+    })?;
     run_login_with_executable(bridge, operation, &executable)
 }
 fn run_login_with_executable(
@@ -1757,6 +1766,52 @@ mod tests {
         stop.join().unwrap();
         thread.join().unwrap();
     }
+    #[cfg(windows)]
+    fn set_synthetic_file_owner(file: &std::fs::File, home: &Path) {
+        use std::os::windows::fs::OpenOptionsExt;
+        use std::os::windows::io::AsRawHandle;
+        use windows_sys::Win32::Security::Authorization::{
+            GetSecurityInfo, SetSecurityInfo, SE_FILE_OBJECT,
+        };
+        use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
+        let directory = OpenOptions::new()
+            .read(true)
+            .custom_flags(0x02200000)
+            .open(home)
+            .unwrap();
+        windows_security::verify_private(&directory).unwrap();
+        // File ownership defaults to TokenOwner, not the parent directory owner.
+        // Elevated runners may default to Administrators; fixtures model a user-owned file.
+        unsafe {
+            let mut owner = std::ptr::null_mut();
+            let mut descriptor = std::ptr::null_mut();
+            assert_eq!(
+                GetSecurityInfo(
+                    directory.as_raw_handle(),
+                    SE_FILE_OBJECT,
+                    OWNER_SECURITY_INFORMATION,
+                    &mut owner,
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
+                    &mut descriptor
+                ),
+                0
+            );
+            let result = SetSecurityInfo(
+                file.as_raw_handle(),
+                SE_FILE_OBJECT,
+                OWNER_SECURITY_INFORMATION,
+                owner,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+            );
+            windows_sys::Win32::Foundation::LocalFree(descriptor);
+            assert_eq!(result, 0);
+        }
+        windows_security::verify_private(file).unwrap();
+    }
     #[test]
     fn selected_home_file_adapter_config_and_size_guards() {
         let root = std::env::temp_dir().canonicalize().unwrap().join(format!(
@@ -1773,8 +1828,15 @@ mod tests {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            options.access_mode(0x40000000 | 0x00080000 | 0x00020000); // GENERIC_WRITE | WRITE_OWNER | READ_CONTROL
+        }
         let mut auth = options.open(&auth_path).unwrap();
         auth.write_all(br#"{"tokens":{"access_token":"synthetic-access-token-only","account_id":"synthetic-account"}}"#).unwrap();
+        #[cfg(windows)]
+        set_synthetic_file_owner(&auth, &root);
         drop(auth);
         assert!(read_credentials(&root, &AtomicBool::new(false)).is_ok());
         fs::write(

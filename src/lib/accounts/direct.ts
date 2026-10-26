@@ -160,6 +160,8 @@ export function directSource(
   };
 }
 export function directMessage(snapshot: DirectSnapshot): string {
+  if (snapshot.diagnostic === "directUnsupportedLauncher")
+    return "A native codex.exe is required on PATH. Shell launchers (.cmd, .bat, .ps1) are unsupported. Install the native Codex CLI and restart Quotafern.";
   switch (snapshot.connectionStatus) {
     case "connected":
       return snapshot.dataStatus === "error"

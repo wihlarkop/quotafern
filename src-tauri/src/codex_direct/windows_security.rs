@@ -152,9 +152,12 @@ pub(super) fn create_private_directory(path: &std::path::Path) -> Result<(), Fai
         }
         let user = String::from_utf16(std::slice::from_raw_parts(sid_text, length))
             .map_err(|_| Failure::UnsafePath)?;
-        let sddl: Vec<u16> = format!("D:P(A;OICI;FA;;;{user})(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)\0")
-            .encode_utf16()
-            .collect();
+        // TokenOwner can be Administrators for elevated processes. Match the strict
+        // TokenUser ownership check at creation, without relaxing the protected DACL.
+        let sddl: Vec<u16> =
+            format!("O:{user}D:P(A;OICI;FA;;;{user})(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)\0")
+                .encode_utf16()
+                .collect();
         let mut descriptor = null_mut();
         if ConvertStringSecurityDescriptorToSecurityDescriptorW(
             sddl.as_ptr(),

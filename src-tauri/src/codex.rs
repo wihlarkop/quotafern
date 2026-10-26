@@ -811,18 +811,22 @@ fn apply_failure(snapshot: &mut CodexSnapshot, error: BridgeFailure) {
     snapshot.diagnostic = Some(error.diagnostic());
 }
 
-pub(crate) fn direct_login_executable() -> Option<PathBuf> {
-    find_codex_executable().ok()
+pub(crate) fn direct_login_executable() -> Result<PathBuf, &'static str> {
+    find_codex_executable().map_err(|failure| failure.diagnostic())
 }
 
 fn find_codex_executable() -> Result<PathBuf, BridgeFailure> {
     let path = env::var_os("PATH").ok_or(BridgeFailure::CodexNotFound)?;
+    find_codex_on_path(&path)
+}
+
+fn find_codex_on_path(path: &std::ffi::OsStr) -> Result<PathBuf, BridgeFailure> {
     #[cfg(windows)]
     let mut saw_unsupported = false;
     #[cfg(not(windows))]
     let saw_unsupported = false;
 
-    for directory in env::split_paths(&path).filter(|entry| entry.is_absolute()) {
+    for directory in env::split_paths(path).filter(|entry| entry.is_absolute()) {
         #[cfg(windows)]
         let names = ["codex.exe"];
         #[cfg(not(windows))]
@@ -2318,6 +2322,31 @@ mod tests {
         assert!(!serialized.contains("secret"));
     }
 
+    #[cfg(windows)]
+    #[test]
+    fn shell_launchers_are_refused_without_execution() {
+        let root = std::env::temp_dir()
+            .canonicalize()
+            .unwrap()
+            .join(format!("quotafern-launcher-fixture-{}", std::process::id()));
+        std::fs::create_dir(&root).unwrap();
+        for name in ["codex.cmd", "codex.bat", "codex.ps1"] {
+            let shim = root.join(name);
+            // A shell invocation would leave a marker; lookup must never execute this.
+            std::fs::write(&shim, "echo forbidden > executed-marker").unwrap();
+            assert_eq!(
+                find_codex_on_path(root.as_os_str()),
+                Err(BridgeFailure::UnsupportedLauncher)
+            );
+            assert!(!root.join("executed-marker").exists());
+            std::fs::remove_file(shim).unwrap();
+        }
+        assert_eq!(
+            find_codex_on_path(root.as_os_str()),
+            Err(BridgeFailure::CodexNotFound)
+        );
+        std::fs::remove_dir(root).unwrap();
+    }
     #[test]
     fn version_allowlist_is_checked_with_synthetic_output() {
         assert_eq!(check_supported_codex_version("codex-cli 0.164.0"), Ok(()));
