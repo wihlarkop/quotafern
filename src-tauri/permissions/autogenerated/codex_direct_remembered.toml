@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-codex-direct-remembered"
+description = "Enables the codex_direct_remembered command without any pre-configured scope."
+commands.allow = ["codex_direct_remembered"]
+
+[[permission]]
+identifier = "deny-codex-direct-remembered"
+description = "Denies the codex_direct_remembered command without any pre-configured scope."
+commands.deny = ["codex_direct_remembered"]

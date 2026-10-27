@@ -4,7 +4,7 @@
 //! `PROC_THREAD_ATTRIBUTE_JOB_LIST` as part of `CreateProcessW`. It is resumed
 //! only after the process and its standard handles are safely owned here.
 
-use std::ffi::OsStr;
+use std::ffi::{OsStr, OsString};
 use std::fs::File;
 use std::io;
 use std::mem::{size_of, zeroed};
@@ -59,6 +59,7 @@ pub(crate) enum InputMode {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum OutputMode {
     Pipe,
+    Null,
 }
 
 /// A Windows child process whose entire descendant tree belongs to a private job.
@@ -83,6 +84,17 @@ impl SupervisedChild {
         stdin_mode: InputMode,
         stdout_mode: OutputMode,
     ) -> io::Result<Self> {
+        Self::spawn_with_environment(executable, args, stdin_mode, stdout_mode, None, None)
+    }
+
+    pub(crate) fn spawn_with_environment(
+        executable: &Path,
+        args: &[impl AsRef<OsStr>],
+        stdin_mode: InputMode,
+        stdout_mode: OutputMode,
+        environment: Option<&[(OsString, OsString)]>,
+        current_directory: Option<&Path>,
+    ) -> io::Result<Self> {
         let job = create_kill_on_close_job()?;
         let mut pending = create_suspended_process(
             executable.as_os_str(),
@@ -90,6 +102,8 @@ impl SupervisedChild {
             stdin_mode,
             stdout_mode,
             job.as_raw_handle() as HANDLE,
+            environment,
+            current_directory,
         )?;
 
         // JOB_LIST assigns membership during process creation. The primary thread
@@ -111,6 +125,40 @@ impl SupervisedChild {
         self.process_id
     }
 
+    pub(crate) fn process_ids(&self) -> io::Result<Vec<u32>> {
+        use windows_sys::Win32::System::JobObjects::{
+            JobObjectBasicProcessIdList, JOBOBJECT_BASIC_PROCESS_ID_LIST,
+        };
+        // No PID discovery outside our private job. Refuse an oversized tree.
+        let mut storage = vec![0usize; 258];
+        if unsafe {
+            QueryInformationJobObject(
+                raw(&self.job),
+                JobObjectBasicProcessIdList,
+                storage.as_mut_ptr().cast(),
+                (storage.len() * size_of::<usize>()) as u32,
+                null_mut(),
+            )
+        } == 0
+        {
+            return Err(io::Error::last_os_error());
+        }
+        let info = unsafe { &*storage.as_ptr().cast::<JOBOBJECT_BASIC_PROCESS_ID_LIST>() };
+        if info.NumberOfAssignedProcesses != info.NumberOfProcessIdsInList
+            || info.NumberOfProcessIdsInList > 256
+        {
+            return Err(io::Error::other("owned process list exceeded bound"));
+        }
+        let ids = unsafe {
+            std::slice::from_raw_parts(
+                info.ProcessIdList.as_ptr(),
+                info.NumberOfProcessIdsInList as usize,
+            )
+        };
+        ids.iter()
+            .map(|id| u32::try_from(*id).map_err(|_| io::Error::other("invalid owned PID")))
+            .collect()
+    }
     pub(crate) fn take_stdin(&mut self) -> Option<ChildInput> {
         self.stdin.take()
     }
@@ -122,7 +170,7 @@ impl SupervisedChild {
     /// Return a cloneable, non-blocking handle for cancellation paths outside the
     /// session lock. Calling it terminates the job immediately; the owner later
     /// verifies that every process has exited before reporting cleanup complete.
-    pub(super) fn terminate_handle(&self) -> TerminationHandle {
+    pub(crate) fn terminate_handle(&self) -> TerminationHandle {
         TerminationHandle {
             job: Arc::clone(&self.job),
         }
@@ -192,13 +240,13 @@ impl Drop for SupervisedChild {
 }
 
 #[derive(Clone)]
-pub(super) struct TerminationHandle {
+pub(crate) struct TerminationHandle {
     job: Arc<OwnedHandle>,
 }
 
 impl TerminationHandle {
     /// Send termination to the job without waiting for blocked I/O or process exit.
-    pub(super) fn terminate(&self) -> io::Result<()> {
+    pub(crate) fn terminate(&self) -> io::Result<()> {
         if unsafe { TerminateJobObject(raw(&self.job), 1) } == 0 {
             let error = io::Error::last_os_error();
             if active_process_count(raw(&self.job))? == 0 {
@@ -321,6 +369,7 @@ impl ChildHandles {
         };
 
         let (parent_read, child_write) = match stdout_mode {
+            OutputMode::Null => (None, open_null_device(false)?),
             OutputMode::Pipe => {
                 let (parent_read, child_write) = create_pipe()?;
                 clear_inherit_flag(&parent_read)?;
@@ -353,6 +402,8 @@ fn create_suspended_process(
     stdin_mode: InputMode,
     stdout_mode: OutputMode,
     job: HANDLE,
+    environment: Option<&[(OsString, OsString)]>,
+    current_directory: Option<&Path>,
 ) -> io::Result<PendingProcess> {
     let executable_wide = nul_terminated_wide(executable)?;
     let mut command_line = command_line(executable, args)?;
@@ -397,6 +448,21 @@ fn create_suspended_process(
     startup.StartupInfo.hStdError = inherited_handles[2];
     startup.lpAttributeList = attributes.as_mut_ptr();
 
+    let mut environment_block = Vec::new();
+    if let Some(entries) = environment {
+        let mut entries: Vec<_> = entries.iter().collect();
+        entries.sort_by_key(|(key, _)| key.to_string_lossy().to_ascii_lowercase());
+        for (key, value) in entries {
+            let mut entry = key.clone();
+            entry.push("=");
+            entry.push(value);
+            environment_block.extend(nul_terminated_wide(&entry)?);
+        }
+        environment_block.push(0);
+    }
+    let directory_wide = current_directory
+        .map(|path| nul_terminated_wide(path.as_os_str()))
+        .transpose()?;
     let mut process_info: PROCESS_INFORMATION = unsafe { zeroed() };
     let created = unsafe {
         CreateProcessW(
@@ -405,9 +471,18 @@ fn create_suspended_process(
             null(),
             null(),
             1,
-            EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED | CREATE_NO_WINDOW,
-            null(),
-            null(),
+            EXTENDED_STARTUPINFO_PRESENT
+                | CREATE_SUSPENDED
+                | CREATE_NO_WINDOW
+                | windows_sys::Win32::System::Threading::CREATE_UNICODE_ENVIRONMENT,
+            if environment.is_some() {
+                environment_block.as_ptr().cast()
+            } else {
+                null()
+            },
+            directory_wide
+                .as_ref()
+                .map_or(null(), |directory| directory.as_ptr()),
             (&startup.StartupInfo as *const windows_sys::Win32::System::Threading::STARTUPINFOW)
                 .cast(),
             &mut process_info,
@@ -729,6 +804,8 @@ mod tests {
             InputMode::Null,
             OutputMode::Pipe,
             event.as_raw_handle() as HANDLE,
+            None,
+            None,
         );
         match result {
             Err(_) => {}

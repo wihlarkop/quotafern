@@ -21,8 +21,14 @@
     createAccountDemo,
     type AccountDemoScenario,
   } from "./lib/accounts/demo";
+  import {
+    CODEX_DIRECT_CONNECTION_AVAILABLE,
+    createDirectController,
+    type DirectPresentation,
+  } from "./lib/accounts/direct";
   import { createLocalStore } from "./lib/accounts/local";
   import LocalAccounts from "./lib/accounts/LocalAccounts.svelte";
+  import type { ConnectionId } from "./lib/accounts/model";
   import {
     initialNavigation,
     reconcileNavigation,
@@ -86,7 +92,15 @@
 
   let activeTab = $state("overview");
   const localStore = createLocalStore(() => window.localStorage);
-  let localAccountState = $state(localStore.state);
+  let localAccountState = $state.raw(localStore.state);
+  let directConnectedCount = $derived(
+    localAccountState.connections.filter((c) => c.lifecycle === "connected").length,
+  );
+  let directPresentations = $state.raw<Partial<Record<ConnectionId, DirectPresentation>>>({});
+  const directController = createDirectController(localStore.state, (state, presentations) => {
+    localAccountState = state;
+    directPresentations = presentations;
+  });
   let accountNavigation = $state<AccountNavigation>(initialNavigation());
   $effect(() => {
     const next = reconcileNavigation(visibleAccountState, accountNavigation);
@@ -352,6 +366,11 @@
 
   async function changeDemoPreview(enabled: boolean) {
     if (codexBusy) return;
+    if (enabled && !(await directController.disconnectAll())) {
+      codexNotice =
+        "Could not confirm monitoring stopped. Disconnect each Codex account before opening Demo.";
+      return;
+    }
     codexNotice = "";
     if (enabled && codexSnapshot.connectionStatus !== "disconnected") {
       const stopped = await disconnectCodex();
@@ -403,9 +422,11 @@
   }
 
   onMount(() => {
+    if (!demoPreview) void directController.reconnectRemembered();
     let mediaQuery: MediaQueryList | null = null;
     const clock = window.setInterval(() => {
       liveNowMs = Date.now();
+      if (!demoPreview) directController.refreshDue(liveNowMs);
       void pollCodexStatus();
     }, 1000);
     try {
@@ -589,20 +610,23 @@
       {:else}
         <span
           class="connection-badge"
-          class:connected={agedCodexSnapshot.connectionStatus === "connected"}
+          class:connected={directConnectedCount > 0 ||
+            agedCodexSnapshot.connectionStatus === "connected"}
           class:failed={agedCodexSnapshot.connectionStatus === "error" ||
             agedCodexSnapshot.connectionStatus === "unavailable" ||
             agedCodexSnapshot.connectionStatus === "incompatible" ||
             agedCodexSnapshot.connectionStatus === "unsupported"}
         >
           <span aria-hidden="true"></span>
-          {agedCodexSnapshot.connectionStatus === "connected"
-            ? "Codex live"
-            : agedCodexSnapshot.connectionStatus === "disconnected"
-              ? "Codex disconnected"
-              : agedCodexSnapshot.connectionStatus === "auth-required"
-                ? "Sign-in needed"
-                : agedCodexSnapshot.connectionStatus}
+          {directConnectedCount > 0
+            ? `Codex live · ${directConnectedCount}`
+            : agedCodexSnapshot.connectionStatus === "connected"
+              ? "Codex live"
+              : agedCodexSnapshot.connectionStatus === "disconnected"
+                ? "Codex disconnected"
+                : agedCodexSnapshot.connectionStatus === "auth-required"
+                  ? "Sign-in needed"
+                  : agedCodexSnapshot.connectionStatus}
         </span>
       {/if}
       <Button
@@ -640,15 +664,19 @@
       tabScroll.overview = event.currentTarget.scrollTop;
     }}
   >
-    {#if demoPreview || !CODEX_CONNECTION_AVAILABLE}
+    {#if demoPreview || CODEX_DIRECT_CONNECTION_AVAILABLE || !CODEX_CONNECTION_AVAILABLE}
       <AccountOverview
         state={visibleAccountState}
         synthetic={demoPreview}
-        nowMs={snapshotNow}
+        nowMs={demoPreview ? snapshotNow : liveNowMs}
         navigation={accountNavigation}
         oncontext={selectAccountContext}
         ondetails={openAccountDetails}
         onback={backAccountContext}
+        onrefresh={!demoPreview && CODEX_DIRECT_CONNECTION_AVAILABLE && directConnectedCount > 0
+          ? () => void directController.refreshAll()
+          : undefined}
+        refreshing={Object.values(directPresentations).some((p) => p?.busy)}
       />
     {:else if showCodexDetails}
       <div class="view-heading">
@@ -874,7 +902,9 @@
       <LocalAccounts
         state={localAccountState}
         store={localStore}
-        onstate={(state) => (localAccountState = state)}
+        onstate={(state) => directController.updateMetadata(state)}
+        direct={directController}
+        presentations={directPresentations}
         bind:collapsedProviders
         onoverview={openAccountOverview}
         ondetails={openAccountDetails}
@@ -902,7 +932,8 @@
             </div>
             <span
               class="account-state codex-connection-state"
-              class:connected={agedCodexSnapshot.connectionStatus === "connected"}
+              class:connected={directConnectedCount > 0 ||
+                agedCodexSnapshot.connectionStatus === "connected"}
               class:failed={agedCodexSnapshot.connectionStatus === "error" ||
                 agedCodexSnapshot.connectionStatus === "unavailable" ||
                 agedCodexSnapshot.connectionStatus === "incompatible" ||
@@ -1188,14 +1219,15 @@
       <span
         class="footer-dot"
         class:preview={demoPreview}
-        class:connected={agedCodexSnapshot.connectionStatus === "connected"}
+        class:connected={directConnectedCount > 0 ||
+          agedCodexSnapshot.connectionStatus === "connected"}
         class:failed={agedCodexSnapshot.connectionStatus !== "connected" &&
           agedCodexSnapshot.connectionStatus !== "disconnected"}
         aria-hidden="true"
       ></span>
       {demoPreview
         ? "Demo preview · synthetic data"
-        : agedCodexSnapshot.connectionStatus === "connected"
+        : directConnectedCount > 0 || agedCodexSnapshot.connectionStatus === "connected"
           ? "Codex · live subscription limits"
           : "Codex · not connected"}
     </span>

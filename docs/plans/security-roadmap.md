@@ -1,5 +1,7 @@
 # Quotafern security roadmap
 
+> **2026-10-26 scope update:** CODEX-LIVE-01 authorizes a separate consented, native direct-HTTP adapter using selected Codex file credentials and isolated Codex-managed login. The historical app-server/SIWC conclusions below remain evidence for those routes, not a prohibition on the new route. Both old app-server gates remain closed. See [current direct integration](../security/codex-live-01.md); live direct activation still requires security and owner acceptance.
+
 Research and status date: 2026-10-24. This roadmap covers the local-first Tauri desktop app and its provider connections. It records the current foundation and concrete acceptance conditions; it does not claim the full roadmap is complete.
 
 ## SEC-01 — Threat model and auth architecture

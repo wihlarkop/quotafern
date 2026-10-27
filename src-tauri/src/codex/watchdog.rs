@@ -6,17 +6,25 @@ use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
 
-pub(super) type Deadline = Arc<Mutex<Option<Instant>>>;
+pub(crate) type Deadline = Arc<Mutex<Option<Instant>>>;
 
-pub(super) struct IoWatchdog {
+pub(crate) struct IoWatchdog {
     stopped: Arc<AtomicBool>,
     thread: Option<JoinHandle<()>>,
 }
 
 impl IoWatchdog {
-    pub(super) fn start(
+    pub(crate) fn start(
         kill: TerminationHandle,
         cancel: Arc<AtomicBool>,
+        deadline: Deadline,
+    ) -> io::Result<Self> {
+        Self::start_with_parent_cancel(kill, cancel, None, deadline)
+    }
+    pub(crate) fn start_with_parent_cancel(
+        kill: TerminationHandle,
+        cancel: Arc<AtomicBool>,
+        parent: Option<Arc<AtomicBool>>,
         deadline: Deadline,
     ) -> io::Result<Self> {
         let stopped = Arc::new(AtomicBool::new(false));
@@ -28,7 +36,12 @@ impl IoWatchdog {
                     let expired = deadline
                         .lock()
                         .map_or(true, |value| value.is_some_and(|at| Instant::now() >= at));
-                    if cancel.load(Ordering::SeqCst) || expired {
+                    if cancel.load(Ordering::SeqCst)
+                        || parent
+                            .as_ref()
+                            .is_some_and(|flag| flag.load(Ordering::SeqCst))
+                        || expired
+                    {
                         cancel.store(true, Ordering::SeqCst);
                         let _ = kill.terminate();
                         return;
@@ -52,10 +65,10 @@ impl Drop for IoWatchdog {
     }
 }
 
-pub(super) struct RequestDeadline(Option<Deadline>);
+pub(crate) struct RequestDeadline(Option<Deadline>);
 
 impl RequestDeadline {
-    pub(super) fn arm(deadline: &Option<Deadline>, timeout: Duration) -> Self {
+    pub(crate) fn arm(deadline: &Option<Deadline>, timeout: Duration) -> Self {
         if let Some(shared) = deadline {
             if let Ok(mut value) = shared.lock() {
                 *value = Some(Instant::now() + timeout);

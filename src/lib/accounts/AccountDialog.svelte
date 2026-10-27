@@ -2,6 +2,7 @@
   import { onMount, untrack } from "svelte";
 
   import { Button } from "../components/ui/button";
+  import { CODEX_DIRECT_CONNECTION_AVAILABLE, type DirectKind } from "./direct";
   import { aliasError, type LocalAction, type ManagementTarget } from "./local";
   import { PROVIDERS, type AccountState, type Mechanism, type WorkspaceId } from "./model";
   import { contextLabel } from "./navigation";
@@ -14,7 +15,7 @@
   }: {
     target: ManagementTarget;
     state: AccountState;
-    onsave: (action: LocalAction) => string | null;
+    onsave: (action: LocalAction) => Promise<string | null>;
     ondone: () => void;
   } = $props();
   const target = untrack(() => requestedTarget);
@@ -41,6 +42,8 @@
   let mechanism = $state<Mechanism>(
     account?.providerId === "openrouter" ? "api-key" : "cli-session",
   );
+  let codexKind = $state<DirectKind>("system");
+  let saving = $state(false);
   let workspace = $state("");
   let workspaceAlias = $state("");
   let error = $state("");
@@ -90,8 +93,9 @@
       (event.shiftKey ? controls.at(-1) : controls[0])?.focus();
     }
   }
-  function save(event: SubmitEvent) {
+  async function save(event: SubmitEvent) {
     event.preventDefault();
+    if (saving) return;
     aliasIssue = !removing && aliasError(alias) !== null;
     workspaceIssue =
       target.kind === "add-connection" &&
@@ -109,7 +113,12 @@
     let action: LocalAction;
     switch (target.kind) {
       case "add-account":
-        action = { kind: target.kind, providerId, alias };
+        action = {
+          kind: target.kind,
+          providerId,
+          alias,
+          ...(CODEX_DIRECT_CONNECTION_AVAILABLE && providerId === "codex" ? { codexKind } : {}),
+        };
         break;
       case "add-connection":
         action = {
@@ -128,7 +137,9 @@
       default:
         action = target;
     }
-    const failure = onsave(action);
+    saving = true;
+    const failure = await onsave(action);
+    saving = false;
     if (failure) {
       error = failure;
       return;
@@ -146,7 +157,7 @@
   onkeydown={modalKeys}
   oncancel={(event) => {
     event.preventDefault();
-    dialog.close();
+    if (!saving) dialog.close();
   }}
 >
   <form onsubmit={save}>
@@ -172,11 +183,22 @@
         <label for="local-provider">Provider</label>
         <select id="local-provider" bind:value={providerId}
           >{#each PROVIDERS as provider}<option value={provider.id}
-              >{provider.displayName} · {provider.adapter === "gated"
-                ? "Live disabled"
-                : "Coming Soon"}</option
+              >{provider.displayName} · {provider.id === "codex" &&
+              CODEX_DIRECT_CONNECTION_AVAILABLE
+                ? "Available"
+                : provider.adapter === "gated"
+                  ? "Live disabled"
+                  : "Coming Soon"}</option
             >{/each}</select
         >
+      {/if}
+      {#if target.kind === "add-account" && providerId === "codex" && CODEX_DIRECT_CONNECTION_AVAILABLE}
+        <label for="codex-account-kind">Codex account</label>
+        <select id="codex-account-kind" bind:value={codexKind}>
+          <option value="system">Use existing Codex account</option>
+          <option value="managed">Sign in to a separate account</option>
+        </select>
+        <p>Adding a label does not connect. You will confirm read-only monitoring separately.</p>
       {/if}
       <label for="local-alias"
         >{target.kind.includes("account") ? "Account alias" : "Connection label"}</label
@@ -238,8 +260,9 @@
       {error}
     </p>
     <div class="local-dialog-actions">
-      <Button type="button" variant="outline" onclick={() => dialog.close()}>Cancel</Button><Button
-        type="submit"
+      <Button type="button" variant="outline" disabled={saving} onclick={() => dialog.close()}
+        >Cancel</Button
+      ><Button type="submit" disabled={saving}
         >{target.kind === "reset"
           ? "Reset local metadata"
           : removing

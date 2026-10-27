@@ -9,20 +9,18 @@ use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tauri::{Runtime, State, WebviewWindow};
-#[cfg(not(test))]
-use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 
 mod consent;
 mod monitoring;
 #[cfg(windows)]
-mod process;
+pub(crate) mod process;
 #[cfg(unix)]
 #[path = "codex/process_unix.rs"]
-mod process;
+pub(crate) mod process;
 use consent::{ConsentGate, NativeConsent};
 use monitoring::{apply_activity_result, apply_quota_monitoring, CodexMonitoring};
 use process::{ChildInput, InputMode, OutputMode, SupervisedChild as OwnedChild};
-mod watchdog;
+pub(crate) mod watchdog;
 use watchdog::{Deadline, IoWatchdog, RequestDeadline};
 #[cfg(test)]
 mod lifecycle_tests;
@@ -811,14 +809,22 @@ fn apply_failure(snapshot: &mut CodexSnapshot, error: BridgeFailure) {
     snapshot.diagnostic = Some(error.diagnostic());
 }
 
+pub(crate) fn direct_login_executable() -> Result<PathBuf, &'static str> {
+    find_codex_executable().map_err(|failure| failure.diagnostic())
+}
+
 fn find_codex_executable() -> Result<PathBuf, BridgeFailure> {
     let path = env::var_os("PATH").ok_or(BridgeFailure::CodexNotFound)?;
+    find_codex_on_path(&path)
+}
+
+fn find_codex_on_path(path: &std::ffi::OsStr) -> Result<PathBuf, BridgeFailure> {
     #[cfg(windows)]
     let mut saw_unsupported = false;
     #[cfg(not(windows))]
     let saw_unsupported = false;
 
-    for directory in env::split_paths(&path).filter(|entry| entry.is_absolute()) {
+    for directory in env::split_paths(path).filter(|entry| entry.is_absolute()) {
         #[cfg(windows)]
         let names = ["codex.exe"];
         #[cfg(not(windows))]
@@ -1468,15 +1474,9 @@ fn ensure_main_window<R: Runtime>(window: &WebviewWindow<R>) -> Result<(), Strin
 }
 
 #[cfg(not(test))]
-fn confirm_native<R: Runtime>(window: &WebviewWindow<R>) -> bool {
-    // Fixed native-only disclosure and answer. Neither the checkbox nor any
-    // renderer payload can approve this interaction. Never runs on UI thread.
-    window.dialog()
-            .message("Start Codex monitoring for this app session?\n\nQuotafern will start your installed Codex app-server and read subscription quotas, credits, spending controls, earned resets and token activity. Codex owns your existing sign-in and may refresh tokens, save its authentication/runtime state and apply workspace policies.\n\nNo agent turns, purchases, reset redemption or login/logout will be requested. Disconnect stops monitoring and its child processes without signing out of Codex. Consent is not remembered after restart.")
-            .title("Quotafern — authorize Codex monitoring")
-            .parent(&window)
-            .buttons(MessageDialogButtons::OkCancelCustom("Start monitoring".into(), "Cancel".into()))
-            .blocking_show()
+fn confirm_native<R: Runtime>(_window: &WebviewWindow<R>) -> bool {
+    // This retired route remains disabled. No OS dialog and no implicit authorization.
+    false
 }
 
 #[cfg(test)]
@@ -2314,6 +2314,31 @@ mod tests {
         assert!(!serialized.contains("secret"));
     }
 
+    #[cfg(windows)]
+    #[test]
+    fn shell_launchers_are_refused_without_execution() {
+        let root = std::env::temp_dir()
+            .canonicalize()
+            .unwrap()
+            .join(format!("quotafern-launcher-fixture-{}", std::process::id()));
+        std::fs::create_dir(&root).unwrap();
+        for name in ["codex.cmd", "codex.bat", "codex.ps1"] {
+            let shim = root.join(name);
+            // A shell invocation would leave a marker; lookup must never execute this.
+            std::fs::write(&shim, "echo forbidden > executed-marker").unwrap();
+            assert_eq!(
+                find_codex_on_path(root.as_os_str()),
+                Err(BridgeFailure::UnsupportedLauncher)
+            );
+            assert!(!root.join("executed-marker").exists());
+            std::fs::remove_file(shim).unwrap();
+        }
+        assert_eq!(
+            find_codex_on_path(root.as_os_str()),
+            Err(BridgeFailure::CodexNotFound)
+        );
+        std::fs::remove_dir(root).unwrap();
+    }
     #[test]
     fn version_allowlist_is_checked_with_synthetic_output() {
         assert_eq!(check_supported_codex_version("codex-cli 0.164.0"), Ok(()));

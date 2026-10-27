@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-codex-consent-cancel"
+description = "Enables the codex_consent_cancel command without any pre-configured scope."
+commands.allow = ["codex_consent_cancel"]
+
+[[permission]]
+identifier = "deny-codex-consent-cancel"
+description = "Denies the codex_consent_cancel command without any pre-configured scope."
+commands.deny = ["codex_consent_cancel"]

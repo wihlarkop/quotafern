@@ -5,6 +5,14 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  build: {
+    rolldownOptions: {
+      input: {
+        main: fileURLToPath(new URL("./index.html", import.meta.url)),
+        consent: fileURLToPath(new URL("./consent.html", import.meta.url)),
+      },
+    },
+  },
   plugins: [svelte(), tailwindcss()],
   resolve: { alias: { $lib: fileURLToPath(new URL("./src/lib", import.meta.url)) } },
   server: {

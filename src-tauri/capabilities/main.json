@@ -8,6 +8,13 @@
     "allow-codex-connect",
     "allow-codex-refresh",
     "allow-codex-disconnect",
-    "allow-codex-status"
+    "allow-codex-status",
+    "allow-codex-direct-connect",
+    "allow-codex-direct-login",
+    "allow-codex-direct-refresh",
+    "allow-codex-direct-disconnect",
+    "allow-codex-direct-status",
+    "allow-codex-direct-remembered",
+    "allow-codex-direct-resume"
   ]
 }

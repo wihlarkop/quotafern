@@ -11,6 +11,16 @@ fn main() {
             "codex_refresh",
             "codex_disconnect",
             "codex_status",
+            "codex_direct_connect",
+            "codex_direct_login",
+            "codex_direct_refresh",
+            "codex_direct_disconnect",
+            "codex_direct_status",
+            "codex_direct_remembered",
+            "codex_direct_resume",
+            "codex_consent_prompt",
+            "codex_consent_confirm",
+            "codex_consent_cancel",
         ]),
     ))
     .expect("failed to build Tauri application manifest");

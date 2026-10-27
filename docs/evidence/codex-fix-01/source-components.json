@@ -1,0 +1,78 @@
+{
+  "mode": "source",
+  "browser": "Edge",
+  "viewport": "380x660",
+  "syntheticOnly": true,
+  "checks": [
+    {
+      "label": "connected live-shaped account copy has no Demo or descriptor-only claim",
+      "passed": true
+    },
+    {
+      "label": "live source freshness says reading",
+      "passed": true
+    },
+    {
+      "label": "live Details omit absent fields, units and sample labels",
+      "passed": true
+    },
+    {
+      "label": "reported zero remaining stays visible",
+      "passed": true
+    },
+    {
+      "label": "null live credit balance omitted",
+      "passed": true
+    },
+    {
+      "label": "null live spending omitted",
+      "passed": true
+    },
+    {
+      "label": "null earned resets omitted",
+      "passed": true
+    },
+    {
+      "label": "missing live timestamp is omitted",
+      "passed": true
+    },
+    {
+      "label": "live authentication error gives real sign-in guidance",
+      "passed": true
+    },
+    {
+      "label": "disconnected descriptor retains descriptor label",
+      "passed": true
+    },
+    {
+      "label": "absent live quota omits false Unknown placeholder",
+      "passed": true
+    },
+    {
+      "label": "synthetic Demo provenance remains unchanged",
+      "passed": true
+    },
+    {
+      "label": "synthetic detail sample label retained",
+      "passed": true
+    },
+    {
+      "label": "unsupported launcher error is actionable",
+      "passed": true
+    },
+    {
+      "label": "direct production gate stays false in QA",
+      "passed": true
+    },
+    {
+      "label": "no browser runtime errors",
+      "passed": true
+    },
+    {
+      "label": "no external requests",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "remote": []
+}

@@ -148,6 +148,7 @@ function validSource(source: QuotaSource): boolean {
   const d = source.data;
   return (
     isLocalId(source.id, "source") &&
+    (d.plan === undefined || ["Free", "Go", "Plus", "Pro"].includes(d.plan)) &&
     ((source.origin === "synthetic" && source.authority === "synthetic-fixture") ||
       (source.origin === "live" && source.authority === "authorized-provider-read")) &&
     finiteOrNull(source.fetchedAtMs) &&

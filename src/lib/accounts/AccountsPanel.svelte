@@ -6,7 +6,14 @@
 
   import { Button } from "../components/ui/button";
   import AccountActions from "./AccountActions.svelte";
+  import {
+    CODEX_DIRECT_CONNECTION_AVAILABLE,
+    directKind,
+    type DirectPresentation,
+    type DirectTarget,
+  } from "./direct";
   import { localRemovalAllowed, type ManagementTarget } from "./local";
+  import type { ConnectionId } from "./model";
   import type { AccountState } from "./model";
   import type { DetailTarget } from "./navigation";
   import { contextualAlias, sampleTime } from "./presentation";
@@ -22,6 +29,7 @@
     onoverview,
     ondetails,
     onmanage,
+    presentations = {},
   }: {
     state: AccountState;
     nowMs: number;
@@ -30,7 +38,8 @@
     collapsedProviders?: string[];
     onoverview?: (selection: Selection, controlId: string) => void;
     ondetails?: (target: DetailTarget, controlId: string) => void;
-    onmanage?: (target: ManagementTarget, opener: string) => void;
+    onmanage?: (target: ManagementTarget | DirectTarget, opener: string) => void;
+    presentations?: Partial<Record<ConnectionId, DirectPresentation>>;
   } = $props();
   let providers = $derived(
     accountsView(state).sort(
@@ -45,7 +54,13 @@
 {#if showHeading}<div class="view-heading">
     <div>
       <h1 tabindex="-1">Accounts</h1>
-      <p>{synthetic ? "Local names, independent connections" : "No accounts configured"}</p>
+      <p>
+        {synthetic
+          ? "Local names, independent connections"
+          : state.metadata.accounts.length
+            ? "Local accounts and connections"
+            : "No accounts configured"}
+      </p>
     </div>
   </div>{/if}
 {#if synthetic}
@@ -56,8 +71,9 @@
   </div>
 {:else}
   <p class="account-screen-note">
-    Local metadata only. All connections are disconnected. Live Codex is disabled; other adapters
-    are Coming Soon.
+    {CODEX_DIRECT_CONNECTION_AVAILABLE
+      ? "Connect Codex accounts individually. Automatic reconnection needs remembered permission; other providers are Coming Soon."
+      : "Local metadata only. Live Codex remains disabled until native acceptance is complete; other providers are Coming Soon."}
   </p>
 {/if}
 <div class="account-provider-list">
@@ -90,7 +106,11 @@
             </button>{:else}{provider.displayName}{/if}
         </h2>
         <span class="system-chip"
-          >{provider.availability === "gated" ? "Live disabled" : "Coming Soon"}</span
+          >{provider.providerId === "codex" && CODEX_DIRECT_CONNECTION_AVAILABLE
+            ? "Available"
+            : provider.availability === "gated"
+              ? "Live disabled"
+              : "Coming Soon"}</span
         >
       </div>
       {#if provider.accounts.length === 0}
@@ -151,7 +171,9 @@
                       {
                         label: "Remove local account…",
                         target: { kind: "remove-account", id: account.accountId },
-                        disabled: !localRemovalAllowed(state, account.accountId),
+                        disabled:
+                          !(provider.providerId === "codex" && CODEX_DIRECT_CONNECTION_AVAILABLE) &&
+                          !localRemovalAllowed(state, account.accountId),
                       },
                     ]}
                   />{/if}
@@ -160,9 +182,13 @@
                   Removal pending · monitoring cleanup could not be confirmed.
                 </p>{/if}
               {#if !synthetic}<p class="account-screen-note">
-                  Disconnected · Identity not verified
+                  {CODEX_DIRECT_CONNECTION_AVAILABLE && provider.providerId === "codex"
+                    ? "Connect each account separately · aliases are local labels"
+                    : "Disconnected · Identity not verified"}
                 </p>
-                {#if !localRemovalAllowed(state, account.accountId)}<p class="account-pending">
+                {#if !CODEX_DIRECT_CONNECTION_AVAILABLE && !localRemovalAllowed(state, account.accountId)}<p
+                    class="account-pending"
+                  >
                     Native cleanup confirmation is unavailable. Removal and new descriptors are
                     blocked.
                   </p>{/if}
@@ -216,19 +242,80 @@
                           connection.runtime.lifecycle === "auth-required"}
                         >{account.state === "removing"
                           ? "Cleanup pending"
-                          : connection.runtime.lifecycle === "connected"
-                            ? "Connected · demo"
-                            : connection.runtime.lifecycle === "auth-required"
-                              ? "Sign-in needed · demo"
-                              : connection.runtime.lifecycle === "error"
-                                ? "Error · demo"
-                                : connection.runtime.lifecycle}</span
+                          : presentations[connection.connectionId]?.status
+                            ? presentations[connection.connectionId]?.status
+                            : connection.runtime.lifecycle === "connected"
+                              ? synthetic
+                                ? "Connected · demo"
+                                : "Connected"
+                              : connection.runtime.lifecycle === "auth-required"
+                                ? synthetic
+                                  ? "Sign-in needed · demo"
+                                  : "Sign-in needed"
+                                : connection.runtime.lifecycle === "error"
+                                  ? synthetic
+                                    ? "Error · demo"
+                                    : "Error"
+                                  : connection.runtime.lifecycle}</span
                       >
                       {#if onmanage && !synthetic}<AccountActions
                           id={`connection-actions-${connection.connectionId}`}
                           label={`Actions for ${provider.displayName} ${contextualAlias(provider.accounts, accountIndex, "account")} ${contextualAlias(account.connections, connectionIndex, "connection")}`}
                           onaction={onmanage}
                           actions={[
+                            ...(CODEX_DIRECT_CONNECTION_AVAILABLE &&
+                            provider.providerId === "codex" &&
+                            directKind(connection.mechanism)
+                              ? [
+                                  {
+                                    label: "Connect",
+                                    target: {
+                                      kind: "direct" as const,
+                                      id: connection.connectionId,
+                                      action: "connect" as const,
+                                    },
+                                    disabled:
+                                      presentations[connection.connectionId]?.busy ||
+                                      connection.runtime.lifecycle === "connected",
+                                  },
+                                  ...(directKind(connection.mechanism) === "managed"
+                                    ? [
+                                        {
+                                          label: "Sign in / sign in again",
+                                          target: {
+                                            kind: "direct" as const,
+                                            id: connection.connectionId,
+                                            action: "login" as const,
+                                          },
+                                          disabled: presentations[connection.connectionId]?.busy,
+                                        },
+                                      ]
+                                    : []),
+                                  {
+                                    label: "Refresh usage",
+                                    target: {
+                                      kind: "direct" as const,
+                                      id: connection.connectionId,
+                                      action: "refresh" as const,
+                                    },
+                                    disabled:
+                                      presentations[connection.connectionId]?.busy ||
+                                      connection.runtime.lifecycle !== "connected",
+                                  },
+                                  {
+                                    label: "Disconnect",
+                                    target: {
+                                      kind: "direct" as const,
+                                      id: connection.connectionId,
+                                      action: "disconnect" as const,
+                                    },
+                                    disabled:
+                                      connection.runtime.lifecycle === "disconnected" &&
+                                      !presentations[connection.connectionId]?.cleanupPending &&
+                                      !presentations[connection.connectionId]?.busy,
+                                  },
+                                ]
+                              : []),
                             {
                               label:
                                 connection.mechanism === "api-key"
@@ -240,44 +327,72 @@
                             {
                               label: "Remove local connection descriptor…",
                               target: { kind: "remove-connection", id: connection.connectionId },
-                              disabled: !localRemovalAllowed(
-                                state,
-                                account.accountId,
-                                connection.connectionId,
-                              ),
+                              disabled:
+                                !(
+                                  provider.providerId === "codex" &&
+                                  CODEX_DIRECT_CONNECTION_AVAILABLE
+                                ) &&
+                                !localRemovalAllowed(
+                                  state,
+                                  account.accountId,
+                                  connection.connectionId,
+                                ),
                             },
                           ]}
                         />{/if}
                     </div>
                     <p>
-                      {connection.mechanism === "api-key"
-                        ? "API key label"
-                        : connection.mechanism === "oauth-grant"
-                          ? "OAuth grant label"
-                          : "CLI session label"}{#if !synthetic}
+                      {connection.mechanism === "codex-managed"
+                        ? "Separate Codex account"
+                        : connection.mechanism === "api-key"
+                          ? "API key label"
+                          : connection.mechanism === "oauth-grant"
+                            ? "OAuth grant label"
+                            : "CLI session label"}{#if !synthetic && connection.runtime.lifecycle === "disconnected" && connectionSources.length === 0}
                         · Descriptor only{/if}{#if connection.workspaceId}
                         · {account.workspaces.find((w) => w.workspaceId === connection.workspaceId)
                           ?.alias}{/if}
                     </p>
                     <p>
                       {connection.verifiedIdentity
-                        ? `Verified identity · ${connection.verifiedIdentity} (synthetic)`
+                        ? `Verified identity · ${connection.verifiedIdentity}${synthetic ? " (synthetic)" : ""}`
                         : "Identity not verified"}
                     </p>
-                    {#each connectionSources as source (source.id)}<p class="connection-freshness">
-                        {source.freshness === "stale"
-                          ? "Stale"
-                          : source.freshness === "current"
-                            ? "Current"
-                            : "Unknown"} sample · {sampleTime(source.fetchedAtMs)}
-                      </p>{/each}
-                    {#if connectionSources.length === 0}<p>No quota source · Unknown</p>{/if}
-                    {#if connection.runtime.diagnostic}<p class="connection-problem">
+                    {#each connectionSources as source (source.id)}{#if source.origin === "synthetic" || source.freshness !== "unknown" || source.fetchedAtMs !== null}<p
+                          class="connection-freshness"
+                        >
+                          {source.freshness === "stale"
+                            ? "Stale"
+                            : source.freshness === "current"
+                              ? "Current"
+                              : "Unknown"}
+                          {source.origin === "synthetic"
+                            ? "sample"
+                            : "reading"}{#if source.origin === "synthetic" || source.fetchedAtMs !== null}
+                            · {sampleTime(source.fetchedAtMs)}{/if}
+                        </p>{/if}{/each}
+                    {#if connectionSources.length === 0}<p>
+                        {synthetic ? "No quota source · Unknown" : "No quota source"}
+                      </p>{/if}
+                    {#if CODEX_DIRECT_CONNECTION_AVAILABLE && presentations[connection.connectionId]?.message}<p
+                        class="connection-freshness"
+                        role="status"
+                        aria-live="polite"
+                      >
+                        {presentations[connection.connectionId]?.message}
+                      </p>{/if}
+                    {#if connection.runtime.diagnostic && !presentations[connection.connectionId]?.message}<p
+                        class="connection-problem"
+                      >
                         {connection.runtime.diagnostic === "authentication-expired"
-                          ? "Sample authorization expired; this connection has no values."
+                          ? synthetic
+                            ? "Sample authorization expired; this connection has no values."
+                            : "Authorization expired. Sign in to Codex again, then reconnect."
                           : connection.runtime.diagnostic === "cleanup-failed"
                             ? "Cleanup confirmation pending."
-                            : "Sample read failed; this connection has no values."}
+                            : synthetic
+                              ? "Sample read failed; this connection has no values."
+                              : "Usage could not be read. Try connecting again."}
                       </p>{/if}
                     {#if ondetails}{#each connectionSources as source (source.id)}<Button
                           variant="ghost"
@@ -319,5 +434,7 @@
 <p class="account-screen-note">
   {synthetic
     ? "Synthetic fixtures stay separate from saved local accounts. Turn Demo off to manage your labels."
-    : "Only non-sensitive local metadata is saved. Connection, authentication and monitoring are unavailable. No quota values are inferred."}
+    : CODEX_DIRECT_CONNECTION_AVAILABLE
+      ? "Only local labels are saved. Connect reads usage after native confirmation. Disconnect stops monitoring and keeps your sign-in. Codex may refresh its own authentication state. No inference or purchases are performed."
+      : "Only non-sensitive local metadata is saved. Connection, authentication and monitoring are unavailable. No quota values are inferred."}
 </p>

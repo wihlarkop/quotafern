@@ -15,7 +15,7 @@ import { rename, restoreState } from "./state";
 
 export const ACCOUNT_METADATA_KEY = "quotafern.account-presentation.v1";
 export type LocalAction =
-  | { kind: "add-account"; providerId: string; alias: string }
+  | { kind: "add-account"; providerId: string; alias: string; codexKind?: "system" | "managed" }
   | {
       kind: "add-connection";
       accountId: AccountId;
@@ -117,8 +117,7 @@ export function createLocalStore(
       }
       current = restoreState(loaded.metadata);
       if (loaded.status !== "empty")
-        notice =
-          "Local labels restored. All connections are disconnected; no identity or usage was restored.";
+        notice = "Local labels restored. Saved labels contain no provider identity or usage.";
     }
   } catch {
     blocked = true;
@@ -154,14 +153,34 @@ export function createLocalStore(
           case "reset":
             next = restoreState(emptyMetadata());
             break;
-          case "add-account":
+          case "add-account": {
             if (!PROVIDERS.some((p) => p.id === action.providerId)) throw new Error("target");
+            const accountId = allocate("account");
             next.metadata.accounts.push({
-              id: allocate("account"),
+              id: accountId,
               providerId: action.providerId,
               alias: label(action.alias),
             });
+            if (action.codexKind) {
+              if (
+                action.providerId !== "codex" ||
+                !["system", "managed"].includes(action.codexKind)
+              )
+                throw new Error("target");
+              next.metadata.connections.push({
+                id: allocate("connection"),
+                accountId,
+                workspaceId: null,
+                alias:
+                  action.codexKind === "managed"
+                    ? "Separate Codex account"
+                    : "Existing Codex account",
+                mechanism: action.codexKind === "managed" ? "codex-managed" : "cli-session",
+              });
+              next = restoreState(next.metadata);
+            }
             break;
+          }
           case "add-connection": {
             if (!localRemovalAllowed(next, action.accountId)) throw new Error("cleanup");
             let workspaceId = action.workspaceId;

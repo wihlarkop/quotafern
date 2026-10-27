@@ -1,6 +1,7 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+  import RefreshCw from "@lucide/svelte/icons/refresh-cw";
 
   import CodexDetails from "../components/CodexDetails.svelte";
   import { Button } from "../components/ui/button";
@@ -25,6 +26,8 @@
     oncontext,
     ondetails,
     onback,
+    onrefresh,
+    refreshing = false,
     synthetic = true,
   }: {
     state: AccountState;
@@ -33,6 +36,8 @@
     oncontext: (selection: Selection) => void;
     ondetails: (target: DetailTarget, controlId: string) => void;
     onback: () => void;
+    onrefresh?: () => void;
+    refreshing?: boolean;
     synthetic?: boolean;
   } = $props();
   let selectedDetail = $derived(navigation.detail);
@@ -76,9 +81,25 @@
         : "Usage overview"}
     </h1>
     <p>
-      {selectedDetail ? "Quota, credits and activity" : "Each source belongs to its own account"}
+      {selectedDetail
+        ? synthetic
+          ? "Quota, credits and activity"
+          : "Reported Codex usage"
+        : "Each source belongs to its own account"}
     </p>
   </div>
+  {#if onrefresh && !synthetic}<Button
+      class="refresh-button"
+      variant="outline"
+      size="sm"
+      onclick={onrefresh}
+      disabled={refreshing}
+      aria-busy={refreshing}
+      aria-label="Refresh all connected Codex accounts"
+      ><RefreshCw size={13} aria-hidden="true" class={refreshing ? "spin" : ""} />{refreshing
+        ? "Refreshing"
+        : "Refresh all"}</Button
+    >{/if}
   {#if selectedDetail || navigation.overviewReturn}<Button
       variant="outline"
       size="sm"
@@ -88,7 +109,9 @@
 {#if synthetic}<div class="account-demo-notice" role="note">
     <strong>SYNTHETIC DEMO</strong><span>Illustrative values. No live account is connected.</span>
   </div>{:else}<p class="account-screen-note">
-    Local metadata only · disconnected. No provider identity, quota or activity is available.
+    {projected.sources.length
+      ? "Live Codex usage · each source belongs to its account"
+      : "Local metadata only · disconnected. No provider identity, quota or activity is available."}
   </p>{/if}
 <div class="account-context-control">
   <label for="account-context">Account context</label><select
@@ -140,16 +163,24 @@
               accountId: detail.accountId,
               connectionId: connection.connectionId,
             })} · {connection.verifiedIdentity
-              ? `Verified identity · ${connection.verifiedIdentity} (synthetic)`
+              ? `Verified identity · ${connection.verifiedIdentity}${synthetic ? " (synthetic)" : ""}`
               : "Identity not verified"}
           </p>{/each}
-        <p class="source-freshness">
-          {detailSource.freshness} sample · {sampleTime(detailSource.fetchedAtMs)}
-        </p>
+        {#if detailSource.origin === "synthetic" || detailSource.freshness !== "unknown" || detailSource.fetchedAtMs !== null}<p
+            class="source-freshness"
+          >
+            {detailSource.freshness}
+            {detailSource.origin === "synthetic"
+              ? "sample"
+              : "reading"}{#if detailSource.origin === "synthetic" || detailSource.fetchedAtMs !== null}
+              · {sampleTime(detailSource.fetchedAtMs)}{/if}
+          </p>{/if}
       </section>
       <article class="owned-detail-readings">
         <h2>
-          {detailSource.data.subscription.length > 0 ? "Subscription quota" : "API usage & billing"}
+          {detailSource.providerId === "codex" || detailSource.data.subscription.length > 0
+            ? "Subscription quota"
+            : "API usage & billing"}
         </h2>
         <SourceReadings source={detailSource} detailed />
         <p class="source-relationship">
@@ -158,12 +189,12 @@
             : "Billing relationship unknown; do not add these balances."}
         </p>
       </article>
-      {#if detail.providerId === "codex"}<CodexDetails
+      {#if synthetic && detail.providerId === "codex"}<CodexDetails
           source="synthetic"
           monitoring={activityMonitoring(detailSource)}
           {nowMs}
           activityOnly
-        />{:else}<p class="account-screen-note">
+        />{:else if synthetic}<p class="account-screen-note">
           Activity unavailable · no daily token report in this fixture.
         </p>{/if}
     {/key}
@@ -198,14 +229,16 @@
           <div>
             <h2>{aliasFor(source.providerId, source.accountId)}</h2>
             <p>
-              {providerName(source.providerId)} · {source.data.subscription.length > 0
+              {providerName(source.providerId)} · {source.providerId === "codex" ||
+              source.data.subscription.length > 0
                 ? "Subscription"
                 : "API metering"}
             </p>
           </div>
-          <span class="source-freshness" class:source-stale={source.freshness === "stale"}
-            >{source.freshness}</span
-          >
+          {#if source.origin === "synthetic" || source.freshness !== "unknown"}<span
+              class="source-freshness"
+              class:source-stale={source.freshness === "stale"}>{source.freshness}</span
+            >{/if}
         </div>
         <p class="owned-source-connection">
           {connections
@@ -219,7 +252,9 @@
         </p>
         <SourceReadings {source} />
         <div class="source-meta">
-          <span>Sample · {sampleTime(source.fetchedAtMs)}</span><span>Synthetic source</span>
+          {#if source.fetchedAtMs !== null}<span
+              >{synthetic ? "Sample" : "Updated"} · {sampleTime(source.fetchedAtMs)}</span
+            >{/if}<span>{synthetic ? "Synthetic source" : "Live Codex source"}</span>
         </div>
         <p class="source-relationship">
           {source.association.kind === "verified"
