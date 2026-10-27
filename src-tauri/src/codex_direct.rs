@@ -119,9 +119,13 @@ enum Failure {
     Cancelled,
     LoginFailed,
     UnsupportedLauncher,
+    #[cfg(windows)]
     ManagedProfileUnsafe,
+    #[cfg(windows)]
     ManagedRootUnsafe,
+    #[cfg(windows)]
     ManagedHomesUnsafe,
+    #[cfg(windows)]
     ManagedAccountUnsafe,
     CredentialDirectoryUnsafe,
     CredentialFileUnsafe,
@@ -182,9 +186,13 @@ impl Failure {
             Self::AuthRequired => "directAuthenticationRequired",
             Self::UnsupportedAuth => "directAuthUnsupported",
             Self::UnsafePath => "directAuthPathUnsafe",
+            #[cfg(windows)]
             Self::ManagedProfileUnsafe => "directManagedProfileUnsafe",
+            #[cfg(windows)]
             Self::ManagedRootUnsafe => "directManagedRootUnsafe",
+            #[cfg(windows)]
             Self::ManagedHomesUnsafe => "directManagedHomesUnsafe",
+            #[cfg(windows)]
             Self::ManagedAccountUnsafe => "directManagedAccountHomeUnsafe",
             Self::CredentialDirectoryUnsafe => "directCredentialDirectoryUnsafe",
             Self::CredentialFileUnsafe => "directCredentialFileUnsafe",
