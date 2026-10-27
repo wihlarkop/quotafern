@@ -117,8 +117,7 @@ export function createLocalStore(
       }
       current = restoreState(loaded.metadata);
       if (loaded.status !== "empty")
-        notice =
-          "Local labels restored. All connections are disconnected; no identity or usage was restored.";
+        notice = "Local labels restored. Saved labels contain no provider identity or usage.";
     }
   } catch {
     blocked = true;

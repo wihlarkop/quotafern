@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-codex-consent-confirm"
+description = "Enables the codex_consent_confirm command without any pre-configured scope."
+commands.allow = ["codex_consent_confirm"]
+
+[[permission]]
+identifier = "deny-codex-consent-confirm"
+description = "Denies the codex_consent_confirm command without any pre-configured scope."
+commands.deny = ["codex_consent_confirm"]

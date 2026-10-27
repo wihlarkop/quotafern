@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "consent-capability",
+  "description": "Dedicated bundled consent window; no provider or general window authority.",
+  "windows": ["codex-consent"],
+  "permissions": [
+    "allow-codex-consent-prompt",
+    "allow-codex-consent-confirm",
+    "allow-codex-consent-cancel"
+  ]
+}

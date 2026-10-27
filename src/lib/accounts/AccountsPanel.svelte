@@ -72,7 +72,7 @@
 {:else}
   <p class="account-screen-note">
     {CODEX_DIRECT_CONNECTION_AVAILABLE
-      ? "Connect Codex accounts individually. Monitoring needs your confirmation; other providers are Coming Soon."
+      ? "Connect Codex accounts individually. Automatic reconnection needs remembered permission; other providers are Coming Soon."
       : "Local metadata only. Live Codex remains disabled until native acceptance is complete; other providers are Coming Soon."}
   </p>
 {/if}
@@ -242,19 +242,21 @@
                           connection.runtime.lifecycle === "auth-required"}
                         >{account.state === "removing"
                           ? "Cleanup pending"
-                          : connection.runtime.lifecycle === "connected"
-                            ? synthetic
-                              ? "Connected · demo"
-                              : "Connected"
-                            : connection.runtime.lifecycle === "auth-required"
+                          : presentations[connection.connectionId]?.status
+                            ? presentations[connection.connectionId]?.status
+                            : connection.runtime.lifecycle === "connected"
                               ? synthetic
-                                ? "Sign-in needed · demo"
-                                : "Sign-in needed"
-                              : connection.runtime.lifecycle === "error"
+                                ? "Connected · demo"
+                                : "Connected"
+                              : connection.runtime.lifecycle === "auth-required"
                                 ? synthetic
-                                  ? "Error · demo"
-                                  : "Error"
-                                : connection.runtime.lifecycle}</span
+                                  ? "Sign-in needed · demo"
+                                  : "Sign-in needed"
+                                : connection.runtime.lifecycle === "error"
+                                  ? synthetic
+                                    ? "Error · demo"
+                                    : "Error"
+                                  : connection.runtime.lifecycle}</span
                       >
                       {#if onmanage && !synthetic}<AccountActions
                           id={`connection-actions-${connection.connectionId}`}

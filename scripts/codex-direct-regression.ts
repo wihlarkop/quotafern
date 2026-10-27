@@ -1,5 +1,5 @@
 import {
-  CODEX_DIRECT_CONNECTION_AVAILABLE,
+  codexDirectPlatformSupported,
   createDirectController,
   directKind,
   directMessage,
@@ -64,6 +64,30 @@ export async function runCodexDirectRegression(): Promise<number> {
     diagnostic: null,
     ...changes,
   });
+  for (const diagnostic of [
+    "directRpcStartupFailed",
+    "directRpcRemoteControlUnsafe",
+    "directRpcNetworkAuditFailed",
+    "directRpcCleanupFailed",
+    "directRpcEndpointUnsafe",
+    "directRpcPeerUnsafe",
+    "directRpcVersionUnsupported",
+    "directRpcProtocolRejected",
+    "directRpcProviderFailed",
+    "directRpcIdentityUnavailable",
+  ]) {
+    const message = directMessage(snapshot(a.id, { connectionStatus: "error", diagnostic }));
+    assert(
+      !message.includes("auth.json") &&
+        !message.includes("access token") &&
+        !message.includes("Use a separate"),
+      "RPC errors retain safe actionable categories without credential advice",
+    );
+    assert(
+      !/Disconnect, then try/.test(message),
+      "RPC failures do not collapse into generic catch advice",
+    );
+  }
   const launcherMessage = directMessage(
     snapshot(a.id, {
       connectionStatus: "unavailable",
@@ -74,7 +98,12 @@ export async function runCodexDirectRegression(): Promise<number> {
     /codex\.exe.*PATH/.test(launcherMessage) && /Install.*restart/.test(launcherMessage),
     "unsupported Windows launcher gives native CLI install and restart guidance",
   );
-  assert(!CODEX_DIRECT_CONNECTION_AVAILABLE, "production renderer gate remains closed");
+  assert(
+    codexDirectPlatformSupported("Win32") && codexDirectPlatformSupported("Win64"),
+    "accepted Windows UI is available",
+  );
+  for (const platform of ["Linux x86_64", "MacIntel", "", "Windows-untrusted"])
+    assert(!codexDirectPlatformSupported(platform), "unaccepted platform UI remains unavailable");
   assert(
     new Set(initial.metadata.accounts.map((x) => x.id)).size === 3,
     "duplicate names have distinct account IDs",
@@ -178,6 +207,12 @@ export async function runCodexDirectRegression(): Promise<number> {
     current.sources.length === 3 && new Set(current.sources.map((s) => s.accountId)).size === 3,
     "three independent quota owners",
   );
+  const beforeDuplicateConnect = calls.length;
+  assert(await controller.action(b.id, "connect"), "connected Connect is idempotent");
+  assert(
+    calls.length === beforeDuplicateConnect && current.sources.length === 3,
+    "duplicate Connect neither disconnects nor requests native access nor erases quota",
+  );
   const bSource = structuredClone(current.sources.find((s) => s.accountId === b.accountId));
   assert(!(await controller.action(a.id, "refresh")), "renderer cooldown blocks repeated request");
   assert(current.sources.length === 3, "cooldown does not erase readings");
@@ -211,8 +246,21 @@ export async function runCodexDirectRegression(): Promise<number> {
   );
   assert(current.sources.length === 3, "refresh all retains distinct sources");
   const callsBefore = calls.length;
-  controller.refreshDue(Date.now());
-  assert(calls.length === callsBefore, "automatic refresh waits five minutes");
+  clock += 180_000 - 1;
+  controller.refreshDue(clock);
+  assert(calls.length === callsBefore, "automatic refresh waits until three-minute boundary");
+  clock++;
+  controller.refreshDue(clock);
+  assert(
+    calls.length === callsBefore + 3,
+    "three-minute boundary refreshes each consented account",
+  );
+  await Promise.resolve();
+  controller.refreshDue(clock);
+  assert(
+    calls.length === callsBefore + 3,
+    "automatic refresh schedules the next interval without duplicate reads",
+  );
   assert(await controller.beforeRemoval(a.accountId), "native cleanup precedes metadata deletion");
   assert(
     current.sources.every((s) => s.accountId !== a.accountId) &&
@@ -224,6 +272,10 @@ export async function runCodexDirectRegression(): Promise<number> {
     current.sources.length === 0 && current.connections.every((x) => x.consent === "not-requested"),
     "demo switch/stop revokes all live values",
   );
+  const afterDisconnect = calls.length;
+  clock += 180_000;
+  controller.refreshDue(clock);
+  assert(calls.length === afterDisconnect, "three-minute polling stops after disconnect");
 
   let resolveLate!: (value: unknown) => void;
   let raced: AccountState = initial;
@@ -383,23 +435,251 @@ export async function runCodexDirectRegression(): Promise<number> {
   const automatic = createDirectController(
     initial,
     () => {},
-    async () => {
+    async (command, args) => {
       autoReads++;
-      return snapshot(a.id);
+      return command === "codex_direct_disconnect"
+        ? snapshot(args.connectionId as `connection_${string}`, {
+            connectionStatus: "disconnected",
+            dataStatus: "unknown",
+            windows: [],
+            fetchedAtMs: null,
+          })
+        : snapshot(a.id);
     },
     true,
     () => autoClock,
   );
   await automatic.action(a.id, "connect");
-  autoClock += 300_001;
+  autoClock += 180_001;
   automatic.refreshDue(autoClock);
   await Promise.resolve();
   await Promise.resolve();
-  assert(autoReads === 2, "five minute refresh applies only to consented connected source");
+  assert(autoReads === 2, "three minute refresh applies only to consented connected source");
   await automatic.disconnectAll();
-  autoClock += 300_001;
+  const readsAfterStop = autoReads;
+  assert(readsAfterStop === 5, "stop all revokes every saved connection reference");
+  autoClock += 180_001;
   automatic.refreshDue(autoClock);
-  assert(autoReads === 3, "disconnected source performs only cleanup and no further refresh");
+  assert(autoReads === readsAfterStop, "disconnected source performs no further refresh");
+  for (const action of ["connect", "login"] as const) {
+    let cooldownState: AccountState = initial;
+    let cooldownMessage = "";
+    const cooling = createDirectController(
+      initial,
+      (next, presentation) => {
+        cooldownState = next;
+        cooldownMessage = presentation[b.id]?.message ?? "";
+      },
+      async () => {
+        throw "directRefreshCooldown";
+      },
+      true,
+    );
+    assert(!(await cooling.action(b.id, action)), "native cooldown refuses " + action);
+    assert(
+      cooldownState.connections.find((r) => r.connectionId === b.id)?.lifecycle ===
+        "disconnected" &&
+        cooldownState.sources.length === 0 &&
+        /recently/.test(cooldownMessage) &&
+        !/could not read|Waiting for confirmation/.test(cooldownMessage),
+      "cooldown is a wait state, never a stuck or generic-error connection",
+    );
+    const priorMessage = cooldownMessage;
+    assert(!(await cooling.action(b.id, "refresh")), "disconnected account cannot refresh");
+    assert(
+      cooldownMessage === priorMessage && !/Usage was checked/.test(cooldownMessage),
+      "disconnected refresh preserves Connect advice instead of reporting recently checked usage",
+    );
+  }
+  // Existing-suite synthetic startup/permission regression; no provider or real auth.
+  const references = [a, b, c].map((x) => ({
+    accountId: x.accountId,
+    connectionId: x.id,
+    kind: directKind(x.mechanism),
+    allowed: true,
+  }));
+  for (const records of [[], references]) {
+    const startupCalls: string[] = [];
+    let restoredState: AccountState = initial;
+    const restored = createDirectController(
+      initial,
+      (next) => {
+        restoredState = next;
+      },
+      async (command, args) => {
+        startupCalls.push(command);
+        if (command === "codex_direct_remembered") return records;
+        return snapshot(args.connectionId as ConnectionId);
+      },
+      true,
+    );
+    assert(
+      startupCalls.length === 0,
+      "restore constructor never reads provider or permission files",
+    );
+    await Promise.all([restored.reconnectRemembered(), restored.reconnectRemembered()]);
+    assert(
+      startupCalls.filter((x) => x === "codex_direct_remembered").length === 1,
+      "concurrent startup reads grants once",
+    );
+    assert(
+      startupCalls.filter((x) => x === "codex_direct_resume").length === records.length,
+      "only explicitly remembered references resume",
+    );
+    assert(
+      !startupCalls.some((x) => /connect$|login$/.test(x)),
+      "startup never invokes manual Connect or login",
+    );
+    assert(
+      restoredState.sources.length === records.length,
+      "remembered accounts restore independent sources",
+    );
+  }
+  {
+    const startupCalls: string[] = [];
+    const unsafeRefs = [
+      { ...references[0], allowed: false },
+      { ...references[1], accountId: a.accountId },
+      { ...references[2], kind: "system" },
+    ];
+    const stopped = createDirectController(
+      initial,
+      () => {},
+      async (command, args) => {
+        startupCalls.push(command);
+        if (command === "codex_direct_remembered") return unsafeRefs;
+        return snapshot(args.connectionId as ConnectionId);
+      },
+      true,
+    );
+    await stopped.reconnectRemembered();
+    assert(
+      startupCalls.join() === "codex_direct_remembered",
+      "policy mismatch or wrong account/kind cannot trigger provider access",
+    );
+  }
+  {
+    let resolveReferences!: (value: unknown) => void;
+    const commands: string[] = [];
+    const pendingRestore = createDirectController(
+      initial,
+      () => {},
+      async (command, args) => {
+        commands.push(command);
+        if (command === "codex_direct_remembered")
+          return new Promise((resolve) => {
+            resolveReferences = resolve;
+          });
+        return snapshot(args.connectionId as ConnectionId, {
+          connectionStatus: "disconnected",
+          dataStatus: "unknown",
+          windows: [],
+          fetchedAtMs: null,
+        });
+      },
+      true,
+    );
+    const pending = pendingRestore.reconnectRemembered();
+    await pendingRestore.action(a.id, "disconnect");
+    resolveReferences([references[0]]);
+    await pending;
+    assert(
+      !commands.includes("codex_direct_resume"),
+      "Disconnect invalidates pending startup grant list",
+    );
+    assert(
+      commands.includes("codex_direct_disconnect"),
+      "inactive remembered accounts still receive native revocation",
+    );
+  }
+  {
+    let resolveReferences!: (value: unknown) => void;
+    const commands: string[] = [];
+    const stopAll = createDirectController(
+      initial,
+      () => {},
+      async (command, args) => {
+        commands.push(command);
+        if (command === "codex_direct_remembered")
+          return new Promise((resolve) => {
+            resolveReferences = resolve;
+          });
+        return snapshot(args.connectionId as ConnectionId, {
+          connectionStatus: "disconnected",
+          dataStatus: "unknown",
+          windows: [],
+          fetchedAtMs: null,
+        });
+      },
+      true,
+    );
+    const restoring = stopAll.reconnectRemembered();
+    await stopAll.disconnectAll();
+    resolveReferences(references);
+    await restoring;
+    assert(
+      !commands.includes("codex_direct_resume"),
+      "stop all/demo cancels pending startup before permission list arrives",
+    );
+  }
+  for (const diagnostic of [
+    "directNetworkFailed",
+    "directAuthenticationRequired",
+    "directRpcVersionUnsupported",
+    "directRpcProviderFailed",
+  ]) {
+    let time = Date.now();
+    let resumes = 0;
+    let latest: AccountState = initial;
+    const retrying = createDirectController(
+      initial,
+      (next) => {
+        latest = next;
+      },
+      async (command, args) => {
+        if (command === "codex_direct_remembered") return [references[0]];
+        if (command === "codex_direct_disconnect")
+          return snapshot(a.id, {
+            connectionStatus: "disconnected",
+            dataStatus: "unknown",
+            windows: [],
+            fetchedAtMs: null,
+          });
+        assert(command === "codex_direct_resume", "automatic retry uses guarded resume only");
+        resumes++;
+        return snapshot(args.connectionId as ConnectionId, {
+          connectionStatus: "error",
+          dataStatus: "error",
+          windows: [],
+          fetchedAtMs: null,
+          diagnostic,
+        });
+      },
+      true,
+      () => time,
+    );
+    await retrying.reconnectRemembered();
+    assert(resumes === 1, "one initial remembered attempt");
+    for (const delay of [60_000, 120_000, 240_000, 600_000, 600_000]) {
+      time += delay;
+      retrying.refreshDue(time);
+      await Promise.resolve();
+      await Promise.resolve();
+    }
+    assert(
+      resumes === (diagnostic === "directNetworkFailed" ? 4 : 1),
+      "retry is finite for network and absent for auth/version/generic RPC errors",
+    );
+    assert(latest.sources.length === 0, "failed startup never fabricates fresh quota");
+    await retrying.action(a.id, "disconnect");
+    time += 1_000_000;
+    retrying.refreshDue(time);
+    await Promise.resolve();
+    assert(
+      resumes === (diagnostic === "directNetworkFailed" ? 4 : 1),
+      "Disconnect stops scheduled automatic retry",
+    );
+  }
   console.log(`PASS CODEX-LIVE-01 account isolation and lifecycle: ${count} assertions`);
   return count;
 }

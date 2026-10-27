@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-codex-consent-prompt"
+description = "Enables the codex_consent_prompt command without any pre-configured scope."
+commands.allow = ["codex_consent_prompt"]
+
+[[permission]]
+identifier = "deny-codex-consent-prompt"
+description = "Denies the codex_consent_prompt command without any pre-configured scope."
+commands.deny = ["codex_consent_prompt"]

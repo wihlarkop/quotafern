@@ -11,12 +11,16 @@ import {
 } from "./model";
 import { beginAuthorizedSession, disconnect, failConnection, publishSource } from "./state";
 
-// Enable only after the direct route's real native acceptance and security review.
-// No stored preference, environment variable or renderer setting can lift this gate.
-export const CODEX_DIRECT_CONNECTION_AVAILABLE = false;
+// Presentation only. Rust independently blocks provider access outside accepted Windows builds.
+export function codexDirectPlatformSupported(platform: string): boolean {
+  return platform === "Win32" || platform === "Win64";
+}
+export const CODEX_DIRECT_CONNECTION_AVAILABLE =
+  typeof navigator !== "undefined" && codexDirectPlatformSupported(navigator.platform);
+const CODEX_DIRECT_REFRESH_MS = 3 * 60_000;
 export type DirectKind = "system" | "managed";
 export type DirectTarget = { kind: "direct"; id: ConnectionId; action: DirectAction };
-export type DirectAction = "connect" | "login" | "refresh" | "disconnect";
+export type DirectAction = "connect" | "login" | "refresh" | "disconnect" | "resume";
 export interface DirectSnapshot {
   accountId: string;
   connectionId: string;
@@ -46,6 +50,7 @@ export interface DirectPresentation {
   busy: boolean;
   message: string;
   cleanupPending: boolean;
+  status?: "Connecting" | "Reconnect required";
 }
 export const directKind = (mechanism: string): DirectKind | null =>
   mechanism === "cli-session" ? "system" : mechanism === "codex-managed" ? "managed" : null;
@@ -159,7 +164,116 @@ export function directSource(
     },
   };
 }
+// Diagnostic labels are source-defined only; never render arbitrary native exceptions.
+const directDiagnostics = new Set([
+  "directAccountAlreadyConnected",
+  "directAuthenticationRequired",
+  "directAuthorizationStorageUnsafe",
+  "directRememberedConsentRequired",
+  "directAuthInvalid",
+  "directAuthPathUnsafe",
+  "directManagedProfileUnsafe",
+  "directManagedRootUnsafe",
+  "directManagedHomesUnsafe",
+  "directManagedAccountHomeUnsafe",
+  "directCredentialDirectoryUnsafe",
+  "directCredentialFileUnsafe",
+  "directConfigFileUnsafe",
+  "directRpcStartupFailed",
+  "directRpcRemoteControlUnsafe",
+  "directRpcNetworkAuditFailed",
+  "directRpcCleanupFailed",
+  "directRpcEndpointUnsafe",
+  "directRpcPeerUnsafe",
+  "directRpcVersionUnsupported",
+  "directRpcProtocolRejected",
+  "directRpcProviderFailed",
+  "directRpcIdentityUnavailable",
+  "directAuthReadFailed",
+  "directAuthUnsupported",
+  "directBridgeShuttingDown",
+  "directBridgeUnavailable",
+  "directCleanupFailed",
+  "directConnectionBindingMismatch",
+  "directConnectionLimit",
+  "directConsentUnavailable",
+  "directCooldownLimit",
+  "directGenerationExhausted",
+  "directIdentityChanged",
+  "directInvalidLocalId",
+  "directInvalidQuotaValue",
+  "directLoginFailed",
+  "directLoginManagedOnly",
+  "directLoginUnavailable",
+  "directMainWindowOnly",
+  "directNativeConsentRequired",
+  "directNetworkFailed",
+  "directNotConnected",
+  "directOperationCancelled",
+  "directOperationInProgress",
+  "directOwnerAcceptancePending",
+  "directQuotaUnavailable",
+  "directRateLimited",
+  "directRedirectRefused",
+  "directRefreshCooldown",
+  "directRequestTimedOut",
+  "directResponseTooLarge",
+  "directSchemaIncompatible",
+  "directServiceUnavailable",
+  "directSystemAlreadyConnected",
+  "directUnsupportedLauncher",
+  "nativeConsentCancelled",
+]);
+function safeDirectDiagnostic(value: unknown): string {
+  return typeof value === "string" && directDiagnostics.has(value) ? value : "unknown";
+}
+function diagnosticSuffix(value: unknown): string {
+  const category = safeDirectDiagnostic(value);
+  return category === "unknown" ? "" : ` [${category}]`;
+}
 export function directMessage(snapshot: DirectSnapshot): string {
+  if (snapshot.diagnostic === "directOwnerAcceptancePending")
+    return "Live Codex monitoring is available on Windows. Native acceptance for this platform is pending.";
+  if (snapshot.diagnostic === "directConsentUnavailable")
+    return "Connection confirmation could not be completed safely. Close any confirmation window, then choose Connect again.";
+  if (snapshot.diagnostic === "directRememberedConsentRequired")
+    return "Reconnect required. Connect again to review permission.";
+  if (snapshot.diagnostic === "directAuthorizationStorageUnsafe")
+    return "Reconnect required. Saved monitoring permission could not be verified.";
+  if (
+    [
+      "directRpcStartupFailed",
+      "directRpcRemoteControlUnsafe",
+      "directRpcNetworkAuditFailed",
+      "directRpcCleanupFailed",
+    ].includes(snapshot.diagnostic ?? "")
+  )
+    return "Codex startup safety checks did not pass. Quota access was blocked. Report the diagnostic category for review.";
+  if (snapshot.diagnostic === "directRpcVersionUnsupported")
+    return "This Codex program does not match the reviewed monitoring version. Quota access was blocked; your Codex sign-in is unchanged.";
+  if (["directRpcEndpointUnsafe", "directRpcPeerUnsafe"].includes(snapshot.diagnostic ?? ""))
+    return "The existing Codex local service could not be verified. Monitoring was blocked; system sign-in and permissions are unchanged.";
+  if (
+    ["directRpcProtocolRejected", "directRpcIdentityUnavailable"].includes(
+      snapshot.diagnostic ?? "",
+    )
+  )
+    return "The existing Codex local service returned an unsupported response. Monitoring was blocked.";
+  if (snapshot.diagnostic === "directRpcProviderFailed")
+    return "Codex could not fetch server quota. Try again later.";
+  if (
+    [
+      "directAuthPathUnsafe",
+      "directCredentialDirectoryUnsafe",
+      "directCredentialFileUnsafe",
+      "directConfigFileUnsafe",
+      "directManagedProfileUnsafe",
+      "directManagedRootUnsafe",
+      "directManagedHomesUnsafe",
+      "directManagedAccountHomeUnsafe",
+    ].includes(snapshot.diagnostic ?? "")
+  )
+    return "Selected Codex storage did not pass privacy checks. Monitoring was blocked; permissions and system sign-in are unchanged.";
   if (snapshot.diagnostic === "directUnsupportedLauncher")
     return "A native codex.exe is required on PATH. Shell launchers (.cmd, .bat, .ps1) are unsupported. Install the native Codex CLI and restart Quotafern.";
   switch (snapshot.connectionStatus) {
@@ -170,7 +284,7 @@ export function directMessage(snapshot: DirectSnapshot): string {
           ? "Showing the last reported usage."
           : snapshot.dataStatus === "unknown"
             ? "Connected. Codex has not reported usage limits."
-            : "Connected. Usage refreshes every five minutes.";
+            : "Connected. Usage refreshes every three minutes.";
     case "auth-required":
       return "Sign-in is needed. Reconnect your existing Codex account, or sign in to a separate account.";
     case "unavailable":
@@ -206,14 +320,36 @@ export function createDirectController(
   const refreshAllowedAt = new Map<ConnectionId, number>();
   const cleanup = new Set<ConnectionId>();
   const presentations: Partial<Record<ConnectionId, DirectPresentation>> = {};
+  const stopped = new Set<ConnectionId>();
+  const retryAttempts = new Map<ConnectionId, number>();
+  const resumeRetry = new Map<ConnectionId, number>();
+  const retryDelays = [60_000, 120_000, 240_000];
+  let restoring = false;
+  const transient = (diagnostic: string | null) =>
+    [
+      "directNetworkFailed",
+      "directRequestTimedOut",
+      "directRateLimited",
+      "directServiceUnavailable",
+    ].includes(diagnostic ?? "");
   const notify = () => changed(structuredClone(state), structuredClone(presentations));
   const version = (id: ConnectionId) => {
     const n = (versions.get(id) ?? 0) + 1;
     versions.set(id, n);
     return n;
   };
-  const setPresentation = (id: ConnectionId, busy: boolean, message: string) => {
-    presentations[id] = { busy, message, cleanupPending: cleanup.has(id) };
+  const setPresentation = (
+    id: ConnectionId,
+    busy: boolean,
+    message: string,
+    status?: DirectPresentation["status"],
+  ) => {
+    presentations[id] = {
+      busy,
+      message,
+      cleanupPending: cleanup.has(id),
+      ...(status ? { status } : {}),
+    };
     notify();
   };
   const owns = (id: ConnectionId) => {
@@ -227,11 +363,14 @@ export function createDirectController(
   async function stop(id: ConnectionId): Promise<boolean> {
     const c = owns(id);
     if (!c) return true;
+    stopped.add(id);
+    resumeRetry.delete(id);
+    retryAttempts.delete(id);
     const request = version(id);
     state = disconnect(state, id);
     nativeGenerations.delete(id);
     nextRefresh.delete(id);
-    if (!cleanup.has(id)) {
+    if (!available) {
       setPresentation(id, false, "Disconnected. Your Codex sign-in is unchanged.");
       return true;
     }
@@ -284,9 +423,15 @@ export function createDirectController(
         }
       notify();
     },
-    async action(id: ConnectionId, action: DirectAction): Promise<boolean> {
+    async action(id: ConnectionId, action: DirectAction, automatic = false): Promise<boolean> {
       if (action === "disconnect") return stop(id);
       if (!available) return false;
+      if (automatic && stopped.has(id)) return false;
+      if (!automatic) {
+        stopped.delete(id);
+        retryAttempts.delete(id);
+        resumeRetry.delete(id);
+      }
       const c = owns(id);
       if (!c || (action === "login" && directKind(c.mechanism) !== "managed")) return false;
       if (
@@ -295,17 +440,29 @@ export function createDirectController(
         )
       )
         return false;
-      if (action !== "refresh" && cleanup.has(id) && !(await stop(id))) return false;
-      if (action === "refresh" && now() < (refreshAllowedAt.get(id) ?? 0)) {
-        setPresentation(id, false, "Usage was checked recently. Try refreshing again shortly.");
+      if (
+        action === "connect" &&
+        state.connections.some(
+          (runtime) =>
+            runtime.connectionId === id &&
+            runtime.lifecycle === "connected" &&
+            runtime.consent === "granted" &&
+            presentations[id]?.status !== "Reconnect required",
+        )
+      )
+        return true;
+      if (action !== "refresh" && action !== "resume" && cleanup.has(id) && !(await stop(id)))
         return false;
-      }
       if (
         action === "refresh" &&
         (state.connections.find((r) => r.connectionId === id)?.consent !== "granted" ||
           state.connections.find((r) => r.connectionId === id)?.lifecycle !== "connected")
       )
         return false;
+      if (action === "refresh" && now() < (refreshAllowedAt.get(id) ?? 0)) {
+        setPresentation(id, false, "Usage was checked recently. Try refreshing again shortly.");
+        return false;
+      }
       if (
         action !== "refresh" &&
         state.metadata.connections.some(
@@ -313,11 +470,12 @@ export function createDirectController(
         )
       )
         return false;
+      if (!automatic) stopped.delete(id);
       const request = version(id);
       if (action !== "refresh") state = beginAuthorizedSession(state, id);
       const generation = state.connections.find((r) => r.connectionId === id)!.generation;
       cleanup.add(id);
-      nextRefresh.set(id, now() + CODEX_FRESHNESS_MS);
+      nextRefresh.set(id, now() + CODEX_DIRECT_REFRESH_MS);
       if (action === "refresh") refreshAllowedAt.set(id, now() + 30_000);
       const previousSource = state.sources.find((s) => s.association.connectionIds.includes(id));
       const preserveStale = () => {
@@ -328,13 +486,19 @@ export function createDirectController(
       setPresentation(
         id,
         true,
-        action === "refresh" ? "Refreshing usage…" : "Waiting for confirmation…",
+        action === "refresh"
+          ? "Refreshing usage…"
+          : action === "resume"
+            ? "Reconnecting…"
+            : "Waiting for confirmation…",
+        action === "resume" ? "Connecting" : undefined,
       );
+      let stage = "native-invoke";
       try {
         const result = await native(`codex_direct_${action}`, {
           accountId: c.accountId,
           connectionId: id,
-          ...(action === "refresh" ? {} : { kind: directKind(c.mechanism) }),
+          ...(action === "refresh" || action === "resume" ? {} : { kind: directKind(c.mechanism) }),
         });
         if (
           versions.get(id) !== request ||
@@ -342,13 +506,36 @@ export function createDirectController(
           state.connections.find((r) => r.connectionId === id)?.generation !== generation
         )
           return false;
+        stage = "snapshot-validation";
         if (
           !validDirectSnapshot(result, c.accountId, id) ||
           (action === "refresh" && result.generation !== nativeGenerations.get(id))
         )
           throw new Error("invalid response");
         refreshAllowedAt.set(id, now() + 30_000);
-        nextRefresh.set(id, now() + CODEX_FRESHNESS_MS);
+        nextRefresh.set(id, now() + CODEX_DIRECT_REFRESH_MS);
+        if (
+          action === "resume" &&
+          result.connectionStatus !== "connected" &&
+          transient(result.diagnostic)
+        ) {
+          state = failConnection(state, id, generation, "unavailable");
+          const attempt = retryAttempts.get(id) ?? 0;
+          if (attempt < retryDelays.length && !stopped.has(id)) {
+            retryAttempts.set(id, attempt + 1);
+            resumeRetry.set(id, now() + retryDelays[attempt]);
+            setPresentation(id, false, "Connection unavailable. Retrying shortly.", "Connecting");
+          } else {
+            resumeRetry.delete(id);
+            setPresentation(
+              id,
+              false,
+              "Reconnect required. Automatic retries stopped.",
+              "Reconnect required",
+            );
+          }
+          return false;
+        }
         if (
           action === "refresh" &&
           result.connectionStatus === "error" &&
@@ -360,16 +547,34 @@ export function createDirectController(
           ].includes(result.diagnostic ?? "") &&
           preserveStale()
         ) {
-          setPresentation(
-            id,
-            false,
-            "Usage could not be refreshed. Showing the last reported reading; try again later.",
-          );
+          const attempt = retryAttempts.get(id) ?? 0;
+          if (attempt >= retryDelays.length) {
+            nextRefresh.delete(id);
+            setPresentation(
+              id,
+              false,
+              "Automatic refresh paused. Showing the last reading; reconnect or refresh manually.",
+              "Reconnect required",
+            );
+          } else {
+            retryAttempts.set(id, attempt + 1);
+            nextRefresh.set(id, now() + retryDelays[attempt]);
+            setPresentation(
+              id,
+              false,
+              "Usage could not be refreshed. Showing the last reported reading; retrying shortly.",
+            );
+          }
           return false;
         }
         if (result.connectionStatus === "connected") {
+          retryAttempts.delete(id);
+          resumeRetry.delete(id);
           nativeGenerations.set(id, result.generation);
-          state = publishSource(state, id, generation, directSource(result, state, id, generation));
+          stage = "source-projection";
+          const source = directSource(result, state, id, generation);
+          stage = "source-publication";
+          state = publishSource(state, id, generation, source);
         } else {
           state =
             result.connectionStatus === "disconnected"
@@ -385,18 +590,48 @@ export function createDirectController(
           if (result.connectionStatus === "disconnected") cleanup.delete(id);
           nextRefresh.delete(id);
         }
-        setPresentation(id, false, directMessage(result));
+        stage = "presentation";
+        setPresentation(
+          id,
+          false,
+          directMessage(result) + diagnosticSuffix(result.diagnostic),
+          result.connectionStatus !== "connected" && result.connectionStatus !== "disconnected"
+            ? "Reconnect required"
+            : undefined,
+        );
         return result.connectionStatus === "connected";
       } catch (error) {
         if (versions.get(id) === request) {
-          nextRefresh.set(id, now() + CODEX_FRESHNESS_MS);
-          if (action === "refresh" && error === "directRefreshCooldown") {
-            setPresentation(id, false, "Usage was checked recently. Try refreshing again shortly.");
+          if (action === "resume") {
+            resumeRetry.delete(id);
+            nextRefresh.delete(id);
+            state = failConnection(state, id, generation, "unavailable");
+            setPresentation(
+              id,
+              false,
+              `Reconnect required.${diagnosticSuffix(error)}`,
+              "Reconnect required",
+            );
+            return false;
+          }
+          nextRefresh.set(id, now() + CODEX_DIRECT_REFRESH_MS);
+          if (error === "directRefreshCooldown") {
+            if (action !== "refresh") {
+              state = disconnect(state, id);
+              nextRefresh.delete(id);
+            }
+            setPresentation(
+              id,
+              false,
+              action === "refresh"
+                ? "Usage was checked recently. Try refreshing again shortly."
+                : "A connection was attempted recently. Wait briefly, then choose Connect again.",
+            );
             return false;
           }
           if (
             action === "refresh" &&
-            !(error instanceof Error && error.message === "invalid response") &&
+            transient(typeof error === "string" ? error : null) &&
             preserveStale()
           ) {
             setPresentation(
@@ -406,14 +641,81 @@ export function createDirectController(
             );
             return false;
           }
+          nextRefresh.delete(id);
           state = failConnection(state, id, generation, "refresh-failed");
-          setPresentation(id, false, "Codex could not read usage. Disconnect, then try again.");
+          setPresentation(
+            id,
+            false,
+            (stage === "snapshot-validation"
+              ? "The quota response could not be verified. Reconnect to try again."
+              : "Reconnect required.") + diagnosticSuffix(error),
+            "Reconnect required",
+          );
         }
         return false;
       }
     },
+    async reconnectRemembered(): Promise<void> {
+      if (!available || restoring) return;
+      restoring = true;
+      try {
+        const records = await native("codex_direct_remembered", {});
+        if (!Array.isArray(records) || records.length > 32)
+          throw new Error("invalid remembered references");
+        const seen = new Set<string>();
+        for (const row of records) {
+          if (
+            !row ||
+            typeof row !== "object" ||
+            typeof row.allowed !== "boolean" ||
+            typeof row.connectionId !== "string" ||
+            typeof row.accountId !== "string" ||
+            !["system", "managed"].includes(row.kind) ||
+            seen.has(row.connectionId)
+          )
+            throw new Error("invalid remembered references");
+          seen.add(row.connectionId);
+        }
+        await Promise.all(
+          records.map(async (row) => {
+            const c = owns(row.connectionId as ConnectionId);
+            if (
+              !c ||
+              c.accountId !== row.accountId ||
+              directKind(c.mechanism) !== row.kind ||
+              stopped.has(c.id) ||
+              presentations[c.id]?.busy ||
+              state.connections.some(
+                (runtime) => runtime.connectionId === c.id && runtime.lifecycle === "connected",
+              )
+            )
+              return;
+            if (!row.allowed) {
+              setPresentation(
+                c.id,
+                false,
+                "Reconnect required. Review updated monitoring permission.",
+                "Reconnect required",
+              );
+              return;
+            }
+            await this.action(c.id, "resume", true);
+          }),
+        );
+      } catch {
+        // Unknown or unsafe authorization metadata never becomes a connection.
+        for (const c of state.metadata.connections)
+          if (owns(c.id) && !stopped.has(c.id))
+            setPresentation(
+              c.id,
+              false,
+              "Reconnect required. Saved monitoring permission could not be verified.",
+              "Reconnect required",
+            );
+      }
+    },
     async disconnectAll(): Promise<boolean> {
-      const ids = [...cleanup];
+      const ids = state.metadata.connections.filter((c) => owns(c.id)).map((c) => c.id);
       const results = await Promise.all(ids.map(stop));
       return results.every(Boolean);
     },
@@ -430,6 +732,11 @@ export function createDirectController(
       await Promise.all(ids.map((id) => this.action(id, "refresh")));
     },
     refreshDue(nowMs: number) {
+      for (const [id, next] of resumeRetry)
+        if (next <= nowMs && !presentations[id]?.busy && !stopped.has(id)) {
+          resumeRetry.delete(id);
+          void this.action(id, "resume", true);
+        }
       for (const c of state.connections)
         if (
           c.lifecycle === "connected" &&
@@ -437,7 +744,7 @@ export function createDirectController(
           !presentations[c.connectionId]?.busy &&
           (nextRefresh.get(c.connectionId) ?? Infinity) <= nowMs
         )
-          void this.action(c.connectionId, "refresh");
+          void this.action(c.connectionId, "refresh", true);
     },
   };
 }

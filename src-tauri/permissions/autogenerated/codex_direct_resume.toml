@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-codex-direct-resume"
+description = "Enables the codex_direct_resume command without any pre-configured scope."
+commands.allow = ["codex_direct_resume"]
+
+[[permission]]
+identifier = "deny-codex-direct-resume"
+description = "Denies the codex_direct_resume command without any pre-configured scope."
+commands.deny = ["codex_direct_resume"]

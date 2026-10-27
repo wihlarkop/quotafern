@@ -65,6 +65,30 @@ F1 rules above remain historical foundation boundaries. F3 separately authorizes
 - Both live Codex gates are intentionally disabled: Rust `LIVE_CONNECTION_ENABLED = false` and renderer `CODEX_CONNECTION_AVAILABLE = false`. F4 startup side effects and Unix forced-parent termination are unresolved; do not enable live provider work merely because the UI and local account flows passed Windows acceptance.
 - Owner-reported combined Windows native GUI acceptance covers the **live-disabled foundation** after ACC-04. macOS/Linux native GUI, real provider sessions, signed installers and updater behavior remain unverified.
 
+## CODEX-AUTO-01 remembered monitoring exception (2026-10-28)
+
+- The owner's CODEX-AUTO-01 authorization narrowly supersedes session-only monitoring consent. Old session consent and ACC-04 descriptors never authorize automatic access.
+- Fresh native Connect offers Connect once / Connect and remember / Cancel. Only successful, verified monitoring may save a native grant. The private native store holds opaque references, kind, policy/revision, a pseudonymous identity digest and an in-flight safety lease; never tokens, raw identity, quota or credential paths. ACC-04 remains untrusted presentation metadata.
+- Startup may resume only matching, current native grants through the existing guarded adapter, without login or repeated dialogs. Disconnect durably revokes that account's permission. Quit stops owned resources and preserves explicit permission after bounded safe cleanup acknowledgement; crashes or unacknowledged/terminal failures require manual reconnection.
+- Preserve pinned executable/startup policy, Remote Control prevention, private transport, account isolation, native cooldown and three-minute refresh. Retry only typed transient failures with bounded backoff; unknown App Server failures remain terminal.
+- No system ACL changes, automatic login/logout, launch-at-login or unrelated tray changes. Acceptance gates remain local; production patch gates remain disabled. See `docs/security/codex-auto-01.md`.
+
+## Svelte consent simplification (2026-10-28)
+
+- Owner approved the isolated Svelte/Tauri consent design and then requested replacement of all app-owned OS message boxes. Manual Connect now means remembered monitoring permission; Cancel/close/Escape never approve. Old session-only consent is not upgraded.
+- Rust creates one dedicated `codex-consent` child with a separate bundled entry and only prompt/confirm/cancel IPC. Main cannot approve its own request; child cannot access provider or general window APIs. Challenges are native, random, one-time, expiring and bound to the current account/connection/kind/generation. Main is disabled while the dialog is active and re-enabled on bounded cleanup.
+- Permission is still saved only after a successful verified read. Direct adapters, native identity/ACL checks, private helper and three-minute refresh remain unchanged. Policy version 4 invalidates previous grants for renewed consent.
+- No app-owned OS message-box fallback. If the custom native window cannot be safely created/focused/cleaned, monitoring fails closed. Retired legacy integration remains disabled and refuses authorization. Codex/browser-owned authentication windows are outside Quotafern's UI authority.
+- This narrowly permits the additional consent window; the main tray popup and main-only provider capabilities remain unchanged. See `docs/security/connect-consent-svelte.md`. No production activation, commit/push/merge/release.
+
+## CODEX-MERGE-PREP-01 final Windows scope (2026-10-28)
+
+- Latest owner authorization supersedes earlier acceptance-only/always-false direct-gate instructions: enable the reviewed live implementation on Windows with native `cfg!(windows)`; renderer platform availability is advisory. macOS/Linux live access stays closed pending native acceptance. Both retired legacy gates remain false.
+- Existing System uses only the reviewed private pinned helper over supervised stdio; managed accounts keep isolated direct HTTP. No shared-daemon attachment or automatic unreviewed helper fallback. No system ACL or credential changes.
+- Keep isolated Rust-owned Svelte consent, native remembered authority, identity binding, three-minute refresh, cancellation, Remote Control disable/status, listener guard and owned-job cleanup. Remove production startup probes/receipt writers and endpoint observations; retain synthetic regressions. Tests must not rewrite live gates or access real credentials.
+- Owner confirms full Windows System/managed Plus/Free, multi-account/Refresh all, Disconnect/Reconnect, persistent consent/relaunch auto-reconnect and Svelte consent PASS. See `docs/validation/codex-merge-prep-01.md` for limits and exact validation/review provenance.
+- Commit/push/update Draft PR #16 and await exact-commit three-OS CI are authorized. Never merge, tag, release or modify unrelated PRs/worktrees. Earlier contrary scope statements remain historical.
+
 ## Documentation hygiene
 
 - Keep `docs/superpowers/plans/`, architecture/security decisions, roadmap contracts, and acceptance evidence needed for audit or reproducibility.

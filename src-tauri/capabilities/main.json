@@ -13,6 +13,8 @@
     "allow-codex-direct-login",
     "allow-codex-direct-refresh",
     "allow-codex-direct-disconnect",
-    "allow-codex-direct-status"
+    "allow-codex-direct-status",
+    "allow-codex-direct-remembered",
+    "allow-codex-direct-resume"
   ]
 }

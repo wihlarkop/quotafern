@@ -92,11 +92,11 @@
 
   let activeTab = $state("overview");
   const localStore = createLocalStore(() => window.localStorage);
-  let localAccountState = $state(localStore.state);
+  let localAccountState = $state.raw(localStore.state);
   let directConnectedCount = $derived(
     localAccountState.connections.filter((c) => c.lifecycle === "connected").length,
   );
-  let directPresentations = $state<Partial<Record<ConnectionId, DirectPresentation>>>({});
+  let directPresentations = $state.raw<Partial<Record<ConnectionId, DirectPresentation>>>({});
   const directController = createDirectController(localStore.state, (state, presentations) => {
     localAccountState = state;
     directPresentations = presentations;
@@ -422,6 +422,7 @@
   }
 
   onMount(() => {
+    if (!demoPreview) void directController.reconnectRemembered();
     let mediaQuery: MediaQueryList | null = null;
     const clock = window.setInterval(() => {
       liveNowMs = Date.now();

@@ -1,5 +1,7 @@
 # CODEX-LIVE-01 validation
 
+> The original gated acceptance history below is superseded by the owner-confirmed [final Windows acceptance and activation](codex-merge-prep-01.md). It remains historical evidence, not the current gate state.
+
 Date: 2026-10-26. This record distinguishes synthetic implementation evidence from native GUI and authenticated acceptance. The direct route and legacy app-server gates remain disabled.
 
 ## Baseline

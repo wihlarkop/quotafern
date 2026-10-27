@@ -1,7 +1,13 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+mod authorization;
+pub(crate) mod consent;
 use std::collections::HashMap;
 use std::fs::{self, OpenOptions};
+#[cfg(windows)]
+mod existing_stdio;
+#[cfg(windows)]
+mod rpc_snapshot;
 #[cfg(windows)]
 mod windows_security;
 use crate::codex::process::{InputMode, OutputMode, SupervisedChild};
@@ -11,12 +17,10 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tauri::{Manager, Runtime, State, WebviewWindow};
-#[cfg(not(test))]
-use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 use zeroize::{Zeroize, Zeroizing};
 
 // Separate from app-server. Enabling requires reviewed native/account acceptance.
-const DIRECT_CONNECTION_ENABLED: bool = false;
+const DIRECT_CONNECTION_ENABLED: bool = cfg!(windows);
 const USAGE_URL: &str = "https://chatgpt.com/backend-api/wham/usage";
 const MAX_BODY: usize = 256 * 1024;
 const MAX_AUTH: usize = 128 * 1024;
@@ -25,7 +29,7 @@ const COOLDOWN: Duration = Duration::from_secs(30);
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(12);
 const LOGIN_TIMEOUT: Duration = Duration::from_secs(300);
 
-#[derive(Clone, Copy, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub(crate) enum DirectKind {
     System,
@@ -96,6 +100,9 @@ impl DirectSnapshot {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Failure {
+    ConsentUnavailable,
+    AuthorizationStorageUnsafe,
+    RememberedConsentRequired,
     AuthRequired,
     UnsupportedAuth,
     UnsafePath,
@@ -112,13 +119,76 @@ enum Failure {
     Cancelled,
     LoginFailed,
     UnsupportedLauncher,
+    ManagedProfileUnsafe,
+    ManagedRootUnsafe,
+    ManagedHomesUnsafe,
+    ManagedAccountUnsafe,
+    CredentialDirectoryUnsafe,
+    CredentialFileUnsafe,
+    ConfigFileUnsafe,
+    #[cfg(windows)]
+    RpcCleanupFailed,
+    #[cfg(windows)]
+    RpcNetworkAuditFailed,
+    #[cfg(windows)]
+    RpcRemoteControlUnsafe,
+    #[cfg(windows)]
+    RpcStartupFailed,
+    #[cfg(windows)]
+    RpcEndpointUnsafe,
+    #[cfg(windows)]
+    RpcPeerUnsafe,
+    #[cfg(windows)]
+    RpcVersionUnsupported,
+    #[cfg(windows)]
+    RpcProtocol,
+    #[cfg(windows)]
+    RpcProviderFailed,
+    #[cfg(windows)]
+    RpcIdentityUnavailable,
 }
 impl Failure {
+    fn retryable(self) -> bool {
+        matches!(
+            self,
+            Self::Network | Self::Timeout | Self::RateLimited | Self::Server
+        )
+    }
     fn diagnostic(self) -> &'static str {
         match self {
+            Self::ConsentUnavailable => "directConsentUnavailable",
+            Self::AuthorizationStorageUnsafe => "directAuthorizationStorageUnsafe",
+            Self::RememberedConsentRequired => "directRememberedConsentRequired",
+            #[cfg(windows)]
+            Self::RpcCleanupFailed => "directRpcCleanupFailed",
+            #[cfg(windows)]
+            Self::RpcNetworkAuditFailed => "directRpcNetworkAuditFailed",
+            #[cfg(windows)]
+            Self::RpcRemoteControlUnsafe => "directRpcRemoteControlUnsafe",
+            #[cfg(windows)]
+            Self::RpcStartupFailed => "directRpcStartupFailed",
+            #[cfg(windows)]
+            Self::RpcEndpointUnsafe => "directRpcEndpointUnsafe",
+            #[cfg(windows)]
+            Self::RpcPeerUnsafe => "directRpcPeerUnsafe",
+            #[cfg(windows)]
+            Self::RpcVersionUnsupported => "directRpcVersionUnsupported",
+            #[cfg(windows)]
+            Self::RpcProtocol => "directRpcProtocolRejected",
+            #[cfg(windows)]
+            Self::RpcProviderFailed => "directRpcProviderFailed",
+            #[cfg(windows)]
+            Self::RpcIdentityUnavailable => "directRpcIdentityUnavailable",
             Self::AuthRequired => "directAuthenticationRequired",
             Self::UnsupportedAuth => "directAuthUnsupported",
             Self::UnsafePath => "directAuthPathUnsafe",
+            Self::ManagedProfileUnsafe => "directManagedProfileUnsafe",
+            Self::ManagedRootUnsafe => "directManagedRootUnsafe",
+            Self::ManagedHomesUnsafe => "directManagedHomesUnsafe",
+            Self::ManagedAccountUnsafe => "directManagedAccountHomeUnsafe",
+            Self::CredentialDirectoryUnsafe => "directCredentialDirectoryUnsafe",
+            Self::CredentialFileUnsafe => "directCredentialFileUnsafe",
+            Self::ConfigFileUnsafe => "directConfigFileUnsafe",
             Self::ReadFailed => "directAuthReadFailed",
             Self::InvalidAuth => "directAuthInvalid",
             Self::IdentityChanged => "directIdentityChanged",
@@ -151,10 +221,16 @@ struct Session {
     identity: Option<Zeroizing<String>>,
     cancelled: Arc<AtomicBool>,
     busy: bool,
+    remember_requested: bool,
+    permission_profile: Option<PathBuf>,
+    outcome: Arc<std::sync::atomic::AtomicU8>,
+    permission_revision: Option<u64>,
+    expected_identity_hash: Option<String>,
     login: Option<Arc<Mutex<SupervisedChild>>>,
 }
 #[derive(Default)]
 struct Inner {
+    pending_consent: Option<consent::Pending>,
     shutting_down: bool,
     sessions: HashMap<String, Session>,
     generations: u64,
@@ -162,6 +238,7 @@ struct Inner {
 }
 #[derive(Clone, Default)]
 pub(crate) struct DirectBridge(Arc<Mutex<Inner>>);
+#[derive(Clone)]
 struct Operation {
     account: String,
     connection: String,
@@ -170,6 +247,9 @@ struct Operation {
     home: PathBuf,
     cancelled: Arc<AtomicBool>,
     previous_identity: Option<Zeroizing<String>>,
+    outcome: Arc<std::sync::atomic::AtomicU8>,
+    permission_revision: Option<u64>,
+    expected_identity_hash: Option<String>,
 }
 impl DirectBridge {
     fn attempt_current(&self, connection: &str, generation: u64) -> bool {
@@ -194,6 +274,14 @@ impl DirectBridge {
     fn reserve(&self, account: &str, connection: &str, kind: DirectKind) -> Result<u64, String> {
         valid_ids(account, connection)?;
         let mut inner = self.0.lock().map_err(|_| "directBridgeUnavailable")?;
+        Self::reserve_locked(&mut inner, account, connection, kind)
+    }
+    fn reserve_locked(
+        inner: &mut Inner,
+        account: &str,
+        connection: &str,
+        kind: DirectKind,
+    ) -> Result<u64, String> {
         if inner.shutting_down {
             return Err("directBridgeShuttingDown".into());
         }
@@ -252,10 +340,89 @@ impl DirectBridge {
                 identity: None,
                 cancelled: Arc::new(AtomicBool::new(false)),
                 busy: true,
+                remember_requested: false,
+                permission_profile: None,
+                outcome: Arc::new(std::sync::atomic::AtomicU8::new(0)),
+                permission_revision: None,
+                expected_identity_hash: None,
                 login: None,
             },
         );
         Ok(generation)
+    }
+    fn reserve_remembered(
+        &self,
+        profile: &Path,
+        account: &str,
+        connection: &str,
+    ) -> Result<(u64, authorization::Grant), String> {
+        valid_ids(account, connection)?;
+        let mut inner = self.0.lock().map_err(|_| "directBridgeUnavailable")?;
+        let store = authorization::Store::open(profile, false)
+            .map_err(|e| e.diagnostic())?
+            .ok_or("directRememberedConsentRequired")?;
+        let grant = store
+            .load(account, connection)
+            .map_err(|e| e.diagnostic())?;
+        let generation = Self::reserve_locked(&mut inner, account, connection, grant.kind)?;
+        let session = inner
+            .sessions
+            .get_mut(connection)
+            .ok_or("directOperationCancelled")?;
+        session.permission_revision = Some(grant.revision);
+        session.expected_identity_hash = Some(grant.identity_hash.clone());
+        Ok((generation, grant))
+    }
+    fn remember_choice(
+        &self,
+        profile: &Path,
+        account: &str,
+        connection: &str,
+        generation: u64,
+        remember: bool,
+    ) -> Result<(), Failure> {
+        let mut inner = self.0.lock().map_err(|_| Failure::Cancelled)?;
+        let session = inner
+            .sessions
+            .get_mut(connection)
+            .ok_or(Failure::Cancelled)?;
+        if session.snapshot.generation != generation || session.cancelled.load(Ordering::SeqCst) {
+            return Err(Failure::Cancelled);
+        }
+        // New manual approval supersedes an earlier grant; cancel never reaches this operation.
+        if let Some(store) = authorization::Store::open(profile, false)? {
+            store.remove(account, connection)?;
+        }
+        session.remember_requested = remember;
+        Ok(())
+    }
+    fn validate_permission(&self, profile: &Path, operation: &Operation) -> Result<(), Failure> {
+        let mut inner = self.0.lock().map_err(|_| Failure::Cancelled)?;
+        if inner.shutting_down
+            || !inner
+                .sessions
+                .get(&operation.connection)
+                .is_some_and(|s| s.snapshot.generation == operation.generation)
+        {
+            return Err(Failure::Cancelled);
+        }
+        check_cancel(&operation.cancelled)?;
+        if let Some(revision) = operation.permission_revision {
+            let store = authorization::Store::open(profile, false)?
+                .ok_or(Failure::RememberedConsentRequired)?;
+            let grant = store.load(&operation.account, &operation.connection)?;
+            if grant.revision != revision
+                || grant.kind != operation.kind
+                || operation.expected_identity_hash.as_ref() != Some(&grant.identity_hash)
+            {
+                return Err(Failure::RememberedConsentRequired);
+            }
+            store.suspend(grant)?;
+            if let Some(session) = inner.sessions.get_mut(&operation.connection) {
+                session.permission_profile = Some(profile.into());
+            }
+        }
+        Ok(())
     }
     fn authorize(
         &self,
@@ -281,6 +448,9 @@ impl DirectBridge {
             home,
             cancelled: session.cancelled.clone(),
             previous_identity: session.identity.clone(),
+            outcome: session.outcome.clone(),
+            permission_revision: session.permission_revision,
+            expected_identity_hash: session.expected_identity_hash.clone(),
         })
     }
     fn refresh_operation(&self, account: &str, connection: &str) -> Result<Operation, String> {
@@ -311,6 +481,7 @@ impl DirectBridge {
             return Err("directNotConnected".into());
         }
         session.busy = true;
+        session.outcome = Arc::new(std::sync::atomic::AtomicU8::new(0));
         let operation = Operation {
             account: account.into(),
             connection: connection.into(),
@@ -319,6 +490,9 @@ impl DirectBridge {
             home,
             cancelled: session.cancelled.clone(),
             previous_identity: session.identity.clone(),
+            outcome: session.outcome.clone(),
+            permission_revision: session.permission_revision,
+            expected_identity_hash: session.expected_identity_hash.clone(),
         };
         // Preserve failure history when reserving a refresh.
         let failures = inner.cooldowns.get(account).map_or(0, |(_, n)| *n);
@@ -327,11 +501,21 @@ impl DirectBridge {
             .insert(account.into(), (Instant::now() + COOLDOWN, failures));
         Ok(operation)
     }
+    #[cfg(test)]
     fn finish(
         &self,
         operation: &Operation,
         result: Result<(Value, Zeroizing<String>), Failure>,
     ) -> DirectSnapshot {
+        self.finish_with_store(None, operation, result)
+    }
+    fn finish_with_store(
+        &self,
+        profile: Option<&Path>,
+        operation: &Operation,
+        result: Result<(Value, Zeroizing<String>), Failure>,
+    ) -> DirectSnapshot {
+        record_outcome(operation, &result);
         let mut inner = self.0.lock().unwrap_or_else(|p| p.into_inner());
         let valid = inner.sessions.get(&operation.connection).is_some_and(|s| {
             s.snapshot.generation == operation.generation
@@ -352,12 +536,94 @@ impl DirectBridge {
             .expect("validated session");
         session.busy = false;
         session.login = None;
-        let outcome = match result {
-            Ok((value, identity)) => normalize(&value, session.snapshot.clone()).inspect(|_| {
-                session.identity = Some(identity);
-            }),
+        let mut outcome = match result {
+            Ok((value, identity)) => {
+                normalize_selected(operation.kind, &value, session.snapshot.clone()).inspect(|_| {
+                    session.identity = Some(identity);
+                })
+            }
             Err(failure) => Err(failure),
         };
+        if let Some(profile) = profile {
+            if let Some(revision) = operation.permission_revision {
+                let current = authorization::Store::open(profile, false)
+                    .and_then(|store| store.ok_or(Failure::RememberedConsentRequired))
+                    .and_then(|store| {
+                        store.load_for_finish(&operation.account, &operation.connection, revision)
+                    });
+                match current {
+                    Ok(grant)
+                        if grant.revision == revision
+                            && grant.kind == operation.kind
+                            && operation.expected_identity_hash.as_deref()
+                                == Some(grant.identity_hash.as_str()) => {}
+                    Ok(_) => outcome = Err(Failure::RememberedConsentRequired),
+                    Err(error) => outcome = Err(error),
+                }
+            }
+            if outcome.is_ok() && session.remember_requested {
+                let saved = authorization::Store::open(profile, true)
+                    .and_then(|store| store.ok_or(Failure::AuthorizationStorageUnsafe))
+                    .and_then(|store| {
+                        store.save(
+                            &operation.account,
+                            &operation.connection,
+                            operation.kind,
+                            session
+                                .identity
+                                .as_deref()
+                                .map(String::as_str)
+                                .ok_or(Failure::IdentityChanged)?,
+                        )
+                    });
+                match saved {
+                    Ok(grant) => {
+                        session.permission_revision = Some(grant.revision);
+                        session.permission_profile = Some(profile.into());
+                        session.expected_identity_hash = Some(grant.identity_hash);
+                        session.remember_requested = false;
+                    }
+                    Err(error) => outcome = Err(error),
+                }
+            }
+            if outcome
+                .as_ref()
+                .err()
+                .is_some_and(|e| !e.retryable() && *e != Failure::Cancelled)
+            {
+                // A failed source/auth/policy never creates an unattended retry loop.
+                let revoked = authorization::Store::open(profile, false).and_then(|store| {
+                    if let Some(store) = store {
+                        store.remove(&operation.account, &operation.connection)?;
+                    }
+                    Ok(())
+                });
+                if let Err(error) = revoked {
+                    outcome = Err(error);
+                }
+                session.remember_requested = false;
+                session.home = None;
+                session.identity = None;
+                session.cancelled.store(true, Ordering::SeqCst);
+            }
+        }
+        if let (Some(profile), Some(revision)) = (profile, operation.permission_revision) {
+            if outcome.is_ok()
+                || outcome
+                    .as_ref()
+                    .err()
+                    .is_some_and(|e| e.retryable() || *e == Failure::Cancelled)
+            {
+                let released = authorization::Store::open(profile, false)
+                    .and_then(|s| s.ok_or(Failure::RememberedConsentRequired))
+                    .and_then(|store| {
+                        store.release(&operation.account, &operation.connection, revision)
+                    });
+                if let Err(error) = released {
+                    outcome = Err(error);
+                }
+            }
+        }
         let failure = outcome.as_ref().err().copied();
         session.snapshot = match outcome {
             Ok(snapshot) => snapshot,
@@ -406,7 +672,16 @@ impl DirectBridge {
             ))
         }
     }
+    #[cfg(test)]
     fn disconnect(&self, account: &str, connection: &str) -> Result<DirectSnapshot, String> {
+        self.disconnect_with_store(None, account, connection)
+    }
+    fn disconnect_with_store(
+        &self,
+        profile: Option<&Path>,
+        account: &str,
+        connection: &str,
+    ) -> Result<DirectSnapshot, String> {
         valid_ids(account, connection)?;
         let mut inner = self.0.lock().map_err(|_| "directBridgeUnavailable")?;
         if inner
@@ -416,6 +691,17 @@ impl DirectBridge {
         {
             return Err("directConnectionBindingMismatch".into());
         }
+        if let Some(session) = inner.sessions.get(connection) {
+            session.cancelled.store(true, Ordering::SeqCst);
+        }
+        let revocation = profile.map_or(Ok(()), |profile| {
+            authorization::Store::open(profile, false).and_then(|store| {
+                if let Some(store) = store {
+                    store.remove(account, connection)?;
+                }
+                Ok(())
+            })
+        });
         if let Some(session) = inner.sessions.get_mut(connection) {
             session.cancelled.store(true, Ordering::SeqCst);
             if let Some(child) = &session.login {
@@ -436,16 +722,56 @@ impl DirectBridge {
             session.cancelled.store(true, Ordering::SeqCst);
         }
         // Deliberately retain the CLI-owned home and credentials. This is not logout.
+        revocation.map_err(|e| e.diagnostic().to_string())?;
         Ok(snapshot)
     }
     pub(crate) fn shutdown(&self) {
-        let mut inner = self.0.lock().unwrap_or_else(|p| p.into_inner());
-        inner.shutting_down = true;
-        for (_, session) in inner.sessions.drain() {
-            session.cancelled.store(true, Ordering::SeqCst);
-            if let Some(child) = session.login {
+        let sessions: Vec<_> = {
+            let mut inner = self.0.lock().unwrap_or_else(|p| p.into_inner());
+            inner.shutting_down = true;
+            inner
+                .sessions
+                .drain()
+                .map(|(_, s)| {
+                    s.cancelled.store(true, Ordering::SeqCst);
+                    s
+                })
+                .collect()
+        };
+        // No bridge/storage lock is held while stopping processes or waiting for acknowledgement.
+        for session in &sessions {
+            if let Some(child) = &session.login {
                 if let Ok(mut child) = child.lock() {
                     let _ = child.terminate();
+                }
+            }
+        }
+        let deadline = Instant::now() + Duration::from_secs(5);
+        for session in sessions {
+            if session.permission_revision.is_none() || session.permission_profile.is_none() {
+                continue;
+            }
+            while session.busy
+                && session.outcome.load(Ordering::SeqCst) == 0
+                && Instant::now() < deadline
+            {
+                std::thread::sleep(Duration::from_millis(10));
+            }
+            if session.outcome.load(Ordering::SeqCst) == 1
+                || (session.busy && session.outcome.load(Ordering::SeqCst) == 0)
+            {
+                continue;
+            }
+            if let (Some(profile), Some(revision)) =
+                (&session.permission_profile, session.permission_revision)
+            {
+                let _lock = self.0.lock().unwrap_or_else(|p| p.into_inner());
+                if let Ok(Some(store)) = authorization::Store::open(profile, false) {
+                    let _ = store.release(
+                        &session.snapshot.account_id,
+                        &session.snapshot.connection_id,
+                        revision,
+                    );
                 }
             }
         }
@@ -571,16 +897,37 @@ fn reject_links(path: &Path) -> Result<(), Failure> {
     }
     Ok(())
 }
-fn read_credentials(home: &Path, cancelled: &AtomicBool) -> Result<Credentials, Failure> {
+fn read_credentials(
+    home: &Path,
+    cancelled: &AtomicBool,
+    kind: DirectKind,
+) -> Result<Credentials, Failure> {
     check_cancel(cancelled)?;
-    reject_links(home)?;
-    verify_home(home)?;
-    require_file_store(home)?;
+    reject_links(home).map_err(|_| Failure::CredentialDirectoryUnsafe)?;
+    #[cfg(windows)]
+    let _system_guards = if kind == DirectKind::System {
+        Some(
+            windows_security::verify_system_home(home)
+                .map_err(|_| Failure::CredentialDirectoryUnsafe)?,
+        )
+    } else {
+        None
+    };
+    if cfg!(not(windows)) || kind == DirectKind::Managed {
+        verify_home(home).map_err(|_| Failure::CredentialDirectoryUnsafe)?;
+    }
+    require_file_store(home).map_err(|failure| {
+        if failure == Failure::UnsafePath {
+            Failure::CredentialFileUnsafe
+        } else {
+            failure
+        }
+    })?;
     let path = home.join("auth.json");
     if !path.exists() {
         return Err(Failure::AuthRequired);
     }
-    reject_links(&path)?;
+    reject_links(&path).map_err(|_| Failure::CredentialFileUnsafe)?;
     let mut options = OpenOptions::new();
     options.read(true);
     #[cfg(windows)]
@@ -595,16 +942,16 @@ fn read_credentials(home: &Path, cancelled: &AtomicBool) -> Result<Credentials, 
     }
     let file = options.open(&path).map_err(|_| Failure::ReadFailed)?;
     #[cfg(windows)]
-    windows_security::verify_private(&file)?;
+    windows_security::verify_private(&file).map_err(|_| Failure::CredentialFileUnsafe)?;
     let meta = file.metadata().map_err(|_| Failure::ReadFailed)?;
     if !meta.is_file() || meta.len() > MAX_AUTH as u64 {
-        return Err(Failure::UnsafePath);
+        return Err(Failure::CredentialFileUnsafe);
     }
     #[cfg(windows)]
     {
         use std::os::windows::fs::MetadataExt;
         if meta.file_attributes() & 0x400 != 0 {
-            return Err(Failure::UnsafePath);
+            return Err(Failure::CredentialFileUnsafe);
         }
     }
     #[cfg(unix)]
@@ -612,7 +959,7 @@ fn read_credentials(home: &Path, cancelled: &AtomicBool) -> Result<Credentials, 
         use std::os::unix::fs::MetadataExt;
         if meta.uid() != unsafe { libc::geteuid() } || meta.mode() & 0o077 != 0 || meta.nlink() != 1
         {
-            return Err(Failure::UnsafePath);
+            return Err(Failure::CredentialFileUnsafe);
         }
     }
     let mut bytes = Zeroizing::new(Vec::new());
@@ -620,7 +967,7 @@ fn read_credentials(home: &Path, cancelled: &AtomicBool) -> Result<Credentials, 
         .read_to_end(&mut bytes)
         .map_err(|_| Failure::ReadFailed)?;
     if bytes.len() > MAX_AUTH {
-        return Err(Failure::UnsafePath);
+        return Err(Failure::CredentialFileUnsafe);
     }
     check_cancel(cancelled)?;
     parse_credentials(&bytes)
@@ -639,6 +986,16 @@ fn resolve_home<R: Runtime>(
             reject_links(&home)?;
             Ok(home)
         }
+        #[cfg(windows)]
+        DirectKind::Managed => {
+            let profile = window
+                .app_handle()
+                .path()
+                .home_dir()
+                .map_err(|_| Failure::ManagedProfileUnsafe)?;
+            windows_security::managed_home(&profile, account)
+        }
+        #[cfg(not(windows))]
         DirectKind::Managed => {
             let root = window
                 .app_handle()
@@ -676,6 +1033,7 @@ fn verify_home(path: &Path) -> Result<(), Failure> {
     }
     Ok(())
 }
+#[cfg(not(windows))]
 fn create_private_tree(path: &Path) -> Result<(), Failure> {
     if path.exists() {
         reject_links(path)?;
@@ -823,11 +1181,88 @@ fn validate_response_identity(value: &Value, identity: &str) -> Result<(), Failu
     }
     Ok(())
 }
-async fn execute(
+fn finish_native<R: Runtime>(
+    window: &WebviewWindow<R>,
+    bridge: &DirectBridge,
+    operation: &Operation,
+    result: Result<(Value, Zeroizing<String>), Failure>,
+) -> DirectSnapshot {
+    match window.app_handle().path().home_dir() {
+        Ok(profile) => bridge.finish_with_store(Some(&profile), operation, result),
+        Err(_) => {
+            bridge.finish_with_store(None, operation, Err(Failure::AuthorizationStorageUnsafe))
+        }
+    }
+}
+fn record_outcome(operation: &Operation, result: &Result<(Value, Zeroizing<String>), Failure>) {
+    let state = if result
+        .as_ref()
+        .err()
+        .is_some_and(|e| !e.retryable() && *e != Failure::Cancelled)
+    {
+        1
+    } else {
+        2
+    };
+    // A terminal result committed by the adapter cannot become cancellation on shutdown.
+    if state == 1 {
+        operation.outcome.store(1, Ordering::SeqCst);
+    } else {
+        let _ = operation
+            .outcome
+            .compare_exchange(0, 2, Ordering::SeqCst, Ordering::SeqCst);
+    }
+}
+async fn execute<R: Runtime>(
+    window: &WebviewWindow<R>,
     bridge: &DirectBridge,
     operation: &Operation,
 ) -> Result<(Value, Zeroizing<String>), Failure> {
-    let credentials = read_credentials(&operation.home, &operation.cancelled)?;
+    let result = execute_inner(window, bridge, operation)
+        .await
+        .and_then(|(value, identity)| {
+            normalize_selected(
+                operation.kind,
+                &value,
+                DirectSnapshot::empty(
+                    &operation.account,
+                    &operation.connection,
+                    operation.generation,
+                ),
+            )?;
+            Ok((value, identity))
+        });
+    record_outcome(operation, &result);
+    result
+}
+async fn execute_inner<R: Runtime>(
+    _window: &WebviewWindow<R>,
+    bridge: &DirectBridge,
+    operation: &Operation,
+) -> Result<(Value, Zeroizing<String>), Failure> {
+    let profile = _window
+        .app_handle()
+        .path()
+        .home_dir()
+        .map_err(|_| Failure::AuthorizationStorageUnsafe)?;
+    bridge.validate_permission(&profile, operation)?;
+    #[cfg(windows)]
+    if operation.kind == DirectKind::System {
+        let profile = _window
+            .app_handle()
+            .path()
+            .home_dir()
+            .map_err(|_| Failure::RpcPeerUnsafe)?;
+        let bridge = bridge.clone();
+        let operation = operation.clone();
+        return tauri::async_runtime::spawn_blocking(move || {
+            existing_stdio::fetch(&profile, &bridge, &operation)
+        })
+        .await
+        .map_err(|_| Failure::RpcProtocol)?;
+    }
+    let credentials = read_credentials(&operation.home, &operation.cancelled, operation.kind)?;
+    authorization::check_identity(operation, &credentials.identity)?;
     if operation
         .previous_identity
         .as_ref()
@@ -859,11 +1294,24 @@ async fn execute(
     let value = fetch_usage(&http_client()?, &credentials, &operation.cancelled).await?;
     validate_response_identity(&value, &credentials.identity)?;
     // A CLI rotation during the request must not relabel an older response.
-    let current = read_credentials(&operation.home, &operation.cancelled)?;
+    let current = read_credentials(&operation.home, &operation.cancelled, operation.kind)?;
     if current.identity.as_str() != credentials.identity.as_str() {
         return Err(Failure::IdentityChanged);
     }
     Ok((value, credentials.identity))
+}
+fn normalize_selected(
+    kind: DirectKind,
+    value: &Value,
+    snapshot: DirectSnapshot,
+) -> Result<DirectSnapshot, Failure> {
+    #[cfg(windows)]
+    if kind == DirectKind::System {
+        return rpc_snapshot::normalize(value, snapshot);
+    }
+    #[cfg(not(windows))]
+    let _ = kind;
+    normalize(value, snapshot)
 }
 fn normalize(value: &Value, mut snapshot: DirectSnapshot) -> Result<DirectSnapshot, Failure> {
     if !value.is_object() {
@@ -1021,34 +1469,29 @@ fn main_only<R: Runtime>(window: &WebviewWindow<R>) -> Result<(), String> {
     }
 }
 #[cfg(not(test))]
-fn native_consent<R: Runtime>(window: &WebviewWindow<R>, login: bool, kind: DirectKind) -> bool {
-    let message = if login {
-        "Start ordinary Codex CLI browser sign-in in this account's isolated Quotafern home? Codex owns sign-in and may write its authentication state. Quotafern will read the resulting ChatGPT access token and account identifier only after approval, then send them directly to chatgpt.com/backend-api/wham/usage for read-only quota monitoring. No inference or token renewal is performed by Quotafern. While connected, quota is refreshed manually and automatically every five minutes; disconnecting or quitting ends consent. Disconnecting or removing the local account leaves CLI credentials on disk."
-    } else {
-        "Allow Quotafern to read this selected Codex home's auth.json access token and account identifier, then send them directly to chatgpt.com/backend-api/wham/usage for read-only quota monitoring? This unofficial endpoint may change. No inference or token renewal is performed. Consent lasts only for this session. While connected, quota is refreshed manually and automatically every five minutes; disconnecting or quitting ends consent. Disconnecting leaves CLI credentials on disk."
-    };
-    let source = match kind {
-        DirectKind::System => "System Codex profile",
-        DirectKind::Managed => "Dedicated Quotafern account",
-    };
-    window
-        .dialog()
-        .message(message)
-        .title(format!("{source}: read-only quota monitoring"))
-        .buttons(MessageDialogButtons::OkCancelCustom(
-            if login {
-                "Sign in and connect"
-            } else {
-                "Connect"
-            }
-            .into(),
-            "Cancel".into(),
-        ))
-        .blocking_show()
+fn native_consent<R: Runtime>(
+    window: &WebviewWindow<R>,
+    bridge: &DirectBridge,
+    account: &str,
+    connection: &str,
+    generation: u64,
+    login: bool,
+    kind: DirectKind,
+) -> Result<bool, Failure> {
+    consent::present(window, bridge, account, connection, generation, login, kind)
 }
 #[cfg(test)]
-fn native_consent<R: Runtime>(_window: &WebviewWindow<R>, _login: bool, _kind: DirectKind) -> bool {
-    panic!("native dialog must not run in tests")
+fn native_consent<R: Runtime>(
+    _window: &WebviewWindow<R>,
+    _bridge: &DirectBridge,
+    _account: &str,
+    _connection: &str,
+    _generation: u64,
+    _login: bool,
+    _kind: DirectKind,
+) -> Result<bool, Failure> {
+    // Compile-time test presenter denies; it cannot approve or access credentials.
+    Ok(false)
 }
 async fn connect<R: Runtime>(
     window: WebviewWindow<R>,
@@ -1071,8 +1514,19 @@ async fn connect<R: Runtime>(
     }
     let generation = bridge.reserve(&account, &connection, kind)?;
     let window_for_dialog = window.clone();
+    let consent_bridge = bridge.clone();
+    let consent_account = account.clone();
+    let consent_connection = connection.clone();
     let approved = tauri::async_runtime::spawn_blocking(move || {
-        native_consent(&window_for_dialog, login, kind)
+        native_consent(
+            &window_for_dialog,
+            &consent_bridge,
+            &consent_account,
+            &consent_connection,
+            generation,
+            login,
+            kind,
+        )
     })
     .await
     .map_err(|_| "directConsentUnavailable")?;
@@ -1081,8 +1535,28 @@ async fn connect<R: Runtime>(
             DirectSnapshot::empty(&account, &connection, generation).fail(Failure::Cancelled)
         );
     }
-    if !approved {
-        return Ok(bridge.cancel_attempt(&account, &connection, generation));
+    match approved {
+        Ok(true) => {}
+        Ok(false) => {
+            let mut snapshot = bridge.cancel_attempt(&account, &connection, generation);
+            snapshot.diagnostic = Some("nativeConsentCancelled");
+            return Ok(snapshot);
+        }
+        Err(error) => {
+            return Ok(bridge
+                .cancel_attempt(&account, &connection, generation)
+                .fail(error))
+        }
+    };
+    let profile = window
+        .app_handle()
+        .path()
+        .home_dir()
+        .map_err(|_| "directAuthorizationStorageUnsafe")?;
+    if let Err(error) = bridge.remember_choice(&profile, &account, &connection, generation, true) {
+        return Ok(bridge
+            .cancel_attempt(&account, &connection, generation)
+            .fail(error));
     }
     let home = match resolve_home(&window, &account, kind) {
         Ok(home) => home,
@@ -1099,6 +1573,7 @@ async fn connect<R: Runtime>(
     };
     if login {
         let login_bridge = bridge.clone();
+        let login_profile = profile.clone();
         let login_operation = Operation {
             account: operation.account.clone(),
             connection: operation.connection.clone(),
@@ -1107,32 +1582,48 @@ async fn connect<R: Runtime>(
             home: operation.home.clone(),
             cancelled: operation.cancelled.clone(),
             previous_identity: None,
+            outcome: operation.outcome.clone(),
+            permission_revision: None,
+            expected_identity_hash: None,
         };
         let result = tauri::async_runtime::spawn_blocking(move || {
-            run_login(&login_bridge, &login_operation)
+            run_login(&login_bridge, &login_operation, &login_profile)
         })
         .await
         .map_err(|_| "directLoginUnavailable")?;
         if let Err(failure) = result {
-            return Ok(bridge.finish(&operation, Err(failure)));
+            return Ok(finish_native(&window, &bridge, &operation, Err(failure)));
         }
     }
-    Ok(bridge.finish(&operation, execute(&bridge, &operation).await))
+    Ok(finish_native(
+        &window,
+        &bridge,
+        &operation,
+        execute(&window, &bridge, &operation).await,
+    ))
 }
-fn run_login(bridge: &DirectBridge, operation: &Operation) -> Result<(), Failure> {
+fn run_login(bridge: &DirectBridge, operation: &Operation, _profile: &Path) -> Result<(), Failure> {
     if operation.kind != DirectKind::Managed {
         return Err(Failure::UnsupportedAuth);
     }
     check_cancel(&operation.cancelled)?;
-    let executable = crate::codex::direct_login_executable().map_err(|diagnostic| {
-        if diagnostic == "unsupportedLauncher" {
-            Failure::UnsupportedLauncher
-        } else {
-            Failure::LoginFailed
-        }
-    })?;
-    run_login_with_executable(bridge, operation, &executable)
+    #[cfg(windows)]
+    {
+        existing_stdio::managed_login(bridge, operation, _profile)
+    }
+    #[cfg(not(windows))]
+    {
+        let executable = crate::codex::direct_login_executable().map_err(|diagnostic| {
+            if diagnostic == "unsupportedLauncher" {
+                Failure::UnsupportedLauncher
+            } else {
+                Failure::LoginFailed
+            }
+        })?;
+        run_login_with_executable(bridge, operation, &executable)
+    }
 }
+#[cfg(any(test, not(windows)))]
 fn run_login_with_executable(
     bridge: &DirectBridge,
     operation: &Operation,
@@ -1160,6 +1651,15 @@ fn run_login_with_executable(
         }
     }
     environment.push(("CODEX_HOME".into(), operation.home.clone().into_os_string()));
+    run_login_with_environment(bridge, operation, executable, &environment)
+}
+fn run_login_with_environment(
+    bridge: &DirectBridge,
+    operation: &Operation,
+    executable: &Path,
+    environment: &[(std::ffi::OsString, std::ffi::OsString)],
+) -> Result<(), Failure> {
+    check_cancel(&operation.cancelled)?;
     let args = [
         "--config",
         "cli_auth_credentials_store=\"file\"",
@@ -1201,7 +1701,7 @@ fn run_login_with_executable(
                 &args,
                 InputMode::Null,
                 OutputMode::Null,
-                Some(&environment),
+                Some(environment),
                 Some(&operation.home),
             )
             .map_err(|_| Failure::LoginFailed)?,
@@ -1284,7 +1784,12 @@ pub(crate) async fn codex_direct_refresh<R: Runtime>(
         return Err("directOwnerAcceptancePending".into());
     }
     let operation = bridge.refresh_operation(&account_id, &connection_id)?;
-    Ok(bridge.finish(&operation, execute(&bridge, &operation).await))
+    Ok(finish_native(
+        &window,
+        &bridge,
+        &operation,
+        execute(&window, &bridge, &operation).await,
+    ))
 }
 #[tauri::command]
 pub(crate) fn codex_direct_disconnect<R: Runtime>(
@@ -1294,7 +1799,68 @@ pub(crate) fn codex_direct_disconnect<R: Runtime>(
     connection_id: String,
 ) -> Result<DirectSnapshot, String> {
     main_only(&window)?;
-    bridge.disconnect(&account_id, &connection_id)
+    valid_ids(&account_id, &connection_id)?;
+    let profile = window
+        .app_handle()
+        .path()
+        .home_dir()
+        .map_err(|_| "directAuthorizationStorageUnsafe")?;
+    bridge.disconnect_with_store(Some(&profile), &account_id, &connection_id)
+}
+#[tauri::command]
+pub(crate) fn codex_direct_remembered<R: Runtime>(
+    window: WebviewWindow<R>,
+    bridge: State<'_, DirectBridge>,
+) -> Result<Vec<authorization::Remembered>, String> {
+    main_only(&window)?;
+    if !DIRECT_CONNECTION_ENABLED {
+        return Ok(vec![]);
+    }
+    let profile = window
+        .app_handle()
+        .path()
+        .home_dir()
+        .map_err(|_| "directAuthorizationStorageUnsafe")?;
+    let _lock = bridge.0.lock().map_err(|_| "directBridgeUnavailable")?;
+    authorization::Store::open(&profile, false)
+        .and_then(|store| store.map_or(Ok(vec![]), |store| store.list()))
+        .map_err(|e| e.diagnostic().into())
+}
+#[tauri::command]
+pub(crate) async fn codex_direct_resume<R: Runtime>(
+    window: WebviewWindow<R>,
+    bridge: State<'_, DirectBridge>,
+    account_id: String,
+    connection_id: String,
+) -> Result<DirectSnapshot, String> {
+    main_only(&window)?;
+    valid_ids(&account_id, &connection_id)?;
+    if !DIRECT_CONNECTION_ENABLED {
+        return Err("directOwnerAcceptancePending".into());
+    }
+    let profile = window
+        .app_handle()
+        .path()
+        .home_dir()
+        .map_err(|_| "directAuthorizationStorageUnsafe")?;
+    let (generation, grant) = bridge.reserve_remembered(&profile, &account_id, &connection_id)?;
+    let home = match resolve_home(&window, &account_id, grant.kind) {
+        Ok(home) => home,
+        Err(error) => {
+            return Ok(bridge
+                .cancel_attempt(&account_id, &connection_id, generation)
+                .fail(error))
+        }
+    };
+    let operation = bridge
+        .authorize(&account_id, &connection_id, generation, home)
+        .ok_or("directOperationCancelled")?;
+    Ok(finish_native(
+        &window,
+        &bridge,
+        &operation,
+        execute(&window, &bridge, &operation).await,
+    ))
 }
 #[tauri::command]
 pub(crate) fn codex_direct_status<R: Runtime>(
@@ -1331,6 +1897,19 @@ fn require_file_store(home: &Path) -> Result<(), Failure> {
         options.custom_flags(libc::O_NOFOLLOW);
     }
     let file = options.open(path).map_err(|_| Failure::ReadFailed)?;
+    #[cfg(windows)]
+    windows_security::verify_private(&file).map_err(|_| Failure::ConfigFileUnsafe)?;
+    let opened = file.metadata().map_err(|_| Failure::ReadFailed)?;
+    if !opened.is_file() || opened.len() > MAX_AUTH as u64 {
+        return Err(Failure::ConfigFileUnsafe);
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt;
+        if opened.file_attributes() & 0x400 != 0 {
+            return Err(Failure::ConfigFileUnsafe);
+        }
+    }
     let mut text = Zeroizing::new(String::new());
     file.take(MAX_AUTH as u64 + 1)
         .read_to_string(&mut text)
@@ -1557,6 +2136,247 @@ mod tests {
         );
     }
     #[test]
+    fn durable_permission_lease_handles_storage_failure_terminal_ack_and_quit() {
+        let app = tauri::test::mock_app();
+        let profile = app.path().home_dir().unwrap();
+        let root = profile.join(format!(
+            ".quotafern-lease-synthetic-{}-{}",
+            std::process::id(),
+            now_ms().unwrap()
+        ));
+        secure_create(&root).unwrap();
+        let store = authorization::Store::open(&root, true).unwrap().unwrap();
+        store
+            .save(
+                ACCOUNT,
+                CONNECTION,
+                DirectKind::Managed,
+                "synthetic-identity",
+            )
+            .unwrap();
+        let start = |bridge: &DirectBridge| {
+            let (generation, _) = bridge
+                .reserve_remembered(&root, ACCOUNT, CONNECTION)
+                .unwrap();
+            let operation = bridge
+                .authorize(ACCOUNT, CONNECTION, generation, root.clone())
+                .unwrap();
+            bridge.validate_permission(&root, &operation).unwrap();
+            operation
+        };
+        let bridge = DirectBridge::default();
+        let operation = start(&bridge);
+        let connected = bridge.finish_with_store(
+            Some(&root),
+            &operation,
+            Ok((fixture(20.0), Zeroizing::new("synthetic-identity".into()))),
+        );
+        assert_eq!(connected.connection_status, "connected");
+        assert!(store.load(ACCOUNT, CONNECTION).unwrap().allowed());
+        bridge.0.lock().unwrap().cooldowns.clear();
+        let refresh = bridge.refresh_operation(ACCOUNT, CONNECTION).unwrap();
+        bridge.validate_permission(&root, &refresh).unwrap();
+        let refreshed = bridge.finish_with_store(
+            Some(&root),
+            &refresh,
+            Ok((fixture(21.0), Zeroizing::new("synthetic-identity".into()))),
+        );
+        assert_eq!(refreshed.connection_status, "connected");
+        assert!(store.load(ACCOUNT, CONNECTION).unwrap().allowed());
+        bridge.shutdown();
+        let bridge = DirectBridge::default();
+        let operation = start(&bridge);
+        assert!(store.load(ACCOUNT, CONNECTION).is_err());
+        assert_eq!(store.list().unwrap().len(), 1);
+        let path = root
+            .join(".quotafern")
+            .join("codex-authorizations")
+            .join(format!("{CONNECTION}.json"));
+        let original = fs::metadata(&path).unwrap().permissions();
+        let mut readonly = original.clone();
+        readonly.set_readonly(true);
+        fs::set_permissions(&path, readonly).unwrap();
+        assert_eq!(
+            bridge
+                .finish_with_store(Some(&root), &operation, Err(Failure::AuthRequired))
+                .diagnostic,
+            Some("directAuthorizationStorageUnsafe")
+        );
+        fs::set_permissions(&path, original).unwrap();
+        assert!(store.load(ACCOUNT, CONNECTION).is_err()); // Restoring filesystem access cannot reactivate the failed operation.
+        store.remove(ACCOUNT, CONNECTION).unwrap();
+        store
+            .save(
+                ACCOUNT,
+                CONNECTION,
+                DirectKind::Managed,
+                "synthetic-identity",
+            )
+            .unwrap();
+        let bridge = DirectBridge::default();
+        let operation = start(&bridge);
+        let acknowledgement = operation.clone();
+        let worker = std::thread::spawn(move || {
+            while !acknowledgement.cancelled.load(Ordering::SeqCst) {
+                std::thread::sleep(Duration::from_millis(1));
+            }
+            record_outcome(&acknowledgement, &Err(Failure::Cancelled));
+        });
+        bridge.shutdown();
+        worker.join().unwrap();
+        assert!(store.load(ACCOUNT, CONNECTION).unwrap().allowed()); // Normal acknowledged Quit preserves permission.
+        let bridge = DirectBridge::default();
+        let operation = start(&bridge);
+        record_outcome(&operation, &Err(Failure::AuthRequired));
+        record_outcome(&operation, &Err(Failure::Cancelled));
+        assert_eq!(operation.outcome.load(Ordering::SeqCst), 1);
+        bridge.shutdown();
+        assert!(store.load(ACCOUNT, CONNECTION).is_err()); // Terminal result wins over Quit.
+        store.remove(ACCOUNT, CONNECTION).unwrap();
+        drop(store);
+        assert!(
+            root.starts_with(&profile)
+                && root
+                    .file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .starts_with(".quotafern-lease-synthetic-")
+        );
+        fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn remembered_permission_restart_revoke_and_late_results_are_native_authority() {
+        let app = tauri::test::mock_app();
+        let profile = app.path().home_dir().unwrap();
+        let root = profile.join(format!(
+            ".quotafern-remember-synthetic-{}-{}",
+            std::process::id(),
+            now_ms().unwrap()
+        ));
+        secure_create(&root).unwrap();
+        let bridge = DirectBridge::default();
+        assert!(bridge
+            .reserve_remembered(&root, ACCOUNT, CONNECTION)
+            .is_err());
+        let generation = bridge
+            .reserve(ACCOUNT, CONNECTION, DirectKind::Managed)
+            .unwrap();
+        bridge
+            .remember_choice(&root, ACCOUNT, CONNECTION, generation, false)
+            .unwrap();
+        let operation = bridge
+            .authorize(ACCOUNT, CONNECTION, generation, root.clone())
+            .unwrap();
+        bridge.finish_with_store(
+            Some(&root),
+            &operation,
+            Ok((fixture(20.0), Zeroizing::new("synthetic-identity".into()))),
+        );
+        assert!(authorization::Store::open(&root, false).unwrap().is_none());
+        bridge
+            .disconnect_with_store(Some(&root), ACCOUNT, CONNECTION)
+            .unwrap();
+        bridge.0.lock().unwrap().cooldowns.clear();
+        let generation = bridge
+            .reserve(ACCOUNT, CONNECTION, DirectKind::Managed)
+            .unwrap();
+        bridge
+            .remember_choice(&root, ACCOUNT, CONNECTION, generation, true)
+            .unwrap();
+        let operation = bridge
+            .authorize(ACCOUNT, CONNECTION, generation, root.clone())
+            .unwrap();
+        assert_eq!(
+            bridge
+                .finish_with_store(
+                    Some(&root),
+                    &operation,
+                    Ok((fixture(20.0), Zeroizing::new("synthetic-identity".into())))
+                )
+                .connection_status,
+            "connected"
+        );
+        bridge.shutdown();
+        let restarted = DirectBridge::default();
+        let (generation, grant) = restarted
+            .reserve_remembered(&root, ACCOUNT, CONNECTION)
+            .unwrap();
+        assert!(restarted
+            .reserve_remembered(&root, ACCOUNT, CONNECTION)
+            .is_err());
+        let operation = restarted
+            .authorize(ACCOUNT, CONNECTION, generation, root.clone())
+            .unwrap();
+        assert_eq!(
+            operation.expected_identity_hash.as_ref(),
+            Some(&grant.identity_hash)
+        );
+        assert!(authorization::check_identity(&operation, "synthetic-identity").is_ok());
+        assert_eq!(
+            authorization::check_identity(&operation, "different-identity"),
+            Err(Failure::IdentityChanged)
+        );
+        restarted
+            .disconnect_with_store(Some(&root), ACCOUNT, CONNECTION)
+            .unwrap();
+        assert_eq!(
+            restarted
+                .finish_with_store(
+                    Some(&root),
+                    &operation,
+                    Ok((fixture(1.0), Zeroizing::new("synthetic-identity".into())))
+                )
+                .diagnostic,
+            Some("directOperationCancelled")
+        );
+        assert!(authorization::Store::open(&root, false)
+            .unwrap()
+            .unwrap()
+            .list()
+            .unwrap()
+            .is_empty());
+        assert!(DirectBridge::default()
+            .reserve_remembered(&root, ACCOUNT, CONNECTION)
+            .is_err());
+        // A completed response or native approval from a cancelled attempt cannot recreate a grant.
+        let pending = DirectBridge::default();
+        let generation = pending
+            .reserve(ACCOUNT, CONNECTION, DirectKind::Managed)
+            .unwrap();
+        pending
+            .remember_choice(&root, ACCOUNT, CONNECTION, generation, true)
+            .unwrap();
+        let late = pending
+            .authorize(ACCOUNT, CONNECTION, generation, root.clone())
+            .unwrap();
+        pending
+            .disconnect_with_store(Some(&root), ACCOUNT, CONNECTION)
+            .unwrap();
+        assert!(pending
+            .remember_choice(&root, ACCOUNT, CONNECTION, generation, true)
+            .is_err());
+        pending.finish_with_store(
+            Some(&root),
+            &late,
+            Ok((fixture(5.0), Zeroizing::new("synthetic-identity".into()))),
+        );
+        assert!(authorization::Store::open(&root, false)
+            .unwrap()
+            .unwrap()
+            .list()
+            .unwrap()
+            .is_empty());
+        assert!(
+            root.starts_with(&profile)
+                && root
+                    .file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .starts_with(".quotafern-remember-synthetic-")
+        );
+        fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
     fn per_account_isolation_cooldown_identity_and_late_results() {
         let bridge = DirectBridge::default();
         let generation = bridge
@@ -1767,7 +2587,7 @@ mod tests {
         thread.join().unwrap();
     }
     #[cfg(windows)]
-    fn set_synthetic_file_owner(file: &std::fs::File, home: &Path) {
+    pub(super) fn set_synthetic_file_owner(file: &std::fs::File, home: &Path) {
         use std::os::windows::fs::OpenOptionsExt;
         use std::os::windows::io::AsRawHandle;
         use windows_sys::Win32::Security::Authorization::{
@@ -1838,14 +2658,23 @@ mod tests {
         #[cfg(windows)]
         set_synthetic_file_owner(&auth, &root);
         drop(auth);
-        assert!(read_credentials(&root, &AtomicBool::new(false)).is_ok());
+        assert!(read_credentials(&root, &AtomicBool::new(false), DirectKind::Managed).is_ok());
         fs::write(
             root.join("config.toml"),
             "cli_auth_credentials_store = 'keyring'\n",
         )
         .unwrap();
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            let config = OpenOptions::new()
+                .access_mode(0x00080000 | 0x00020000)
+                .open(root.join("config.toml"))
+                .unwrap();
+            set_synthetic_file_owner(&config, &root);
+        }
         assert!(matches!(
-            read_credentials(&root, &AtomicBool::new(false)),
+            read_credentials(&root, &AtomicBool::new(false), DirectKind::Managed),
             Err(Failure::UnsupportedAuth)
         ));
         fs::write(
@@ -1853,14 +2682,14 @@ mod tests {
             "cli_auth_credentials_store = 'file'\n",
         )
         .unwrap();
-        assert!(read_credentials(&root, &AtomicBool::new(false)).is_ok());
+        assert!(read_credentials(&root, &AtomicBool::new(false), DirectKind::Managed).is_ok());
         fs::write(&auth_path, vec![b'x'; MAX_AUTH + 1]).unwrap();
         assert!(matches!(
-            read_credentials(&root, &AtomicBool::new(false)),
-            Err(Failure::UnsafePath)
+            read_credentials(&root, &AtomicBool::new(false), DirectKind::Managed),
+            Err(Failure::CredentialFileUnsafe)
         ));
         assert!(matches!(
-            read_credentials(&root, &AtomicBool::new(true)),
+            read_credentials(&root, &AtomicBool::new(true), DirectKind::Managed),
             Err(Failure::Cancelled)
         ));
         fs::remove_file(&auth_path).unwrap();
@@ -1868,10 +2697,8 @@ mod tests {
         fs::remove_dir(root).unwrap();
     }
     #[test]
-    fn production_gate_stays_closed_and_client_refuses_cleartext() {
-        const {
-            assert!(!DIRECT_CONNECTION_ENABLED);
-        }
+    fn production_gate_is_windows_only_and_client_refuses_cleartext() {
+        assert_eq!(DIRECT_CONNECTION_ENABLED, cfg!(windows));
         assert_eq!(USAGE_URL, "https://chatgpt.com/backend-api/wham/usage");
         let client = http_client().unwrap();
         tauri::async_runtime::block_on(async {
@@ -1938,6 +2765,8 @@ mod tests {
                 codex_direct_connect,
                 codex_direct_login,
                 codex_direct_status,
+                codex_direct_remembered,
+                codex_direct_resume,
                 codex_direct_disconnect,
                 codex_direct_refresh
             ])
@@ -1972,9 +2801,14 @@ mod tests {
         } else {
             "tauri://localhost"
         };
-        let args = json!({"accountId":ACCOUNT,"connectionId":CONNECTION,"kind":"system"});
+        let args = json!({"accountId":ACCOUNT,"connectionId":CONNECTION,"kind":"system","approved":true,"remember":true});
         let gated = invoke(&main, "codex_direct_connect", origin, args.clone()).unwrap();
-        assert_eq!(gated["connectionStatus"], "unavailable");
+        if DIRECT_CONNECTION_ENABLED {
+            assert_eq!(gated["connectionStatus"], "disconnected");
+            assert_eq!(gated["diagnostic"], "nativeConsentCancelled");
+        } else {
+            assert_eq!(gated["connectionStatus"], "unavailable");
+        }
         assert!(invoke(&other, "codex_direct_connect", origin, args.clone()).is_err());
         assert!(invoke(
             &main,
@@ -1983,7 +2817,19 @@ mod tests {
             args.clone()
         )
         .is_err());
-        assert!(invoke(&main, "codex_direct_login", origin, args).is_err());
+        assert!(invoke(&main, "codex_direct_login", origin, args.clone()).is_err());
+        for command in ["codex_direct_remembered", "codex_direct_resume"] {
+            assert!(invoke(&other, command, origin, args.clone()).is_err());
+            assert!(invoke(&main, command, "https://remote.invalid", args.clone()).is_err());
+        }
+        // Off-Windows commands stop before filesystem access. Enabled tests never enumerate real grants.
+        if !DIRECT_CONNECTION_ENABLED {
+            assert_eq!(
+                invoke(&main, "codex_direct_remembered", origin, json!({})).unwrap(),
+                json!([])
+            );
+            assert!(invoke(&main, "codex_direct_resume", origin, args).is_err());
+        }
         assert!(bridge.0.lock().unwrap().sessions.is_empty());
     }
     #[test]

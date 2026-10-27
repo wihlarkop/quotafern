@@ -1,20 +1,22 @@
 # Quotafern
 
-Quotafern is a compact local-first system-tray app for remaining AI subscription quotas. Its multi-account UI supports local account and connection labels, but **live provider connections are disabled in this build**. Opening the app does not access provider accounts or credentials.
+Quotafern is a compact local-first system-tray app for remaining AI subscription quotas. Its multi-account UI supports local account and connection labels, with **live Codex monitoring enabled on Windows** after explicit remembered consent. Unconsented accounts do not access the provider. macOS/Linux live access remains disabled pending native acceptance.
 
 ## Local accounts (ACC-04)
 
-With **Demo preview off**, Accounts lets users add, rename and remove provider-specific local accounts, optional workspaces and connection descriptors, including API-key _labels_. These records are not signed in and do not represent working integrations. There are no API-key, token or OAuth credential inputs; Overview never invents quotas for disconnected records.
+With **Demo preview off**, Accounts lets users add, rename and remove provider-specific local accounts, optional workspaces and connection descriptors, including API-key _labels_. These records alone do not sign in or authorize monitoring; the supported Windows Codex routes require native consent. There are no API-key, token or OAuth credential inputs; Overview never invents quotas for disconnected records.
 
-Only validated non-sensitive IDs, aliases, ownership and mechanism descriptors are saved under the app-owned `quotafern.account-presentation.v1` localStorage key. All records restore disconnected, with no authorization, identities, quota or Activity snapshots. Do not put secrets in labels. The explicit Demo preview remains entirely separate and is never persisted as an account. See [ACC-04 implementation and boundaries](docs/specs/acc-04.md) and [ACC-01 ownership contracts](docs/specs/acc-01-architecture.md).
+Only validated non-sensitive IDs, aliases, ownership and mechanism descriptors are saved under the app-owned `quotafern.account-presentation.v1` localStorage key. Saved labels contain no authorization, provider identities, quota or Activity snapshots. On Windows, only matching native remembered permissions may reconnect automatically; all other records remain disconnected. Do not put secrets in labels. The explicit Demo preview remains entirely separate and is never persisted as an account. See [ACC-04 implementation and boundaries](docs/specs/acc-04.md) and [ACC-01 ownership contracts](docs/specs/acc-01-architecture.md).
 
-The owner reported **combined Windows native UI acceptance** after UX-02A/B/C, ICON-01 and ACC-04, with exact-merge CI success. macOS/Linux native GUI acceptance, signed installers and real provider access have not been verified. This is not a public release.
+The owner reported **combined Windows native UI acceptance** after UX-02A/B/C, ICON-01 and ACC-04, with exact-merge CI success. The owner later confirmed Windows Codex live acceptance for existing System and managed Plus/Free accounts, isolation/Refresh all, Disconnect/Reconnect, persistent consent/auto-reconnect and the Svelte confirmation. macOS/Linux native GUI/authenticated acceptance and signed installers remain unverified. This is not a public release.
 
 ## Codex connection status
 
-CODEX-LIVE-01 adds a separate native direct-HTTP adapter and minimal account actions for an existing Codex file login or isolated Codex-managed accounts. ACC-04 remains the metadata registry; aliases never establish identity. The adapter normalizes only server-reported quota windows, personal plan labels and optional credits. It does not run app-server polling, read session logs, implement OAuth/token renewal, or initiate inference.
+Windows supports two reviewed native routes: Existing Codex uses a short-lived supervised App Server over private stdin/stdout; separate managed accounts use isolated Codex homes and direct HTTPS quota reads. ACC-04 remains a label registry, never authentication. Only provider-returned quota/reset/plan/credit fields are displayed.
 
-**The direct route remains disabled pending dedicated security and owner acceptance.** Opening Accounts does not read credentials. Both legacy app-server gates also remain closed. A separately reviewed acceptance build is required to exercise Connect, managed Sign in again, per-account/manual refresh and conservative five-minute refresh. Disconnect/remove cancels monitoring without deleting credentials. See [direct integration and compatibility](docs/security/codex-live-01.md) and [validation/owner steps](docs/validation/codex-live-01.md).
+Accounts → Connect opens the isolated Svelte/Tauri confirmation. Connect also remembers permission; no old session consent is silently upgraded. Native permission permits automatic reconnect on launch and three-minute refresh. Disconnect removes permission without signing out; Quit stops owned resources and preserves explicit permission. Failed live reads never become demo data.
+
+System monitoring and managed Sign in use the reviewed private Codex 0.164.0-alpha.11.1 helper. A valid cached helper can survive system CLI updates; a clean install needs that exact helper or matching installed bytes. Unsupported/tampered images fail closed, with no download or fallback to an unreviewed binary. An already authenticated managed home can be read directly. Remote Control stays disabled; private job containment, identity binding, strict native storage checks and cancellation remain enforced. Both retired legacy gates stay false. See [final scope and owner evidence](docs/validation/codex-merge-prep-01.md).
 
 For credential-free examples, enable **Demo preview** in Settings. Synthetic sources remain explicit, separate and unpersisted. Failed live reads never use demo values. Existing Codex Details activity/spending/reset examples belong to the historical mock foundation; the direct quota endpoint does not invent those fields. Other providers remain **Coming Soon**.
 
@@ -29,7 +31,7 @@ The owner-approved Soft Ivory & Forest Jade icon family is installed for the des
 - A second launch routes to the already-running app. On Linux, use the tray context menu; left-click tray events are not supported by the current Linux tray integration.
 - F1/F2 quota data were synthetic only. Later milestones preserved explicitly labeled Demo fixtures, without implicit fallback to synthetic readings when live data is unavailable.
 - Appearance mode (`system`, `light`, or `dark`) and palette (Graphite & Jade or Zinc & Signal) are separate, non-sensitive preferences stored in `localStorage`.
-- Quotafern sends no telemetry and has no cloud server or synchronization. The direct and legacy app-server production gates prevent Codex startup and credential/provider access.
+- Quotafern sends no telemetry and has no cloud server or synchronization. Rust blocks unaccepted platforms and all provider access without consent. Native remembered permission is the only startup authority; retired legacy gates stay closed.
 
 ## Development
 

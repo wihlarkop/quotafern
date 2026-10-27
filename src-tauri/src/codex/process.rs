@@ -125,6 +125,40 @@ impl SupervisedChild {
         self.process_id
     }
 
+    pub(crate) fn process_ids(&self) -> io::Result<Vec<u32>> {
+        use windows_sys::Win32::System::JobObjects::{
+            JobObjectBasicProcessIdList, JOBOBJECT_BASIC_PROCESS_ID_LIST,
+        };
+        // No PID discovery outside our private job. Refuse an oversized tree.
+        let mut storage = vec![0usize; 258];
+        if unsafe {
+            QueryInformationJobObject(
+                raw(&self.job),
+                JobObjectBasicProcessIdList,
+                storage.as_mut_ptr().cast(),
+                (storage.len() * size_of::<usize>()) as u32,
+                null_mut(),
+            )
+        } == 0
+        {
+            return Err(io::Error::last_os_error());
+        }
+        let info = unsafe { &*storage.as_ptr().cast::<JOBOBJECT_BASIC_PROCESS_ID_LIST>() };
+        if info.NumberOfAssignedProcesses != info.NumberOfProcessIdsInList
+            || info.NumberOfProcessIdsInList > 256
+        {
+            return Err(io::Error::other("owned process list exceeded bound"));
+        }
+        let ids = unsafe {
+            std::slice::from_raw_parts(
+                info.ProcessIdList.as_ptr(),
+                info.NumberOfProcessIdsInList as usize,
+            )
+        };
+        ids.iter()
+            .map(|id| u32::try_from(*id).map_err(|_| io::Error::other("invalid owned PID")))
+            .collect()
+    }
     pub(crate) fn take_stdin(&mut self) -> Option<ChildInput> {
         self.stdin.take()
     }
@@ -136,7 +170,7 @@ impl SupervisedChild {
     /// Return a cloneable, non-blocking handle for cancellation paths outside the
     /// session lock. Calling it terminates the job immediately; the owner later
     /// verifies that every process has exited before reporting cleanup complete.
-    pub(super) fn terminate_handle(&self) -> TerminationHandle {
+    pub(crate) fn terminate_handle(&self) -> TerminationHandle {
         TerminationHandle {
             job: Arc::clone(&self.job),
         }
@@ -206,13 +240,13 @@ impl Drop for SupervisedChild {
 }
 
 #[derive(Clone)]
-pub(super) struct TerminationHandle {
+pub(crate) struct TerminationHandle {
     job: Arc<OwnedHandle>,
 }
 
 impl TerminationHandle {
     /// Send termination to the job without waiting for blocked I/O or process exit.
-    pub(super) fn terminate(&self) -> io::Result<()> {
+    pub(crate) fn terminate(&self) -> io::Result<()> {
         if unsafe { TerminateJobObject(raw(&self.job), 1) } == 0 {
             let error = io::Error::last_os_error();
             if active_process_count(raw(&self.job))? == 0 {

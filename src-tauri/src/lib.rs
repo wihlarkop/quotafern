@@ -165,10 +165,6 @@ pub fn run() {
         .manage(LastTrayAnchor::default())
         .manage(TrayIconHandle::default())
         .manage(WindowFocusHistory::default());
-    // Rust-only native confirmation. No renderer capability. Headless unit
-    // tests install only their compile-time trusted presenter, never OS dialogs.
-    #[cfg(not(test))]
-    let builder = builder.plugin(tauri_plugin_dialog::init());
     let app = builder
         // Prevent duplicate processes and duplicate tray icons. A repeated
         // launch brings the existing, single popup back into view.
@@ -186,7 +182,12 @@ pub fn run() {
             codex_direct::codex_direct_login,
             codex_direct::codex_direct_refresh,
             codex_direct::codex_direct_disconnect,
-            codex_direct::codex_direct_status
+            codex_direct::codex_direct_status,
+            codex_direct::codex_direct_remembered,
+            codex_direct::codex_direct_resume,
+            codex_direct::consent::codex_consent_prompt,
+            codex_direct::consent::codex_consent_confirm,
+            codex_direct::consent::codex_consent_cancel
         ])
         .on_window_event(|window, event| {
             if window.label() == "main" {

@@ -1,6 +1,8 @@
 # CODEX-LIVE-01: direct personal Codex quota
 
-Status: implementation under review; production activation remains gated. The separate F3 app-server path remains disabled. No real credentials or authenticated account requests belong to developer/CI validation.
+> Current production scope is Windows-only and owner-accepted; System uses reviewed supervised stdio, managed accounts use direct HTTPS. The original direct-adapter boundary below is historical/managed-route specific. See [final activation, controls and acceptance](../validation/codex-merge-prep-01.md). Legacy gates remain closed; macOS/Linux live access is blocked.
+
+Historical initial status: implementation under review; activation was gated. The separate F3 app-server path remains disabled. No real credentials or authenticated account requests belong to developer/CI validation.
 
 ## Approved boundary
 
