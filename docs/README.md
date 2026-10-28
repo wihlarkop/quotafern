@@ -11,7 +11,7 @@ Quotafern documentation is grouped by purpose; use the links below instead of se
 - [Approved brand source](assets/icon-01/): retained original icon art, checksums and reproduction inputs.
 - [Superpowers plans](superpowers/plans/): original implementation plans, preserved unchanged.
 
-Historical screenshot galleries have been removed from the current Git tree at the owner's request. Their old versions remain in Git history. Reproducible browser captures now write to ignored `.tmp/qa/screenshots/` rather than tracked documentation.
+Historical screenshot galleries have been removed from the current Git tree at the owner's request. Their old versions remain in Git history. Reproducible browser captures normally write to ignored `.tmp/qa/screenshots/`. UX-03 explicitly requested before/after evidence; its small canonical set is linked in [validation](validation/ux-03.md), while additional state captures remain temporary.
 
 Runtime and browser QA harnesses live under [QA scripts](../qa/README.md). Historical foundation acceptance covered the live-disabled baseline; the later owner-confirmed Windows live acceptance is recorded below. macOS/Linux native/authenticated acceptance remains unverified.
 

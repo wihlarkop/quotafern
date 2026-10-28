@@ -98,6 +98,7 @@
   );
   let directPresentations = $state.raw<Partial<Record<ConnectionId, DirectPresentation>>>({});
   const directController = createDirectController(localStore.state, (state, presentations) => {
+    liveNowMs = Date.now();
     localAccountState = state;
     directPresentations = presentations;
   });
@@ -901,6 +902,7 @@
     {:else}
       <LocalAccounts
         state={localAccountState}
+        nowMs={liveNowMs}
         store={localStore}
         onstate={(state) => directController.updateMetadata(state)}
         direct={directController}

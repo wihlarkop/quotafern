@@ -7,3 +7,11 @@ Run source/production UI checks using `bun run scripts/run-ui-check.ts <browser|
 Generated screenshots are written to ignored `.tmp/qa/screenshots/`; current run result JSON goes to ignored `.tmp/qa/results/`. Older committed result JSON is retained in `docs/evidence/` for historical reproduction. Do not commit regenerated gallery screenshots by default.
 
 No QA script may read real provider credentials or enable Codex live gates.
+
+## UX-03
+
+Start `bun run dev --port 4177`, then run `bun run qa:ux03 source`. For the bundled route, run `bun run build`, start `bun run preview --port 4178`, then run `bun run qa:ux03 production`. The Bun runner opens and closes its own named Playwright CLI session and creates isolated browser contexts. It requires the existing Playwright CLI/Chromium runtime; it adds no app dependency.
+
+`qa/browser/ux-03/fixture.js` supplies a fake Tauri IPC port and synthetic account/plan/quota values; it never enters the app bundle. HTTP requests outside loopback are blocked. The fixture clock advances only to exercise the unchanged cooldown. Existing controller rules still require stopping one connection before another connection to the same account can start.
+
+The two result JSON files record assertions and capture paths. Five canonical after views per mode are saved in `docs/evidence/ux-03/` for the explicitly requested comparison; additional state captures go to ignored `.tmp/qa/screenshots/ux-03/`. See [validation](../docs/validation/ux-03.md). The release demo uses its fixed multi-account scenario, so the development-only shared-source fixture contributes two additional source-browser assertions.
