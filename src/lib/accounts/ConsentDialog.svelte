@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Leaf, ShieldCheck } from "@lucide/svelte";
+  import Leaf from "@lucide/svelte/icons/leaf";
+  import ShieldCheck from "@lucide/svelte/icons/shield-check";
   import { invoke } from "@tauri-apps/api/core";
   import { onMount } from "svelte";
 

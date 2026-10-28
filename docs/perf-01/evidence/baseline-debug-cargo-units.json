@@ -1,0 +1,177 @@
+[
+  {
+    "name": "aws-lc-sys",
+    "version": "0.46.0",
+    "target": " build-script (run)",
+    "start": 110.42,
+    "duration": 174.44
+  },
+  {
+    "name": "windows",
+    "version": "0.62.2",
+    "target": "",
+    "start": 169.83,
+    "duration": 91.12
+  },
+  {
+    "name": "quotafern",
+    "version": "0.1.0",
+    "target": "",
+    "start": 404.12,
+    "duration": 56.36
+  },
+  {
+    "name": "tauri-utils",
+    "version": "2.10.2",
+    "target": "",
+    "start": 134.97,
+    "duration": 20.91
+  },
+  {
+    "name": "moxcms",
+    "version": "0.8.1",
+    "target": "",
+    "start": 344.47,
+    "duration": 20.72
+  },
+  {
+    "name": "tauri",
+    "version": "2.12.5",
+    "target": "",
+    "start": 383.66,
+    "duration": 20.46
+  },
+  {
+    "name": "tauri-utils",
+    "version": "2.10.2",
+    "target": "",
+    "start": 313.82,
+    "duration": 19.87
+  },
+  {
+    "name": "windows-sys",
+    "version": "0.61.2",
+    "target": "",
+    "start": 23.32,
+    "duration": 14.66
+  },
+  {
+    "name": "rustls",
+    "version": "0.23.46",
+    "target": "",
+    "start": 313.05,
+    "duration": 12.15
+  },
+  {
+    "name": "image",
+    "version": "0.25.10",
+    "target": "",
+    "start": 369.3,
+    "duration": 12.1
+  },
+  {
+    "name": "pxfm",
+    "version": "0.1.30",
+    "target": "",
+    "start": 336.79,
+    "duration": 10.38
+  },
+  {
+    "name": "tokio",
+    "version": "1.54.1",
+    "target": "",
+    "start": 124.67,
+    "duration": 10.13
+  },
+  {
+    "name": "reqwest",
+    "version": "0.13.5",
+    "target": "",
+    "start": 391.79,
+    "duration": 9.67
+  },
+  {
+    "name": "regex-automata",
+    "version": "0.4.18",
+    "target": "",
+    "start": 58.19,
+    "duration": 8.21
+  },
+  {
+    "name": "quotafern",
+    "version": "0.1.0",
+    "target": " quotafern \"bin\"",
+    "start": 460.48,
+    "duration": 8.18
+  },
+  {
+    "name": "syn",
+    "version": "3.0.9",
+    "target": "",
+    "start": 4.31,
+    "duration": 7.33
+  },
+  {
+    "name": "syn",
+    "version": "2.0.119",
+    "target": "",
+    "start": 4.37,
+    "duration": 7.13
+  },
+  {
+    "name": "windows-sys",
+    "version": "0.61.2",
+    "target": "",
+    "start": 47.95,
+    "duration": 6.91
+  },
+  {
+    "name": "webview2-com",
+    "version": "0.39.1",
+    "target": "",
+    "start": 299.86,
+    "duration": 6.36
+  },
+  {
+    "name": "muda",
+    "version": "0.20.0",
+    "target": "",
+    "start": 350.58,
+    "duration": 6.18
+  },
+  {
+    "name": "tauri",
+    "version": "2.12.5",
+    "target": " build-script",
+    "start": 330.32,
+    "duration": 6.06
+  },
+  {
+    "name": "tao",
+    "version": "0.37.2",
+    "target": "",
+    "start": 338.22,
+    "duration": 6.0
+  },
+  {
+    "name": "webview2-com-sys",
+    "version": "0.39.1",
+    "target": "",
+    "start": 290.58,
+    "duration": 5.55
+  },
+  {
+    "name": "regex-syntax",
+    "version": "0.8.11",
+    "target": "",
+    "start": 55.45,
+    "duration": 5.53
+  },
+  {
+    "name": "darling_core",
+    "version": "0.24.1",
+    "target": "",
+    "start": 43.27,
+    "duration": 4.76
+  }
+]

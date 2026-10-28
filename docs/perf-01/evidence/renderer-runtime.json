@@ -1,0 +1,127 @@
+{
+  "method": "Synthetic IPC only; six interleaved fresh Chromium contexts, three accounts, local production assets, five-second settled Accounts idle samples, navigation wall times include Playwright overhead. No native processes/credentials. Heap samples are not retained-memory/leak measurements. Startup is renderer-only, not native cold launch. No concurrent builds should run.",
+  "rows": [
+    {
+      "variant": "baseline",
+      "startedAt": "2026-10-28T21:46:01.739Z",
+      "startup": {
+        "fcpMs": null,
+        "domContentLoadedMs": 599.9000000003725
+      },
+      "accountsNavigationWallMs": 97,
+      "idleMs": 5001,
+      "idleTaskDurationMs": 27.113999999999972,
+      "heapUsedBeforeBytes": 5974256,
+      "heapUsedAfterBytes": 5750296,
+      "automaticRefreshCallsDuringIdle": 0,
+      "refreshAllCalls": 3,
+      "consentStartup": {
+        "fcpMs": 208,
+        "domContentLoadedMs": 106.40000000037253
+      },
+      "consentCalls": ["codex_consent_prompt", "codex_consent_cancel"]
+    },
+    {
+      "variant": "optimized",
+      "startedAt": "2026-10-28T21:46:08.244Z",
+      "startup": {
+        "fcpMs": 388,
+        "domContentLoadedMs": 299.90000000037253
+      },
+      "accountsNavigationWallMs": 80,
+      "idleMs": 5001,
+      "idleTaskDurationMs": 24.57300000000001,
+      "heapUsedBeforeBytes": 5404408,
+      "heapUsedAfterBytes": 5853816,
+      "automaticRefreshCallsDuringIdle": 0,
+      "refreshAllCalls": 3,
+      "consentStartup": {
+        "fcpMs": 168,
+        "domContentLoadedMs": 68.59999999962747
+      },
+      "consentCalls": ["codex_consent_prompt", "codex_consent_cancel"]
+    },
+    {
+      "variant": "optimized",
+      "startedAt": "2026-10-28T21:46:14.294Z",
+      "startup": {
+        "fcpMs": 388,
+        "domContentLoadedMs": 298.70000000018626
+      },
+      "accountsNavigationWallMs": 82,
+      "idleMs": 5002,
+      "idleTaskDurationMs": 23.683999999999983,
+      "heapUsedBeforeBytes": 5411212,
+      "heapUsedAfterBytes": 5860660,
+      "automaticRefreshCallsDuringIdle": 0,
+      "refreshAllCalls": 3,
+      "consentStartup": {
+        "fcpMs": 188,
+        "domContentLoadedMs": 80.5
+      },
+      "consentCalls": ["codex_consent_prompt", "codex_consent_cancel"]
+    },
+    {
+      "variant": "baseline",
+      "startedAt": "2026-10-28T21:46:20.362Z",
+      "startup": {
+        "fcpMs": 404,
+        "domContentLoadedMs": 322.8999999994412
+      },
+      "accountsNavigationWallMs": 80,
+      "idleMs": 5002,
+      "idleTaskDurationMs": 25.382000000000016,
+      "heapUsedBeforeBytes": 5955560,
+      "heapUsedAfterBytes": 5761868,
+      "automaticRefreshCallsDuringIdle": 0,
+      "refreshAllCalls": 3,
+      "consentStartup": {
+        "fcpMs": 208,
+        "domContentLoadedMs": 76.5
+      },
+      "consentCalls": ["codex_consent_prompt", "codex_consent_cancel"]
+    },
+    {
+      "variant": "baseline",
+      "startedAt": "2026-10-28T21:46:26.458Z",
+      "startup": {
+        "fcpMs": 364,
+        "domContentLoadedMs": 297.79999999981374
+      },
+      "accountsNavigationWallMs": 80,
+      "idleMs": 5001,
+      "idleTaskDurationMs": 24.36000000000005,
+      "heapUsedBeforeBytes": 5979364,
+      "heapUsedAfterBytes": 5799664,
+      "automaticRefreshCallsDuringIdle": 0,
+      "refreshAllCalls": 3,
+      "consentStartup": {
+        "fcpMs": 216,
+        "domContentLoadedMs": 95.20000000018626
+      },
+      "consentCalls": ["codex_consent_prompt", "codex_consent_cancel"]
+    },
+    {
+      "variant": "optimized",
+      "startedAt": "2026-10-28T21:46:32.560Z",
+      "startup": {
+        "fcpMs": 392,
+        "domContentLoadedMs": 309
+      },
+      "accountsNavigationWallMs": 82,
+      "idleMs": 5001,
+      "idleTaskDurationMs": 21.648999999999972,
+      "heapUsedBeforeBytes": 5401332,
+      "heapUsedAfterBytes": 5850736,
+      "automaticRefreshCallsDuringIdle": 0,
+      "refreshAllCalls": 3,
+      "consentStartup": {
+        "fcpMs": 240,
+        "domContentLoadedMs": 84.59999999962747
+      },
+      "consentCalls": ["codex_consent_prompt", "codex_consent_cancel"]
+    }
+  ],
+  "externalRequests": 0,
+  "pageErrors": 0
+}

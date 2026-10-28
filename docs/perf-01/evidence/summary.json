@@ -1,0 +1,26 @@
+{
+  "variants": {
+    "baseline": {
+      "viteMedianMs": 6380.2798,
+      "rawTotalBytes": 431057,
+      "jsRawBytes": 358714,
+      "jsGzipBytes": 112286,
+      "jsBrotliBytes": 92288
+    },
+    "icons": {
+      "viteMedianMs": 3004.086,
+      "rawTotalBytes": 431057,
+      "jsRawBytes": 358714,
+      "jsGzipBytes": 112286,
+      "jsBrotliBytes": 92288
+    },
+    "optimized": {
+      "viteMedianMs": 3075.2072,
+      "rawTotalBytes": 401595,
+      "jsRawBytes": 329252,
+      "jsGzipBytes": 103585,
+      "jsBrotliBytes": 89909
+    }
+  },
+  "iconOnlyByteIdentical": true
+}

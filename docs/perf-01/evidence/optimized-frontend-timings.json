@@ -1,0 +1,44 @@
+[
+  {
+    "task": "check",
+    "repetition": 1,
+    "startedAt": "2026-10-28T21:32:23.660Z",
+    "wallMs": 6982.7436,
+    "code": 0
+  },
+  {
+    "task": "check",
+    "repetition": 2,
+    "startedAt": "2026-10-28T21:32:30.646Z",
+    "wallMs": 6880.4169,
+    "code": 0
+  },
+  {
+    "task": "check",
+    "repetition": 3,
+    "startedAt": "2026-10-28T21:32:37.527Z",
+    "wallMs": 6499.8737,
+    "code": 0
+  },
+  {
+    "task": "build",
+    "repetition": 1,
+    "startedAt": "2026-10-28T21:32:44.028Z",
+    "wallMs": 10564.084200000001,
+    "code": 0
+  },
+  {
+    "task": "build",
+    "repetition": 2,
+    "startedAt": "2026-10-28T21:32:54.595Z",
+    "wallMs": 10215.046299999998,
+    "code": 0
+  },
+  {
+    "task": "build",
+    "repetition": 3,
+    "startedAt": "2026-10-28T21:33:04.811Z",
+    "wallMs": 10193.487399999998,
+    "code": 0
+  }
+]

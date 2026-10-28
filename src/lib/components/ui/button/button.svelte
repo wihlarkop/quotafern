@@ -3,10 +3,11 @@
   import type { Snippet } from "svelte";
   import type { HTMLButtonAttributes } from "svelte/elements";
   import { twMerge } from "tailwind-merge";
-  import { type VariantProps, tv } from "tailwind-variants";
+  import { type VariantProps, tv } from "tailwind-variants/lite";
 
   // Adapted from the official shadcn-svelte Button source: https://shadcn-svelte.com/docs/components/button
   // The local variants map to Quotafern's palette tokens and deliberately omit the upstream link rendering.
+  // Variants contain custom tokens; caller utilities are merged once in buttonClass.
   export const buttonVariants = tv({
     base: "qf-button",
     variants: {

@@ -1,0 +1,64 @@
+[
+  {
+    "mode": "debug",
+    "repetition": 1,
+    "startedAt": "2026-10-28T21:02:39.504Z",
+    "wallMs": 495859.20540000004,
+    "code": 0,
+    "command": [
+      "run",
+      "build:desktop",
+      "--no-bundle",
+      "--debug",
+      "--",
+      "--locked",
+      "--offline",
+      "--timings"
+    ],
+    "targetCache": "profile-empty; dependency downloads cached; no cargo clean",
+    "cargoBuildJobs": 2,
+    "exeBytes": 22322176
+  },
+  {
+    "mode": "debug",
+    "repetition": 2,
+    "startedAt": "2026-10-28T21:10:55.369Z",
+    "wallMs": 113161.5319,
+    "code": 0,
+    "command": [
+      "run",
+      "build:desktop",
+      "--no-bundle",
+      "--debug",
+      "--",
+      "--locked",
+      "--offline",
+      "--timings"
+    ],
+    "targetCache": "same-profile incremental",
+    "cargoBuildJobs": 2,
+    "exeBytes": 22322176
+  },
+  {
+    "mode": "release",
+    "repetition": 1,
+    "startedAt": "2026-10-28T21:12:48.531Z",
+    "wallMs": 780679.4058999999,
+    "code": 0,
+    "command": ["run", "build:desktop", "--no-bundle", "--", "--locked", "--offline", "--timings"],
+    "targetCache": "profile-empty; dependency downloads cached; no cargo clean",
+    "cargoBuildJobs": 2,
+    "exeBytes": 14083072
+  },
+  {
+    "mode": "release",
+    "repetition": 2,
+    "startedAt": "2026-10-28T21:25:49.211Z",
+    "wallMs": 151707.56860000012,
+    "code": 0,
+    "command": ["run", "build:desktop", "--no-bundle", "--", "--locked", "--offline", "--timings"],
+    "targetCache": "same-profile incremental",
+    "cargoBuildJobs": 2,
+    "exeBytes": 14083072
+  }
+]

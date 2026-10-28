@@ -1,0 +1,289 @@
+{
+  "mode": "production",
+  "checks": 56,
+  "failures": [],
+  "results": [
+    {
+      "label": "light: current reading remains current",
+      "passed": true
+    },
+    {
+      "label": "light: missing plan is omitted",
+      "passed": true
+    },
+    {
+      "label": "light: reported Plus plan",
+      "passed": true
+    },
+    {
+      "label": "light: reported Free plan",
+      "passed": true
+    },
+    {
+      "label": "light: one menu per ordinary account",
+      "passed": true
+    },
+    {
+      "label": "light: redundant copy absent",
+      "passed": true
+    },
+    {
+      "label": "light: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "light: appearance preserved",
+      "passed": true
+    },
+    {
+      "label": "Add starts at provider selection",
+      "passed": true
+    },
+    {
+      "label": "only Codex provider and two login choices are selectable",
+      "passed": true
+    },
+    {
+      "label": "Add cancellation restores focus",
+      "passed": true
+    },
+    {
+      "label": "Add cancellation makes no native request",
+      "passed": true
+    },
+    {
+      "label": "Rename restores account menu focus",
+      "passed": true
+    },
+    {
+      "label": "long aliases 320px: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "Disconnect preserves another account",
+      "passed": true
+    },
+    {
+      "label": "Failed cleanup retains account",
+      "passed": true
+    },
+    {
+      "label": "Successful remove preserves other accounts",
+      "passed": true
+    },
+    {
+      "label": "Remove targets native cleanup by account ID",
+      "passed": true
+    },
+    {
+      "label": "Overview exposes failed connection alongside quota",
+      "passed": true
+    },
+    {
+      "label": "Confirmed zero remains zero",
+      "passed": true
+    },
+    {
+      "label": "No duplicate or disconnected source",
+      "passed": true
+    },
+    {
+      "label": "Human readable quota duration",
+      "passed": true
+    },
+    {
+      "label": "Details Back restores opener",
+      "passed": true
+    },
+    {
+      "label": "dark: current reading remains current",
+      "passed": true
+    },
+    {
+      "label": "dark: missing plan is omitted",
+      "passed": true
+    },
+    {
+      "label": "dark: reported Plus plan",
+      "passed": true
+    },
+    {
+      "label": "dark: reported Free plan",
+      "passed": true
+    },
+    {
+      "label": "dark: one menu per ordinary account",
+      "passed": true
+    },
+    {
+      "label": "dark: redundant copy absent",
+      "passed": true
+    },
+    {
+      "label": "dark: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "dark: appearance preserved",
+      "passed": true
+    },
+    {
+      "label": "Zero accounts has useful empty state",
+      "passed": true
+    },
+    {
+      "label": "system: native consent requested only after local dialog closes",
+      "passed": true
+    },
+    {
+      "label": "system: optional name has sensible default",
+      "passed": true
+    },
+    {
+      "label": "system: Add targets new connection ID",
+      "passed": true
+    },
+    {
+      "label": "managed: native consent requested only after local dialog closes",
+      "passed": true
+    },
+    {
+      "label": "managed: optional name has sensible default",
+      "passed": true
+    },
+    {
+      "label": "managed: Add targets new connection ID",
+      "passed": true
+    },
+    {
+      "label": "Expanded connection action targets its own connection",
+      "passed": true
+    },
+    {
+      "label": "Collapsed connections retain meaningful failure warning",
+      "passed": true
+    },
+    {
+      "label": "Managed Sign in again targets correct native connection",
+      "passed": true
+    },
+    {
+      "label": "Per-connection Refresh preserves action target and cooldown",
+      "passed": true
+    },
+    {
+      "label": "Workspace selection shows only its own source",
+      "passed": true
+    },
+    {
+      "label": "Multiple connections available through disclosure",
+      "passed": true
+    },
+    {
+      "label": "light: consent begins on Cancel",
+      "passed": true
+    },
+    {
+      "label": "light: helper disclosure remains visible",
+      "passed": true
+    },
+    {
+      "label": "light: consent actions fit short window",
+      "passed": true
+    },
+    {
+      "label": "Consent Escape sends one cancellation",
+      "passed": true
+    },
+    {
+      "label": "light: consent entry never mounts provider operations",
+      "passed": true
+    },
+    {
+      "label": "dark: consent begins on Cancel",
+      "passed": true
+    },
+    {
+      "label": "dark: helper disclosure remains visible",
+      "passed": true
+    },
+    {
+      "label": "dark: consent actions fit short window",
+      "passed": true
+    },
+    {
+      "label": "Consent sends one native-owned challenge",
+      "passed": true
+    },
+    {
+      "label": "dark: consent entry never mounts provider operations",
+      "passed": true
+    },
+    {
+      "label": "No browser runtime errors: ",
+      "passed": true
+    },
+    {
+      "label": "No external HTTP requests; IPC and credentials are synthetic",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "accounts-light",
+      "path": "docs/perf-01/evidence/browser/production-accounts-light.png"
+    },
+    {
+      "name": "add-account",
+      "path": "docs/perf-01/evidence/browser/production-add-account.png"
+    },
+    {
+      "name": "long-alias-narrow",
+      "path": ".tmp/qa/screenshots/ux-03/production-long-alias-narrow.png"
+    },
+    {
+      "name": "connection-states",
+      "path": ".tmp/qa/screenshots/ux-03/production-connection-states.png"
+    },
+    {
+      "name": "overview",
+      "path": ".tmp/qa/screenshots/ux-03/production-overview.png"
+    },
+    {
+      "name": "details",
+      "path": ".tmp/qa/screenshots/ux-03/production-details.png"
+    },
+    {
+      "name": "accounts-dark",
+      "path": "docs/perf-01/evidence/browser/production-accounts-dark.png"
+    },
+    {
+      "name": "zero-accounts",
+      "path": ".tmp/qa/screenshots/ux-03/production-zero-accounts.png"
+    },
+    {
+      "name": "one-account",
+      "path": ".tmp/qa/screenshots/ux-03/production-one-account.png"
+    },
+    {
+      "name": "reconnect-required",
+      "path": ".tmp/qa/screenshots/ux-03/production-reconnect-required.png"
+    },
+    {
+      "name": "workspace-overview",
+      "path": ".tmp/qa/screenshots/ux-03/production-workspace-overview.png"
+    },
+    {
+      "name": "shared-connections",
+      "path": ".tmp/qa/screenshots/ux-03/production-shared-connections.png"
+    },
+    {
+      "name": "consent-light",
+      "path": "docs/perf-01/evidence/browser/production-consent-light.png"
+    },
+    {
+      "name": "consent-dark",
+      "path": "docs/perf-01/evidence/browser/production-consent-dark.png"
+    }
+  ]
+}

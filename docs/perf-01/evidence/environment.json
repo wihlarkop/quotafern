@@ -1,0 +1,10 @@
+{
+  "bun": "1.4.4",
+  "platform": "win32",
+  "release": "10.0.26200",
+  "cpu": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
+  "logicalCpus": 12,
+  "totalMemory": 17013329920,
+  "freeMemoryAtEnd": 3010703360,
+  "method": "sequential check x3 then build x3; fresh worktree dist on first build, warm global dependency/OS caches; no concurrent local builds; compression gzip level9 and Brotli q11"
+}

@@ -1,0 +1,448 @@
+{
+  "runId": 40765953312,
+  "headSha": "1f3ce659a6aff771ba88868c6cf5694f94a3bb12",
+  "testedMergeSha": "512b4a4a0f41930c7d490d772cbaed078cc6e872",
+  "status": "completed; all four jobs success",
+  "measurement": "Timestamp spans from hosted logs; command-to-next-command intervals include wrapper overhead and are not exact step execution durations; active log spans exclude queue",
+  "jobs": [
+    {
+      "jobId": 123090027932,
+      "first": "﻿2026-10-28T20:44:33.1602578",
+      "last": "2026-10-28T20:57:00.0711146Z",
+      "commands": [
+        {
+          "start": "2026-10-28T20:44:34.4640597Z",
+          "command": "actions/checkout@v4"
+        },
+        {
+          "start": "2026-10-28T20:44:39.5749573Z",
+          "command": "oven-sh/setup-bun@v2"
+        },
+        {
+          "start": "2026-10-28T20:44:44.2289628Z",
+          "command": "bun install --frozen-lockfile"
+        },
+        {
+          "start": "2026-10-28T20:45:05.3415332Z",
+          "command": "dtolnay/rust-toolchain@stable"
+        },
+        {
+          "start": "2026-10-28T20:45:14.7890553Z",
+          "command": "bun run fmt:rust"
+        },
+        {
+          "start": "2026-10-28T20:45:24.8758679Z",
+          "command": "bun run build"
+        },
+        {
+          "start": "2026-10-28T20:45:42.1166225Z",
+          "command": "bun run lint:rust"
+        },
+        {
+          "start": "2026-10-28T20:48:51.6254731Z",
+          "command": "bun run check:rust"
+        },
+        {
+          "start": "2026-10-28T20:48:59.5276365Z",
+          "command": "bun run regression:rust"
+        },
+        {
+          "start": "2026-10-28T20:51:31.0034202Z",
+          "command": "bun run build:desktop --no-bundle"
+        }
+      ],
+      "summary": [
+        "2026-10-28T20:44:40.1068368Z Cache hit for: bun-VBkI/L2U9fmAfJpW9o/+NuykrVo=",
+        "2026-10-28T20:45:05.2203717Z 86 packages installed [20.60s]",
+        "2026-10-28T20:45:32.7411780Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:45:37.1882764Z ✓ built in 4.01s",
+        "2026-10-28T20:52:01.3198850Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:52:05.6607091Z ✓ built in 3.97s"
+      ],
+      "activeLogSpanSeconds": 746.911,
+      "commandIntervals": [
+        {
+          "command": "actions/checkout@v4",
+          "start": "2026-10-28T20:44:34.4640597Z",
+          "nextCommandStart": "2026-10-28T20:44:39.5749573Z",
+          "seconds": 5.11
+        },
+        {
+          "command": "oven-sh/setup-bun@v2",
+          "start": "2026-10-28T20:44:39.5749573Z",
+          "nextCommandStart": "2026-10-28T20:44:44.2289628Z",
+          "seconds": 4.654
+        },
+        {
+          "command": "bun install --frozen-lockfile",
+          "start": "2026-10-28T20:44:44.2289628Z",
+          "nextCommandStart": "2026-10-28T20:45:05.3415332Z",
+          "seconds": 21.113
+        },
+        {
+          "command": "dtolnay/rust-toolchain@stable",
+          "start": "2026-10-28T20:45:05.3415332Z",
+          "nextCommandStart": "2026-10-28T20:45:14.7890553Z",
+          "seconds": 9.448
+        },
+        {
+          "command": "bun run fmt:rust",
+          "start": "2026-10-28T20:45:14.7890553Z",
+          "nextCommandStart": "2026-10-28T20:45:24.8758679Z",
+          "seconds": 10.086
+        },
+        {
+          "command": "bun run build",
+          "start": "2026-10-28T20:45:24.8758679Z",
+          "nextCommandStart": "2026-10-28T20:45:42.1166225Z",
+          "seconds": 17.241
+        },
+        {
+          "command": "bun run lint:rust",
+          "start": "2026-10-28T20:45:42.1166225Z",
+          "nextCommandStart": "2026-10-28T20:48:51.6254731Z",
+          "seconds": 189.509
+        },
+        {
+          "command": "bun run check:rust",
+          "start": "2026-10-28T20:48:51.6254731Z",
+          "nextCommandStart": "2026-10-28T20:48:59.5276365Z",
+          "seconds": 7.902
+        },
+        {
+          "command": "bun run regression:rust",
+          "start": "2026-10-28T20:48:59.5276365Z",
+          "nextCommandStart": "2026-10-28T20:51:31.0034202Z",
+          "seconds": 151.476
+        }
+      ]
+    },
+    {
+      "jobId": 123090027295,
+      "first": "﻿2026-10-28T20:44:32.9358605",
+      "last": "2026-10-28T20:44:56.6299725Z",
+      "commands": [
+        {
+          "start": "2026-10-28T20:44:33.7220385Z",
+          "command": "actions/checkout@v4"
+        },
+        {
+          "start": "2026-10-28T20:44:35.3622822Z",
+          "command": "oven-sh/setup-bun@v2"
+        },
+        {
+          "start": "2026-10-28T20:44:36.4232823Z",
+          "command": "bun install --frozen-lockfile"
+        },
+        {
+          "start": "2026-10-28T20:44:37.4088817Z",
+          "command": "bun run check"
+        },
+        {
+          "start": "2026-10-28T20:44:43.5068909Z",
+          "command": "bun run lint"
+        },
+        {
+          "start": "2026-10-28T20:44:43.5737086Z",
+          "command": "bun run fmt:check"
+        },
+        {
+          "start": "2026-10-28T20:44:45.2229899Z",
+          "command": "bun run build"
+        },
+        {
+          "start": "2026-10-28T20:44:55.9933657Z",
+          "command": "bun run regression"
+        }
+      ],
+      "summary": [
+        "2026-10-28T20:44:35.6497786Z Cache hit for: bun-vyrKTwhw5PEh6pGRz1Zgyle11uQ=",
+        "2026-10-28T20:44:37.4003027Z 86 packages installed [956.00ms]",
+        "2026-10-28T20:44:43.4366482Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:44:43.5682004Z Finished in 14ms on 40 files with 96 rules using 4 threads.",
+        "2026-10-28T20:44:45.1852094Z Finished in 1540ms on 181 files using 4 threads.",
+        "2026-10-28T20:44:50.9138100Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:44:55.4938955Z ✓ built in 4.18s"
+      ],
+      "activeLogSpanSeconds": 23.694,
+      "commandIntervals": [
+        {
+          "command": "actions/checkout@v4",
+          "start": "2026-10-28T20:44:33.7220385Z",
+          "nextCommandStart": "2026-10-28T20:44:35.3622822Z",
+          "seconds": 1.64
+        },
+        {
+          "command": "oven-sh/setup-bun@v2",
+          "start": "2026-10-28T20:44:35.3622822Z",
+          "nextCommandStart": "2026-10-28T20:44:36.4232823Z",
+          "seconds": 1.061
+        },
+        {
+          "command": "bun install --frozen-lockfile",
+          "start": "2026-10-28T20:44:36.4232823Z",
+          "nextCommandStart": "2026-10-28T20:44:37.4088817Z",
+          "seconds": 0.985
+        },
+        {
+          "command": "bun run check",
+          "start": "2026-10-28T20:44:37.4088817Z",
+          "nextCommandStart": "2026-10-28T20:44:43.5068909Z",
+          "seconds": 6.098
+        },
+        {
+          "command": "bun run lint",
+          "start": "2026-10-28T20:44:43.5068909Z",
+          "nextCommandStart": "2026-10-28T20:44:43.5737086Z",
+          "seconds": 0.067
+        },
+        {
+          "command": "bun run fmt:check",
+          "start": "2026-10-28T20:44:43.5737086Z",
+          "nextCommandStart": "2026-10-28T20:44:45.2229899Z",
+          "seconds": 1.649
+        },
+        {
+          "command": "bun run build",
+          "start": "2026-10-28T20:44:45.2229899Z",
+          "nextCommandStart": "2026-10-28T20:44:55.9933657Z",
+          "seconds": 10.771
+        }
+      ]
+    },
+    {
+      "jobId": 123090027673,
+      "first": "﻿2026-10-28T20:44:32.9699046",
+      "last": "2026-10-28T20:53:58.8675319Z",
+      "commands": [
+        {
+          "start": "2026-10-28T20:44:33.9865015Z",
+          "command": "actions/checkout@v4"
+        },
+        {
+          "start": "2026-10-28T20:44:35.0603011Z",
+          "command": "oven-sh/setup-bun@v2"
+        },
+        {
+          "start": "2026-10-28T20:44:36.0470265Z",
+          "command": "bun install --frozen-lockfile"
+        },
+        {
+          "start": "2026-10-28T20:44:36.9653642Z",
+          "command": "dtolnay/rust-toolchain@stable"
+        },
+        {
+          "start": "2026-10-28T20:44:37.7542966Z",
+          "command": "sudo apt-get update"
+        },
+        {
+          "start": "2026-10-28T20:45:04.0931896Z",
+          "command": "bun run fmt:rust"
+        },
+        {
+          "start": "2026-10-28T20:45:04.9405067Z",
+          "command": "bun run build"
+        },
+        {
+          "start": "2026-10-28T20:45:17.4411079Z",
+          "command": "bun run lint:rust"
+        },
+        {
+          "start": "2026-10-28T20:47:03.0980785Z",
+          "command": "bun run check:rust"
+        },
+        {
+          "start": "2026-10-28T20:47:08.9141150Z",
+          "command": "bun run regression:rust"
+        },
+        {
+          "start": "2026-10-28T20:49:22.0068340Z",
+          "command": "bun run build:desktop --no-bundle"
+        }
+      ],
+      "summary": [
+        "2026-10-28T20:44:35.3561680Z Cache hit for: bun-vyrKTwhw5PEh6pGRz1Zgyle11uQ=",
+        "2026-10-28T20:44:36.9416470Z 86 packages installed [868.00ms]",
+        "2026-10-28T20:45:12.0491622Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:45:16.9086220Z ✓ built in 4.42s",
+        "2026-10-28T20:49:29.0415923Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:49:33.8695855Z ✓ built in 4.45s"
+      ],
+      "activeLogSpanSeconds": 565.898,
+      "commandIntervals": [
+        {
+          "command": "actions/checkout@v4",
+          "start": "2026-10-28T20:44:33.9865015Z",
+          "nextCommandStart": "2026-10-28T20:44:35.0603011Z",
+          "seconds": 1.074
+        },
+        {
+          "command": "oven-sh/setup-bun@v2",
+          "start": "2026-10-28T20:44:35.0603011Z",
+          "nextCommandStart": "2026-10-28T20:44:36.0470265Z",
+          "seconds": 0.987
+        },
+        {
+          "command": "bun install --frozen-lockfile",
+          "start": "2026-10-28T20:44:36.0470265Z",
+          "nextCommandStart": "2026-10-28T20:44:36.9653642Z",
+          "seconds": 0.918
+        },
+        {
+          "command": "dtolnay/rust-toolchain@stable",
+          "start": "2026-10-28T20:44:36.9653642Z",
+          "nextCommandStart": "2026-10-28T20:44:37.7542966Z",
+          "seconds": 0.789
+        },
+        {
+          "command": "sudo apt-get update",
+          "start": "2026-10-28T20:44:37.7542966Z",
+          "nextCommandStart": "2026-10-28T20:45:04.0931896Z",
+          "seconds": 26.339
+        },
+        {
+          "command": "bun run fmt:rust",
+          "start": "2026-10-28T20:45:04.0931896Z",
+          "nextCommandStart": "2026-10-28T20:45:04.9405067Z",
+          "seconds": 0.847
+        },
+        {
+          "command": "bun run build",
+          "start": "2026-10-28T20:45:04.9405067Z",
+          "nextCommandStart": "2026-10-28T20:45:17.4411079Z",
+          "seconds": 12.501
+        },
+        {
+          "command": "bun run lint:rust",
+          "start": "2026-10-28T20:45:17.4411079Z",
+          "nextCommandStart": "2026-10-28T20:47:03.0980785Z",
+          "seconds": 105.657
+        },
+        {
+          "command": "bun run check:rust",
+          "start": "2026-10-28T20:47:03.0980785Z",
+          "nextCommandStart": "2026-10-28T20:47:08.9141150Z",
+          "seconds": 5.816
+        },
+        {
+          "command": "bun run regression:rust",
+          "start": "2026-10-28T20:47:08.9141150Z",
+          "nextCommandStart": "2026-10-28T20:49:22.0068340Z",
+          "seconds": 133.092
+        }
+      ]
+    },
+    {
+      "jobId": 123090027682,
+      "first": "﻿2026-10-28T20:49:37.9536850",
+      "last": "2026-10-28T20:59:06.6967980Z",
+      "commands": [
+        {
+          "start": "2026-10-28T20:49:39.7709730Z",
+          "command": "actions/checkout@v4"
+        },
+        {
+          "start": "2026-10-28T20:49:41.6426350Z",
+          "command": "oven-sh/setup-bun@v2"
+        },
+        {
+          "start": "2026-10-28T20:49:43.3558170Z",
+          "command": "bun install --frozen-lockfile"
+        },
+        {
+          "start": "2026-10-28T20:49:45.7592600Z",
+          "command": "dtolnay/rust-toolchain@stable"
+        },
+        {
+          "start": "2026-10-28T20:49:47.4424440Z",
+          "command": "bun run fmt:rust"
+        },
+        {
+          "start": "2026-10-28T20:49:47.9633280Z",
+          "command": "bun run build"
+        },
+        {
+          "start": "2026-10-28T20:50:00.1938580Z",
+          "command": "bun run lint:rust"
+        },
+        {
+          "start": "2026-10-28T20:53:08.0213060Z",
+          "command": "bun run check:rust"
+        },
+        {
+          "start": "2026-10-28T20:53:18.0879180Z",
+          "command": "bun run regression:rust"
+        },
+        {
+          "start": "2026-10-28T20:55:12.9756930Z",
+          "command": "bun run build:desktop --no-bundle"
+        }
+      ],
+      "summary": [
+        "2026-10-28T20:49:42.0087560Z Cache hit for: bun-5yCU7osVKnB2twDWQtWzEtdhAQU=",
+        "2026-10-28T20:49:45.7274040Z 87 packages installed [2.27s]",
+        "2026-10-28T20:49:54.4397440Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:49:59.8195210Z ✓ built in 4.88s",
+        "2026-10-28T20:55:21.1092120Z svelte-check found 0 errors and 0 warnings",
+        "2026-10-28T20:55:27.2526060Z ✓ built in 5.47s"
+      ],
+      "activeLogSpanSeconds": 568.743,
+      "commandIntervals": [
+        {
+          "command": "actions/checkout@v4",
+          "start": "2026-10-28T20:49:39.7709730Z",
+          "nextCommandStart": "2026-10-28T20:49:41.6426350Z",
+          "seconds": 1.872
+        },
+        {
+          "command": "oven-sh/setup-bun@v2",
+          "start": "2026-10-28T20:49:41.6426350Z",
+          "nextCommandStart": "2026-10-28T20:49:43.3558170Z",
+          "seconds": 1.713
+        },
+        {
+          "command": "bun install --frozen-lockfile",
+          "start": "2026-10-28T20:49:43.3558170Z",
+          "nextCommandStart": "2026-10-28T20:49:45.7592600Z",
+          "seconds": 2.404
+        },
+        {
+          "command": "dtolnay/rust-toolchain@stable",
+          "start": "2026-10-28T20:49:45.7592600Z",
+          "nextCommandStart": "2026-10-28T20:49:47.4424440Z",
+          "seconds": 1.683
+        },
+        {
+          "command": "bun run fmt:rust",
+          "start": "2026-10-28T20:49:47.4424440Z",
+          "nextCommandStart": "2026-10-28T20:49:47.9633280Z",
+          "seconds": 0.521
+        },
+        {
+          "command": "bun run build",
+          "start": "2026-10-28T20:49:47.9633280Z",
+          "nextCommandStart": "2026-10-28T20:50:00.1938580Z",
+          "seconds": 12.23
+        },
+        {
+          "command": "bun run lint:rust",
+          "start": "2026-10-28T20:50:00.1938580Z",
+          "nextCommandStart": "2026-10-28T20:53:08.0213060Z",
+          "seconds": 187.828
+        },
+        {
+          "command": "bun run check:rust",
+          "start": "2026-10-28T20:53:08.0213060Z",
+          "nextCommandStart": "2026-10-28T20:53:18.0879180Z",
+          "seconds": 10.066
+        },
+        {
+          "command": "bun run regression:rust",
+          "start": "2026-10-28T20:53:18.0879180Z",
+          "nextCommandStart": "2026-10-28T20:55:12.9756930Z",
+          "seconds": 114.888
+        }
+      ]
+    }
+  ]
+}
