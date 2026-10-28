@@ -1,7 +1,11 @@
 import { unavailableCodexMonitoring, type CodexMonitoring } from "../codex";
-import type { DirectPresentation, DirectTarget } from "./direct";
+import {
+  CODEX_DIRECT_CONNECTION_AVAILABLE,
+  type DirectPresentation,
+  type DirectTarget,
+} from "./direct";
 import type { ManagementTarget } from "./local";
-import { PROVIDERS, type QuotaSource } from "./model";
+import { PROVIDERS, type Provider, type QuotaSource } from "./model";
 import type { accountsView } from "./views";
 
 export type ProviderView = ReturnType<typeof accountsView>[number];
@@ -13,6 +17,16 @@ export type AccountAction = {
   disabled?: boolean;
 };
 export const providerName = (id: string) => PROVIDERS.find((p) => p.id === id)?.displayName ?? id;
+
+/** Catalogue availability never grants native monitoring authority. */
+export function availableAccountProviders(
+  catalog: readonly Provider[] = PROVIDERS,
+  codexAvailable = CODEX_DIRECT_CONNECTION_AVAILABLE,
+) {
+  return catalog.filter((p) =>
+    p.id === "codex" ? codexAvailable : p.accountSetupAvailable === true,
+  );
+}
 
 export function connectionStatus(
   connection: ConnectionView,

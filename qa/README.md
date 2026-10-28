@@ -15,3 +15,9 @@ Start `bun run dev --port 4177`, then run `bun run qa:ux03 source`. For the bund
 `qa/browser/ux-03/fixture.js` supplies a fake Tauri IPC port and synthetic account/plan/quota values; it never enters the app bundle. HTTP requests outside loopback are blocked. The fixture clock advances only to exercise the unchanged cooldown. Existing controller rules still require stopping one connection before another connection to the same account can start.
 
 The two result JSON files record assertions and capture paths. Five canonical after views per mode are saved in `docs/evidence/ux-03/` for the explicitly requested comparison; additional state captures go to ignored `.tmp/qa/screenshots/ux-03/`. See [validation](../docs/validation/ux-03.md). The release demo uses its fixed multi-account scenario, so the development-only shared-source fixture contributes two additional source-browser assertions.
+
+## UX-03B (current)
+
+The same `bun run qa:ux03 source` and `bun run qa:ux03 production` commands now include UX-03B. Start the same source/preview servers on 4177/4178. Current results and six canonical captures per mode are written to `docs/evidence/ux-03b/`; additional captures go to ignored `.tmp/qa/screenshots/ux-03b/`. Old UX-03 results remain historical; use commit `1f3ce659a6aff771ba88868c6cf5694f94a3bb12` to reproduce that exact earlier UI.
+
+Current checks add 380×660/320px Add radios/cancellation, compact Appearance-first Settings and storage feedback, Demo warning/cleanup failure/no reconnect, 1/3/24 grouped account choices, advanced context recovery, and View quota → Overview → Back focus/scroll. See [UX-03B validation and owner Windows checklist](../docs/validation/ux-03b.md). All providers/credentials/IPC remain synthetic during developer verification.

@@ -2,6 +2,8 @@ import { createAccountDemo, ACCOUNT_DEMO_SCENARIOS } from "../src/lib/accounts/d
 import {
   contextLabel,
   contextOptions,
+  contextSelectorGroups,
+  primaryContextKey,
   initialNavigation,
   reconcileNavigation,
   selectionKey,
@@ -19,6 +21,29 @@ export function runAccountNavigationRegression(): number {
   for (const [scenario] of ACCOUNT_DEMO_SCENARIOS) {
     const state = createAccountDemo(scenario, now);
     const options = contextOptions(state);
+    const grouped = contextSelectorGroups(state);
+    assert(
+      grouped.primary
+        .flatMap((g) => g.options)
+        .every((o) => o.selection.kind === "account" && !o.selection.workspaceId),
+      `${scenario}: main selector contains only accounts`,
+    );
+    assert(
+      grouped.primary.flatMap((g) => g.options).length === state.metadata.accounts.length,
+      `${scenario}: all accounts reachable in main selector`,
+    );
+    for (const group of [...grouped.primary, ...grouped.advanced]) {
+      assert(
+        new Set(group.options.map((o) => o.label)).size === group.options.length,
+        `${scenario}: options distinguish duplicate names inside group`,
+      );
+      for (const option of group.options)
+        assert(
+          JSON.stringify(options.find((o) => o.key === option.key)?.selection) ===
+            JSON.stringify(option.selection),
+          "Short grouped labels preserve exact selection IDs and scope",
+        );
+    }
     assert(
       new Set(options.map((o) => o.key)).size === options.length,
       `${scenario}: unique routing IDs`,
@@ -140,6 +165,31 @@ export function runAccountNavigationRegression(): number {
   const workspace = contextOptions(multi).find(
     (o) => o.selection.kind === "account" && o.selection.workspaceId,
   )!;
+  assert(
+    workspace.selection.kind === "account" &&
+      primaryContextKey(workspace.selection) === workspace.selection.accountId,
+    "Advanced workspace retains owning account in primary selector",
+  );
+  assert(
+    connection.selection.kind === "connection" &&
+      primaryContextKey(connection.selection) === connection.selection.accountId,
+    "Advanced connection retains owning account",
+  );
+  const colliding = createAccountDemo("duplicates", now);
+  colliding.metadata.accounts[0].alias = "Same";
+  colliding.metadata.accounts[1].alias = "Same";
+  colliding.metadata.accounts.push({
+    ...colliding.metadata.accounts[0],
+    id: "account_d0030000-0000-4000-8000-000000000099",
+    alias: "Same · account 1",
+  });
+  const collisionOptions = contextSelectorGroups(colliding).primary.find(
+    (g) => g.key === "codex",
+  )!.options;
+  assert(
+    new Set(collisionOptions.map((o) => o.label)).size === collisionOptions.length,
+    "Generated duplicate-name suffix cannot collide with a literal alias",
+  );
   assert(
     overviewView(multi, workspace.selection, now, "synthetic").sources.every(
       (s) => s.workspaceId !== null,

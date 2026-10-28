@@ -4,8 +4,9 @@
   import { Button } from "../components/ui/button";
   import { CODEX_DIRECT_CONNECTION_AVAILABLE, type DirectKind } from "./direct";
   import { aliasError, type LocalAction, type ManagementTarget } from "./local";
-  import { PROVIDERS, type AccountState, type Mechanism, type WorkspaceId } from "./model";
+  import type { AccountState, Mechanism, WorkspaceId } from "./model";
   import { contextLabel } from "./navigation";
+  import { availableAccountProviders, providerName } from "./presentation";
 
   let {
     target: requestedTarget,
@@ -35,7 +36,12 @@
       : (account?.alias ?? "");
   let alias = $state(original);
   const addingAccount = target.kind === "add-account";
-  const defaultName = () => (codexKind === "managed" ? "Another Codex account" : "Existing Codex");
+  const defaultName = () =>
+    providerId === "codex"
+      ? codexKind === "managed"
+        ? "Another Codex account"
+        : "Existing Codex"
+      : providerName(providerId);
   let providerId = $state(
     target.kind === "add-account"
       ? (target.providerId ?? "codex")
@@ -45,6 +51,7 @@
     account?.providerId === "openrouter" ? "api-key" : "cli-session",
   );
   let codexKind = $state<DirectKind>("system");
+  const availableProviders = availableAccountProviders();
   let saving = $state(false);
   let workspace = $state("");
   let workspaceAlias = $state("");
@@ -80,7 +87,9 @@
   onMount(() => {
     dialog.showModal();
     if (addingAccount) {
-      document.getElementById("local-provider")?.focus();
+      (
+        document.getElementById("local-provider") ?? document.getElementById("codex-kind-system")
+      )?.focus();
     } else if (!removing) {
       input?.focus();
       input?.select();
@@ -174,7 +183,7 @@
         : removing
           ? "Monitoring must stop before removal. Your provider account and sign-in will be kept."
           : addingAccount
-            ? "Choose how to connect. You’ll review monitoring permission before quota is read."
+            ? "Choose a login, then review monitoring permission."
             : "Choose a name you recognize. Do not enter passwords or other secrets."}
     </p>
     {#if removing && target.kind !== "reset"}
@@ -187,31 +196,36 @@
         </p>{/if}
     {:else if !removing}
       {#if target.kind === "add-account"}
-        <label for="local-provider">Provider</label>
-        <select id="local-provider" bind:value={providerId}
-          >{#each PROVIDERS as provider}<option
-              value={provider.id}
-              disabled={provider.id !== "codex" || !CODEX_DIRECT_CONNECTION_AVAILABLE}
-              >{provider.displayName} · {provider.id === "codex" &&
-              CODEX_DIRECT_CONNECTION_AVAILABLE
-                ? "Available"
-                : provider.adapter === "gated"
-                  ? "Live disabled"
-                  : "Coming Soon"}</option
-            >{/each}</select
-        >
+        {#if availableProviders.length === 1}
+          <p class="fixed-provider">
+            Provider <strong>{availableProviders[0].displayName}</strong>
+          </p>
+        {:else}
+          <label for="local-provider">Provider</label>
+          <select id="local-provider" bind:value={providerId}
+            >{#each availableProviders as provider}<option value={provider.id}
+                >{provider.displayName}</option
+              >{/each}</select
+          >
+        {/if}
       {/if}
       {#if target.kind === "add-account" && providerId === "codex" && CODEX_DIRECT_CONNECTION_AVAILABLE}
-        <label for="codex-account-kind">Codex account</label>
-        <select id="codex-account-kind" bind:value={codexKind}>
-          <option value="system">Use existing Codex login</option>
-          <option value="managed">Sign in with another account</option>
-        </select>
-        <p>
-          {codexKind === "managed"
-            ? "Codex will open browser sign-in after you approve monitoring. Your existing Codex login stays unchanged."
-            : "Use the account already signed in to Codex on this computer."}
-        </p>
+        <fieldset class="codex-login-choice">
+          <legend>Codex login</legend>
+          <label
+            ><input
+              id="codex-kind-system"
+              type="radio"
+              name="codex-kind"
+              value="system"
+              bind:group={codexKind}
+            />Use existing Codex login</label
+          >
+          <label
+            ><input type="radio" name="codex-kind" value="managed" bind:group={codexKind} />Sign in
+            with another account</label
+          >
+        </fieldset>
       {/if}
       <label for="local-alias"
         >{target.kind.includes("account")
@@ -229,15 +243,10 @@
           if (event.key === "Enter" && event.isComposing) event.preventDefault();
         }}
         aria-invalid={aliasIssue}
-        aria-describedby={`local-alias-help${aliasIssue ? " local-save-error" : ""}`}
+        aria-describedby={aliasIssue ? "local-save-error" : undefined}
         autocomplete="off"
         spellcheck="false"
       />
-      <p id="local-alias-help">
-        {addingAccount
-          ? "Leave blank to use the suggested name."
-          : "Only the name in Quotafern changes."} Up to 80 characters.
-      </p>
       {#if target.kind === "add-connection"}
         <label for="local-mechanism">Connection type</label>
         <select id="local-mechanism" bind:value={mechanism}>
@@ -284,7 +293,7 @@
       ><Button
         type="submit"
         disabled={saving ||
-          (addingAccount && (providerId !== "codex" || !CODEX_DIRECT_CONNECTION_AVAILABLE))}
+          (addingAccount && !availableProviders.some((provider) => provider.id === providerId))}
         >{target.kind === "reset"
           ? "Reset local metadata"
           : removing

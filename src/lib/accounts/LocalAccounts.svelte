@@ -4,16 +4,11 @@
   import { Button } from "../components/ui/button";
   import AccountDialog from "./AccountDialog.svelte";
   import AccountsPanel from "./AccountsPanel.svelte";
-  import {
-    CODEX_DIRECT_CONNECTION_AVAILABLE,
-    type DirectController,
-    type DirectPresentation,
-    type DirectTarget,
-  } from "./direct";
+  import { type DirectController, type DirectPresentation, type DirectTarget } from "./direct";
   import type { LocalAction, LocalStore, ManagementTarget } from "./local";
   import type { ConnectionId } from "./model";
   import type { AccountState } from "./model";
-  import type { DetailTarget } from "./navigation";
+  import { availableAccountProviders } from "./presentation";
   import type { Selection } from "./views";
   let {
     state: accountState,
@@ -24,7 +19,6 @@
     nowMs,
     collapsedProviders = $bindable([]),
     onoverview,
-    ondetails,
   }: {
     state: AccountState;
     store: LocalStore;
@@ -34,7 +28,6 @@
     onstate: (state: AccountState) => void;
     collapsedProviders?: string[];
     onoverview: (selection: Selection, id: string) => void;
-    ondetails: (target: DetailTarget, id: string) => void;
   } = $props();
   let target = $state<ManagementTarget | null>(null);
   let pendingConnection: DirectTarget | null = null;
@@ -139,7 +132,7 @@
 </div>
 <Button
   id="local-add-account"
-  disabled={blocked || !CODEX_DIRECT_CONNECTION_AVAILABLE}
+  disabled={blocked || availableAccountProviders().length === 0}
   onclick={() => open({ kind: "add-account" }, "local-add-account")}>Add account</Button
 >
 <p
@@ -163,7 +156,6 @@
   showHeading={false}
   bind:collapsedProviders
   {onoverview}
-  {ondetails}
   onmanage={blocked ? undefined : open}
   {presentations}
 />

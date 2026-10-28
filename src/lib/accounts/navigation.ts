@@ -96,6 +96,114 @@ export function contextLabel(state: AccountState, selection: Selection): string 
   );
 }
 
+/** Only display labels are disambiguated. Routing and ownership always use opaque IDs. */
+function uniqueLabels(
+  items: readonly { alias: string }[],
+  kind: "account" | "connection" | "workspace",
+) {
+  let labels = items.map((item, index) =>
+    kind === "account" && item.alias === "All accounts"
+      ? `${item.alias} · account ${index + 1}`
+      : item.alias,
+  );
+  while (new Set(labels).size !== labels.length) {
+    const previous = labels;
+    labels = previous.map((label, index) =>
+      previous.filter((other) => other === label).length > 1
+        ? `${label} · ${kind} ${index + 1}`
+        : label,
+    );
+  }
+  return labels;
+}
+
+type SelectorOption = { key: string; label: string; selection: Selection };
+type SelectorGroup = { key: string; label: string; options: SelectorOption[] };
+
+export function contextSelectorGroups(state: AccountState): {
+  primary: SelectorGroup[];
+  advanced: SelectorGroup[];
+} {
+  const providers = accountsView(state).filter((p) => p.accounts.length > 0);
+  const primary = providers.map((p) => {
+    const labels = uniqueLabels(p.accounts, "account");
+    return {
+      key: p.providerId,
+      label: p.displayName,
+      options: p.accounts.map((a, i) => ({
+        key: a.accountId,
+        label: labels[i],
+        selection: {
+          kind: "account",
+          providerId: p.providerId,
+          accountId: a.accountId,
+        } as Selection,
+      })),
+    };
+  });
+  const advanced: SelectorGroup[] = [
+    {
+      key: "providers",
+      label: "Providers",
+      options: providers.map((p) => ({
+        key: `provider:${p.providerId}`,
+        label: `${p.displayName} accounts`,
+        selection: { kind: "provider", providerId: p.providerId },
+      })),
+    },
+  ];
+  for (const provider of providers) {
+    const accounts = uniqueLabels(provider.accounts, "account");
+    provider.accounts.forEach((account, i) => {
+      const workspaces = uniqueLabels(account.workspaces, "workspace");
+      const connections = uniqueLabels(account.connections, "connection");
+      // Include the context kind so a workspace and a connection with the same name stay distinct.
+      advanced.push({
+        key: account.accountId,
+        label: `${provider.displayName} · ${accounts[i]}`,
+        options: [
+          {
+            key: account.accountId,
+            label: "All connections",
+            selection: {
+              kind: "account",
+              providerId: provider.providerId,
+              accountId: account.accountId,
+            },
+          },
+          ...account.workspaces.map((w, j) => ({
+            key: w.workspaceId,
+            label: `Workspace · ${workspaces[j]}`,
+            selection: {
+              kind: "account" as const,
+              providerId: provider.providerId,
+              accountId: account.accountId,
+              workspaceId: w.workspaceId,
+            },
+          })),
+          ...account.connections.map((c, j) => ({
+            key: c.connectionId,
+            label: `Connection · ${connections[j]}`,
+            selection: {
+              kind: "connection" as const,
+              providerId: provider.providerId,
+              accountId: account.accountId,
+              connectionId: c.connectionId,
+            },
+          })),
+        ],
+      });
+    });
+  }
+  return { primary, advanced };
+}
+
+export function primaryContextKey(selection: Selection): string {
+  return selection.kind === "account" || selection.kind === "connection"
+    ? selection.accountId
+    : selectionKey(selection);
+}
+
 export function selectionInvalid(state: AccountState, selection: Selection): boolean {
   return selection.kind !== "all" && resolveSelection(state, selection).kind === "all";
 }

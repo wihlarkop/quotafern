@@ -14,13 +14,14 @@ async (page) => {
   const base = "QA_BASE_URL";
   const capture = async (p, name) => {
     const canonical = [
-      "accounts-light",
-      "accounts-dark",
-      "add-account",
-      "consent-light",
-      "consent-dark",
+      "add-380-light",
+      "add-320-dark",
+      "settings-light",
+      "settings-dark",
+      "selector-three",
+      "view-quota",
     ].includes(name);
-    const path = `${canonical ? "docs/evidence/ux-03" : ".tmp/qa/screenshots/ux-03"}/QA_MODE-${name}.png`;
+    const path = `${canonical ? "docs/evidence/ux-03b" : ".tmp/qa/screenshots/ux-03b"}/QA_MODE-${name}.png`;
     screenshots.push({ name, path });
     await p.screenshot({ path, scale: "css" });
   };
@@ -103,12 +104,13 @@ async (page) => {
         await p.getByRole("button", { name: "Add account", exact: true }).click();
         const dialog = p.getByRole("dialog");
         assert(
-          await p.locator("#local-provider").evaluate((e) => e === document.activeElement),
-          "Add starts at provider selection",
+          await p.locator("#codex-kind-system").evaluate((e) => e === document.activeElement),
+          "Add starts on the existing-login radio",
         );
         assert(
-          (await dialog.locator("option:not(:disabled)").count()) === 3,
-          "only Codex provider and two login choices are selectable",
+          (await dialog.getByRole("radio").count()) === 2 &&
+            (await dialog.getByRole("combobox").count()) === 0,
+          "Fixed Codex provider and two clear login choices",
         );
         await capture(p, "add-account");
         const before = await p.evaluate(() => window.__ux03.calls.length);
@@ -228,7 +230,12 @@ async (page) => {
       if (count === 0) {
         for (const kind of ["system", "managed"]) {
           await p.getByRole("button", { name: "Add account", exact: true }).click();
-          await p.getByRole("combobox", { name: "Codex account", exact: true }).selectOption(kind);
+          await p
+            .getByRole("radio", {
+              name: kind === "system" ? "Use existing Codex login" : "Sign in with another account",
+              exact: true,
+            })
+            .check();
           await p.getByRole("button", { name: "Continue", exact: true }).click();
           await p.getByRole("dialog").waitFor({ state: "detached" });
           await p.waitForFunction(
@@ -263,6 +270,294 @@ async (page) => {
       }
       await p.close();
     }
+    // UX-03B compact Add, Appearance-first Settings, selector and Overview navigation.
+    for (const [width, theme] of [
+      [380, "light"],
+      [320, "dark"],
+    ]) {
+      const p = await fresh(3, theme, width, 660);
+      await row(p, 3).getByText("Stale quota", { exact: false }).waitFor();
+      await p.getByRole("button", { name: "Add account", exact: true }).click();
+      const dialog = p.getByRole("dialog");
+      const before = await p.evaluate(() => ({
+        metadata: localStorage.getItem("quotafern.account-presentation.v1"),
+        calls: window.__ux03.calls.length,
+      }));
+      assert(
+        (await dialog.getByRole("combobox").count()) === 0,
+        `${width}: sole provider is a fixed label`,
+      );
+      assert(
+        await dialog
+          .getByRole("radio", { name: "Use existing Codex login", exact: true })
+          .isChecked(),
+        `${width}: existing login is a clear default`,
+      );
+      assert(
+        !(await dialog.innerText()).includes("80 characters"),
+        `${width}: no routine character-limit paragraph`,
+      );
+      const fits = await dialog.evaluate((el) => {
+        const b = el.getBoundingClientRect();
+        const button = el.querySelector('button[type="submit"]').getBoundingClientRect();
+        return (
+          b.left >= 0 && b.right <= innerWidth && button.top >= 0 && button.bottom <= innerHeight
+        );
+      });
+      assert(fits, `${width}: Continue visible in compact window`);
+      if (theme === "light") await capture(p, "add-380-light");
+      await dialog
+        .getByRole("radio", { name: "Sign in with another account", exact: true })
+        .check();
+      assert(
+        (await dialog
+          .getByRole("textbox", { name: "Account name (optional)", exact: true })
+          .getAttribute("placeholder")) === "Another Codex account",
+        `${width}: managed choice has sensible optional name`,
+      );
+      if (theme === "dark") await capture(p, "add-320-dark");
+      await p.keyboard.press("Escape");
+      assert(
+        await p.evaluate(
+          (before) =>
+            localStorage.getItem("quotafern.account-presentation.v1") === before.metadata &&
+            window.__ux03.calls.length === before.calls,
+          before,
+        ),
+        `${width}: choice and cancellation create no account or authorization`,
+      );
+      await p.getByRole("tab", { name: "Settings", exact: true }).click();
+      const settings = p.getByRole("tabpanel", { name: "Settings", exact: true });
+      assert(
+        await settings
+          .getByRole("radio", { name: theme === "light" ? "Light" : "Dark", exact: true })
+          .isVisible(),
+        `${theme}: Appearance is the first usable setting`,
+      );
+      assert(
+        !(await settings
+          .getByRole("checkbox", { name: "Show synthetic quota examples" })
+          .isVisible()),
+        `${theme}: Demo is secondary by default`,
+      );
+      const compact = await settings.evaluate((el) => el.scrollHeight <= el.clientHeight + 1);
+      assert(compact, `${theme}: default Settings fits compact window`);
+      await capture(p, `settings-${theme}`);
+      await settings
+        .locator("label.theme-option")
+        .filter({ hasText: theme === "light" ? "Dark" : "Light" })
+        .click();
+      assert(
+        await p.evaluate(
+          (theme) => localStorage.getItem("quotafern.appearance.mode.v1") !== theme,
+          theme,
+        ),
+        `${theme}: color mode still persists`,
+      );
+      await settings.getByRole("button", { name: /Zinc & Signal/ }).click();
+      assert(
+        await p.evaluate(
+          () => localStorage.getItem("quotafern.appearance.palette.v1") === "zinc-signal",
+        ),
+        `${theme}: palette still persists`,
+      );
+      const status = settings.locator('.preference-message[aria-atomic="true"]');
+      assert(
+        await status.evaluate(
+          (el) =>
+            el.getBoundingClientRect().height <= 1 && el.textContent.includes("Color palette"),
+        ),
+        `${theme}: success feedback remains accessible without a persistent paragraph`,
+      );
+      await settings.getByText("More settings", { exact: true }).click();
+      const warning = settings.locator("#demo-effect-warning");
+      assert(
+        (await warning.isVisible()) &&
+          (await warning.innerText()).includes("remembered monitoring"),
+        `${theme}: Demo consequence is disclosed before toggle`,
+      );
+      await capture(p, `demo-warning-${theme}`);
+      const toggle = settings.getByRole("checkbox", { name: "Show synthetic quota examples" });
+      await toggle.check();
+      await p.waitForFunction(() => document.title.includes("Demo preview"));
+      assert(
+        await p.evaluate(
+          () =>
+            window.__ux03.calls.filter((c) => c.command === "codex_direct_disconnect").length === 3,
+        ),
+        `${theme}: enabling Demo uses existing disconnect flow for each account`,
+      );
+      const count = await p.evaluate(() => window.__ux03.calls.length);
+      await toggle.uncheck();
+      await p.waitForFunction(() => !document.title.includes("Demo preview"));
+      assert(
+        await p.evaluate((count) => window.__ux03.calls.length === count, count),
+        `${theme}: leaving Demo never reconnects or grants access`,
+      );
+      await settings.getByRole("button", { name: "Manage accounts", exact: true }).click();
+      assert(
+        await p.locator("#local-accounts-title").evaluate((el) => el === document.activeElement),
+        `${theme}: Manage accounts navigates and focuses the destination`,
+      );
+      await p.close();
+    }
+    const quotaPage = await fresh(3, "light", 380, 660);
+    await row(quotaPage, 3).getByText("Stale quota", { exact: false }).waitFor();
+    assert(
+      (await panel(quotaPage).locator("h3 button").count()) === 0,
+      "Account names do not duplicate View quota navigation",
+    );
+    const quotaButton = row(quotaPage, 3).getByRole("button", {
+      name: "View quota for Codex Managed Free",
+      exact: true,
+    });
+    await quotaButton.scrollIntoViewIfNeeded();
+    const scrollBefore = await panel(quotaPage).evaluate((el) => el.scrollTop);
+    await quotaButton.click();
+    const quotaOverview = quotaPage.getByRole("tabpanel", { name: "Overview", exact: true });
+    await quotaOverview.getByRole("heading", { name: "Usage overview", exact: true }).waitFor();
+    assert(
+      (await quotaOverview.locator("#account-context").inputValue()) ===
+        "account_d0030000-0000-4000-8000-000000000003",
+      "View quota selects intended account in Overview",
+    );
+    assert(
+      (await quotaOverview.locator("[data-source-id]").count()) === 1 &&
+        (await quotaOverview
+          .locator('[data-account-id="account_d0030000-0000-4000-8000-000000000003"]')
+          .count()) === 1,
+      "View quota preserves source ownership without another quota renderer",
+    );
+    await capture(quotaPage, "view-quota");
+    await quotaOverview.getByRole("button", { name: "Back", exact: true }).click();
+    assert(
+      await quotaPage
+        .locator("#account-overview-account_d0030000-0000-4000-8000-000000000003")
+        .evaluate((el) => el === document.activeElement),
+      "Overview Back restores View quota focus",
+    );
+    assert(
+      Math.abs((await panel(quotaPage).evaluate((el) => el.scrollTop)) - scrollBefore) <= 1,
+      "Overview Back restores Accounts scroll position",
+    );
+    await menu(quotaPage, 1, "Disconnect");
+    await row(quotaPage, 1)
+      .getByRole("button", { name: "View quota for Codex Existing Codex", exact: true })
+      .click();
+    assert(
+      (await quotaOverview
+        .getByRole("heading", { name: "No quota available", exact: true })
+        .isVisible()) &&
+        (await quotaOverview
+          .getByRole("button", { name: "Manage accounts", exact: true })
+          .isVisible()),
+      "Disconnected View quota offers useful account recovery without synthetic values",
+    );
+    await quotaPage.close();
+    for (const size of [1, 3, 24]) {
+      const p = await fresh(
+        Math.min(size, 3),
+        "light",
+        320,
+        660,
+        size === 24
+          ? () => {
+              const key = "quotafern.account-presentation.v1";
+              const data = JSON.parse(localStorage.getItem(key));
+              for (let n = 4; n <= 24; n++) {
+                const suffix = String(n).padStart(12, "0");
+                const id = `account_d0030000-0000-4000-8000-${suffix}`;
+                data.accounts.push({
+                  id,
+                  providerId: "codex",
+                  alias:
+                    n < 6
+                      ? "Duplicate"
+                      : n === 6
+                        ? "All accounts"
+                        : `Account ${n} · ${"研究チーム".repeat(8)}`,
+                });
+                data.connections.push({
+                  id: `connection_d0030000-0000-4000-8000-${suffix}`,
+                  accountId: id,
+                  workspaceId: null,
+                  alias: `Connection ${n}`,
+                  mechanism: "cli-session",
+                });
+              }
+              localStorage.setItem(key, JSON.stringify(data));
+            }
+          : undefined,
+      );
+      await p.getByRole("tab", { name: "Overview", exact: true }).click();
+      const overview = p.getByRole("tabpanel", { name: "Overview", exact: true });
+      const select = overview.locator("#account-context");
+      const labels = await select.locator("option").allTextContents();
+      assert(
+        labels.length === size + 1,
+        `${size}: primary selector contains All accounts plus individual accounts only`,
+      );
+      assert(
+        new Set(labels).size === labels.length,
+        `${size}: account choices are distinguishable, including duplicate/reserved aliases`,
+      );
+      assert(
+        (await select.locator("optgroup").getAttribute("label")) === "Codex",
+        `${size}: accounts grouped by provider`,
+      );
+      await select.focus();
+      await p.keyboard.press("End");
+      await p.keyboard.press("Enter");
+      assert(
+        (await select.inputValue()) ===
+          `account_d0030000-0000-4000-8000-${String(size).padStart(12, "0")}`,
+        `${size}: keyboard reaches last account by opaque ID`,
+      );
+      await audit(p, `${size} accounts at 320px`);
+      if (size === 3) await capture(p, "selector-three");
+      else await capture(p, `selector-${size}`);
+      await p.close();
+    }
+    const deniedDemo = await fresh(1, "light", 380, 660, () => {
+      window.__ux03.modes["connection_d0030000-0000-4000-8000-000000000001"] = "cleanup-failed";
+    });
+    await row(deniedDemo, 1).getByText("Connected", { exact: true }).waitFor();
+    await deniedDemo.getByRole("tab", { name: "Settings", exact: true }).click();
+    await deniedDemo.getByText("More settings", { exact: true }).click();
+    const deniedToggle = deniedDemo.getByRole("checkbox", {
+      name: "Show synthetic quota examples",
+    });
+    await deniedToggle.click();
+    await deniedDemo
+      .getByText(
+        "Could not confirm monitoring stopped. Disconnect each Codex account before opening Demo.",
+        { exact: true },
+      )
+      .waitFor();
+    assert(
+      !(await deniedToggle.isChecked()) &&
+        !(await deniedDemo.title().then((t) => t.includes("Demo preview"))),
+      "Failed cleanup refuses Demo and resets its checkbox",
+    );
+    await deniedDemo.close();
+    const storageFailure = await fresh(0, "light", 380, 660);
+    await storageFailure.getByRole("tab", { name: "Settings", exact: true }).click();
+    await storageFailure.evaluate(() => {
+      Storage.prototype.setItem = () => {
+        throw Error("Synthetic storage unavailable");
+      };
+    });
+    await storageFailure.locator("label.theme-option").filter({ hasText: "Dark" }).click();
+    assert(
+      await storageFailure
+        .getByText(
+          "Browser storage is unavailable. These choices will last until this popup closes.",
+          { exact: true },
+        )
+        .isVisible(),
+      "Storage failure remains visible while successful appearance feedback is nonvisual",
+    );
+    await storageFailure.close();
     const multiConnection = await fresh(1, "light", 420, 740, () => {
       const originalClock = Date.now;
       Date.now = () => originalClock() + (window.__ux03.timeOffset ?? 0);
@@ -366,11 +661,46 @@ async (page) => {
       (await workspaceView.locator("[data-source-id]").count()) === 1,
       "Workspace selection shows only its own source",
     );
+    const mainContext = workspaceView.locator("#account-context");
+    const advancedContext = workspaceView.locator("#advanced-context");
+    assert(
+      (await mainContext.inputValue()) === "workspace_d0030000-0000-4000-8000-000000000004",
+      "Active workspace remains explicit in the primary caption",
+    );
+    await workspaceView.locator(".advanced-contexts summary").click();
+    assert(
+      (await advancedContext.inputValue()) === "workspace_d0030000-0000-4000-8000-000000000004",
+      "Collapsing advanced filters preserves workspace selection",
+    );
+    await mainContext.selectOption("account_d0030000-0000-4000-8000-000000000001");
+    assert(
+      (await mainContext.inputValue()) === "account_d0030000-0000-4000-8000-000000000001",
+      "Selecting owning account clears the workspace filter in one action",
+    );
+    await workspaceView.locator(".advanced-contexts summary").click();
+    await advancedContext.selectOption("provider:codex");
+    assert(
+      (await mainContext.inputValue()) === "provider:codex",
+      "Provider filter is accessible and explicit without polluting default account options",
+    );
+    await advancedContext.selectOption("connection_d0030000-0000-4000-8000-000000000004");
+    assert(
+      (await mainContext.inputValue()) === "connection_d0030000-0000-4000-8000-000000000004" &&
+        (await workspaceView.locator("[data-source-id]").count()) === 1,
+      "Advanced connection context retains exact owner and source",
+    );
+    await mainContext.focus();
+    await mainContext.selectOption("account_d0030000-0000-4000-8000-000000000001");
+    assert(
+      await mainContext.evaluate((el) => el === document.activeElement),
+      "Changing primary context preserves selector focus",
+    );
     await capture(multiConnection, "workspace-overview");
     await multiConnection.close();
     // Existing demo scenarios exercise many-to-one sources without native access.
     const demo = await fresh(0);
     await demo.getByRole("tab", { name: "Settings", exact: true }).click();
+    await demo.getByText("More settings", { exact: true }).click();
     await demo.getByRole("checkbox", { name: "Show synthetic quota examples" }).check();
     const scenario = demo.getByRole("combobox", { name: /scenario/i });
     if ("QA_MODE" === "source") await scenario.selectOption("shared");

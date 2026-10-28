@@ -14,7 +14,6 @@
   } from "./direct";
   import { localRemovalAllowed, type ManagementTarget } from "./local";
   import type { AccountState, ConnectionId } from "./model";
-  import type { DetailTarget } from "./navigation";
   import {
     contextualAlias,
     sampleTime,
@@ -33,7 +32,6 @@
     showHeading = true,
     collapsedProviders = $bindable([]),
     onoverview,
-    ondetails,
     onmanage,
     presentations = {},
   }: {
@@ -43,7 +41,6 @@
     showHeading?: boolean;
     collapsedProviders?: string[];
     onoverview?: (selection: Selection, controlId: string) => void;
-    ondetails?: (target: DetailTarget, controlId: string) => void;
     onmanage?: (target: ManagementTarget | DirectTarget, opener: string) => void;
     presentations?: Partial<Record<ConnectionId, DirectPresentation>>;
   } = $props();
@@ -114,12 +111,7 @@
   </span>
 {/snippet}
 
-{#snippet connectionInfo(
-  connection: ConnectionView,
-  account: AccountView,
-  providerId: string,
-  accountLabel: string,
-)}
+{#snippet connectionInfo(connection: ConnectionView, account: AccountView)}
   {@const connectionSources = sources.filter((s) =>
     s.association.connectionIds.includes(connection.connectionId),
   )}
@@ -170,32 +162,6 @@
           >{/if}
       </details>
     {/if}
-    {#if ondetails}{#each connectionSources as source (source.id)}
-        <Button
-          variant="ghost"
-          size="sm"
-          class="connection-details-link"
-          id={`connection-details-${connection.connectionId}-${source.id}`}
-          aria-label={`View ${providerId} ${accountLabel} ${connection.alias} source ${connectionSources.indexOf(source) + 1} details`}
-          onclick={() =>
-            ondetails?.(
-              {
-                selection: {
-                  kind: "connection",
-                  providerId,
-                  accountId: account.accountId,
-                  connectionId: connection.connectionId,
-                },
-                sourceId: source.id,
-              },
-              `connection-details-${connection.connectionId}-${source.id}`,
-            )}
-        >
-          {connectionSources.length > 1
-            ? `Quota ${connectionSources.indexOf(source) + 1} details`
-            : "View quota"}<ArrowUpRight size={12} aria-hidden="true" />
-        </Button>
-      {/each}{/if}
   </div>
 {/snippet}
 
@@ -267,21 +233,7 @@
             <div class="owned-account-heading">
               <div class="account-summary-copy">
                 <h3>
-                  {#if onoverview}<button
-                      type="button"
-                      class="account-navigation-link"
-                      id={`account-overview-${account.accountId}`}
-                      aria-label={`Open ${provider.displayName} ${label} overview`}
-                      onclick={() =>
-                        onoverview?.(
-                          {
-                            kind: "account",
-                            providerId: provider.providerId,
-                            accountId: account.accountId,
-                          },
-                          `account-overview-${account.accountId}`,
-                        )}><span>{label}</span><ArrowUpRight size={13} aria-hidden="true" /></button
-                    >{:else}{label}{/if}
+                  {label}
                 </h3>
                 <p class="account-summary-meta">
                   {provider.displayName}{plans.length === 1 ? ` · ${plans[0]}` : ""}
@@ -300,6 +252,22 @@
                   actions={actions(account, provider.providerId)}
                 />{/if}
             </div>
+            {#if onoverview}<Button
+                variant="ghost"
+                size="sm"
+                class="connection-details-link"
+                id={`account-overview-${account.accountId}`}
+                aria-label={`View quota for ${provider.displayName} ${label}`}
+                onclick={() =>
+                  onoverview?.(
+                    {
+                      kind: "account",
+                      providerId: provider.providerId,
+                      accountId: account.accountId,
+                    },
+                    `account-overview-${account.accountId}`,
+                  )}>View quota<ArrowUpRight size={12} aria-hidden="true" /></Button
+              >{/if}
             {#if account.state === "removing"}<p class="account-pending" role="status">
                 Removal pending. Monitoring cleanup could not be confirmed.
               </p>{/if}
@@ -307,7 +275,7 @@
                 class="account-connection-summary"
                 data-connection-id={single.connectionId}
               >
-                {@render connectionInfo(single, account, provider.providerId, label)}
+                {@render connectionInfo(single, account)}
               </div>{/if}
             {#if account.connections.length > 1 || account.workspaces.length > 0}
               <details class="account-contexts">
@@ -359,7 +327,7 @@
                               actions={actions(account, provider.providerId, connection)}
                             />{/if}
                         </div>
-                        {@render connectionInfo(connection, account, provider.providerId, label)}
+                        {@render connectionInfo(connection, account)}
                       </li>{/each}
                   </ul>{/if}
               </details>

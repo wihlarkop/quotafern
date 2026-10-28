@@ -79,7 +79,7 @@
   font-weight: 600;
   margin-top: 4px;
 }
-.local-dialog input,
+.local-dialog input:not([type="radio"]),
 .local-dialog select {
   width: 100%;
   min-width: 0;
@@ -111,6 +111,79 @@
   justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
+}
+.local-dialog .fixed-provider {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 4px;
+}
+.fixed-provider strong {
+  color: var(--text);
+}
+.codex-login-choice {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.codex-login-choice legend {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.local-dialog .codex-login-choice label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-inset);
+  font-weight: 500;
+  cursor: pointer;
+}
+.codex-login-choice label:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.codex-login-choice input {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.more-settings {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+.more-settings summary,
+.advanced-contexts summary {
+  cursor: pointer;
+  border-radius: 3px;
+  width: fit-content;
+}
+.more-settings-content {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+.more-settings h2 {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.more-settings p,
+.settings-secondary-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.manage-accounts-link {
+  margin-top: 16px;
+  font-size: 12px;
 }
 .local-owner-context {
   font-weight: 600;
@@ -1220,6 +1293,9 @@ summary:focus-visible,
   font-size: 11px;
   line-height: 1.35;
 }
+.preference-message.sr-only {
+  min-height: 0;
+}
 
 .motion-group {
   margin-top: 15px;
@@ -2035,12 +2111,14 @@ button.activity-cell {
   gap: 6px;
   min-width: 0;
 }
-.account-context-control label {
+.account-context-control label,
+.advanced-contexts label {
   color: var(--muted);
   font-size: 11px;
   font-weight: 600;
 }
-.account-context-control select {
+.account-context-control select,
+.advanced-contexts select {
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -2049,6 +2127,20 @@ button.activity-cell {
   border-radius: var(--radius-control);
   background: var(--surface-raised);
   color: var(--text);
+}
+.advanced-contexts {
+  margin: 10px 0 16px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.advanced-contexts label {
+  display: block;
+  margin: 10px 0 6px;
+}
+.owned-empty .qf-button {
+  margin-top: 12px;
 }
 .context-announcement {
   margin: 8px 0 16px;

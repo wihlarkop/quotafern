@@ -229,7 +229,9 @@
   let codexNotice = $state("");
   let connectConsent = $state(false);
   let closeMessage = $state("");
-  let preferenceMessage = $state("Theme choices are saved on this device.");
+  let preferenceMessage = $state("");
+  let preferenceStorageError = $state(false);
+  let demoSwitchBusy = $state(false);
   let refreshCooldownSeconds = $derived(
     Math.max(0, Math.ceil((refreshCooldownUntilMs - liveNowMs) / 1000)),
   );
@@ -388,18 +390,42 @@
     showCodexDetails = false;
     connectConsent = false;
     if (!enabled) {
-      codexNotice = CODEX_CONNECTION_AVAILABLE
-        ? "Demo preview closed. Connect to Codex again from Accounts when you’re ready."
-        : "Demo preview closed. Live Codex connection remains unavailable in this build.";
+      codexNotice =
+        CODEX_CONNECTION_AVAILABLE || CODEX_DIRECT_CONNECTION_AVAILABLE
+          ? "Demo preview closed. Reconnect from Accounts when you’re ready."
+          : "Demo preview closed. Live Codex connection remains unavailable in this build.";
     }
   }
 
   function updatePreferences(patch: Partial<Preferences>) {
     preferences = { ...preferences, ...patch };
     const saved = storePreferences(preferences);
+    preferenceStorageError = !saved;
     preferenceMessage = saved
-      ? "Preferences saved on this device."
+      ? patch.theme
+        ? `Color mode: ${patch.theme}.`
+        : `Color palette: ${preferences.palette === "graphite-jade" ? "Graphite & Jade" : "Zinc & Signal"}.`
       : "Browser storage is unavailable. These choices will last until this popup closes.";
+  }
+
+  async function manageAccounts() {
+    activeTab = "accounts";
+    await tick();
+    (
+      document.getElementById("local-accounts-title") ??
+      document.querySelector<HTMLElement>('[role="tabpanel"][data-state="active"] h1')
+    )?.focus({ preventScroll: true });
+  }
+
+  async function requestDemoChange(control: HTMLInputElement) {
+    if (demoSwitchBusy) return;
+    demoSwitchBusy = true;
+    try {
+      await changeDemoPreview(control.checked);
+    } finally {
+      demoSwitchBusy = false;
+      control.checked = demoPreview;
+    }
   }
 
   function handleStorage(event: StorageEvent) {
@@ -674,6 +700,7 @@
         oncontext={selectAccountContext}
         ondetails={openAccountDetails}
         onback={backAccountContext}
+        onaccounts={manageAccounts}
         onrefresh={!demoPreview && CODEX_DIRECT_CONNECTION_AVAILABLE && directConnectedCount > 0
           ? () => void directController.refreshAll()
           : undefined}
@@ -897,7 +924,6 @@
         nowMs={snapshotNow}
         bind:collapsedProviders
         onoverview={openAccountOverview}
-        ondetails={openAccountDetails}
       />
     {:else}
       <LocalAccounts
@@ -909,7 +935,6 @@
         presentations={directPresentations}
         bind:collapsedProviders
         onoverview={openAccountOverview}
-        ondetails={openAccountDetails}
       />
       {#if CODEX_CONNECTION_AVAILABLE}
         <div class="view-heading">
@@ -1072,36 +1097,9 @@
     <div class="view-heading">
       <div>
         <h1>Settings</h1>
-        <p>Appearance and demo preview</p>
+        <p>Appearance and preferences</p>
       </div>
     </div>
-
-    <section class="settings-group source-mode-group">
-      <div class="setting-heading">
-        <h2>Demo preview</h2>
-        <span class="system-chip">Synthetic</span>
-      </div>
-      <label class="demo-toggle-row">
-        <span class="demo-toggle-copy">
-          <strong>Show synthetic quota examples</strong>
-          <small>
-            Turning this on stops Codex monitoring first. Turning it off does not reconnect Codex.
-          </small>
-        </span>
-        <input
-          type="checkbox"
-          checked={demoPreview}
-          disabled={codexBusy}
-          onchange={(event) =>
-            void changeDemoPreview((event.currentTarget as HTMLInputElement).checked)}
-          aria-label="Show synthetic quota examples"
-          data-testid="demo-preview-toggle"
-        />
-      </label>
-      {#if codexNotice}
-        <p class="preference-message" role="status" aria-live="polite">{codexNotice}</p>
-      {/if}
-    </section>
 
     <fieldset class="settings-group appearance-group">
       <legend>Appearance</legend>
@@ -1173,47 +1171,68 @@
             >{/if}
         </button>
       </div>
-      <p class="preference-message" role="status" aria-live="polite">{preferenceMessage}</p>
+      <p
+        class="preference-message"
+        class:sr-only={!preferenceStorageError}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {preferenceMessage}
+      </p>
     </fieldset>
 
-    <section class="settings-group motion-group">
-      <div class="setting-heading">
-        <h2>Motion</h2>
-        <span class="system-chip">System</span>
-      </div>
-      <p>Respects your device’s reduced-motion setting.</p>
-    </section>
-
-    {#if isDevelopment && demoPreview}
-      <section class="settings-group scenario-group">
-        <label for="demo-scenario">Demo scenario</label>
-        <select id="demo-scenario" value={scenario} onchange={chooseScenario}>
-          {#each ACCOUNT_DEMO_SCENARIOS as item (item[0])}
-            <option value={item[0]}>{item[1]}</option>
-          {/each}
-        </select>
-        <p>
-          Development-only fixture selection. Release Demo uses the multiple-account example.
-          Nothing is saved.
+    <details class="more-settings">
+      <summary>More settings</summary>
+      <div class="more-settings-content">
+        <section class="settings-group source-mode-group" aria-labelledby="demo-settings-title">
+          <h2 id="demo-settings-title">Demo preview</h2>
+          <p id="demo-effect-warning">
+            Enabling Demo disconnects all Codex accounts and removes their remembered monitoring
+            permission. Turning it off does not reconnect them.
+          </p>
+          <label class="demo-toggle-row"
+            ><span class="demo-toggle-copy"><strong>Show synthetic quota examples</strong></span
+            ><input
+              type="checkbox"
+              checked={demoPreview}
+              disabled={codexBusy || demoSwitchBusy}
+              onchange={(event) => void requestDemoChange(event.currentTarget as HTMLInputElement)}
+              aria-label="Show synthetic quota examples"
+              aria-describedby="demo-effect-warning"
+              data-testid="demo-preview-toggle"
+            /></label
+          >
+          {#if codexNotice}<p class="preference-message" role="status" aria-live="polite">
+              {codexNotice}
+            </p>{/if}
+        </section>
+        {#if isDevelopment && demoPreview}
+          <section class="settings-group scenario-group">
+            <label for="demo-scenario">Demo scenario</label>
+            <select id="demo-scenario" value={scenario} onchange={chooseScenario}>
+              {#each ACCOUNT_DEMO_SCENARIOS as item (item[0])}
+                <option value={item[0]}>{item[1]}</option>
+              {/each}
+            </select>
+            <p>
+              Development-only fixture selection. Release Demo uses the multiple-account example.
+              Nothing is saved.
+            </p>
+          </section>
+        {/if}
+        <p class="settings-secondary-note">Motion follows your device’s reduced-motion setting.</p>
+        <p class="settings-secondary-note">
+          Appearance and account names stay on this device. Native permission controls reconnection;
+          Codex manages sign-in. Quota readings are not saved.
         </p>
-      </section>
-    {/if}
-
-    <section class="settings-group">
-      <h2>Account preferences</h2>
-      <p>
-        Manage local account and connection labels in Accounts with Demo off. Labels persist on this
-        device; sessions, authorization and usage do not.
-      </p>
-    </section>
-
-    <section class="privacy-note">
-      <span class="privacy-icon" aria-hidden="true"><Leaf size={15} strokeWidth={1.9} /></span>
-      <p>
-        Quotafern saves appearance preferences and non-sensitive local account metadata. Do not put
-        secrets in labels. No credentials, authorization or usage history are stored.
-      </p>
-    </section>
+      </div>
+    </details>
+    <button
+      type="button"
+      class="account-navigation-link manage-accounts-link"
+      onclick={manageAccounts}>Manage accounts</button
+    >
   </Tabs.Content>
 
   <footer class="popup-footer">

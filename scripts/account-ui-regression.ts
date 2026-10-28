@@ -1,12 +1,13 @@
 import { ACCOUNT_DEMO_SCENARIOS, createAccountDemo } from "../src/lib/accounts/demo";
 import { validMetadata } from "../src/lib/accounts/metadata";
-import { isLocalId } from "../src/lib/accounts/model";
+import { isLocalId, PROVIDERS } from "../src/lib/accounts/model";
 import {
   activityMonitoring,
   contextualAlias,
   connectionActions,
   connectionStatus,
   quotaDuration,
+  availableAccountProviders,
 } from "../src/lib/accounts/presentation";
 import { accountsView, detailsView, overviewView } from "../src/lib/accounts/views";
 import { buildActivityGrid } from "../src/lib/activity";
@@ -200,6 +201,31 @@ export function runAccountUiRegression(): number {
       quotaDuration(10080) === "7 days" &&
       quotaDuration(90) === "90 minutes",
     "UX-03 quota duration preserves exact reported minutes",
+  );
+  assert(
+    availableAccountProviders(PROVIDERS, true)
+      .map((p) => p.id)
+      .join(",") === "codex",
+    "UX-03B current catalogue offers only reviewed Codex setup",
+  );
+  const futureCatalogue = PROVIDERS.map((p) =>
+    p.id === "openrouter" ? { ...p, accountSetupAvailable: true } : p,
+  );
+  assert(
+    availableAccountProviders(futureCatalogue, true)
+      .map((p) => p.id)
+      .join(",") === "codex,openrouter",
+    "UX-03B selector can list a separately implemented future provider",
+  );
+  assert(
+    availableAccountProviders(futureCatalogue, false)
+      .map((p) => p.id)
+      .join(",") === "openrouter",
+    "UX-03B provider selection does not override Codex platform availability",
+  );
+  assert(
+    PROVIDERS.every((p) => !p.accountSetupAvailable),
+    "UX-03B does not enable any additional provider in the real catalogue",
   );
   console.log(`PASS UX-02B/UX-03 account presentation: ${count} assertions`);
   return count;

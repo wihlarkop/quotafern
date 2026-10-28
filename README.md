@@ -12,6 +12,8 @@ The owner reported **combined Windows native UI acceptance** after UX-02A/B/C, I
 
 ## Codex connection status
 
+The [UX-03B polish](docs/validation/ux-03b.md) simplifies Add account, puts Appearance first in Settings, groups account choices with advanced filters, and makes View quota open the selected account's Overview with Back navigation. The existing native consent and monitoring boundaries are preserved.
+
 Windows supports two reviewed native routes: Existing Codex uses a short-lived supervised App Server over private stdin/stdout; separate managed accounts use isolated Codex homes and direct HTTPS quota reads. ACC-04 remains a label registry, never authentication. Only provider-returned quota/reset/plan/credit fields are displayed.
 
 Accounts → Connect opens the isolated Svelte/Tauri confirmation. Allow connection remembers permission; no old session consent is silently upgraded. Native permission permits automatic reconnect on launch and three-minute refresh. Disconnect removes permission without signing out; Quit stops owned resources and preserves explicit permission. Failed live reads never become demo data.

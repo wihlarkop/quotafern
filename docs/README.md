@@ -18,3 +18,5 @@ Runtime and browser QA harnesses live under [QA scripts](../qa/README.md). Histo
 Initial gated Codex implementation history: [CODEX-LIVE-01 direct integration](security/codex-live-01.md) and [validation/owner acceptance](validation/codex-live-01.md).
 
 Current Windows Codex behavior and owner-reported full acceptance: [CODEX-MERGE-PREP-01](validation/codex-merge-prep-01.md). macOS/Linux live access remains blocked pending native acceptance.
+
+Current UX follow-up: [UX-03B browser acceptance, before/after captures and owner Windows checklist](validation/ux-03b.md). It preserves the accepted native implementation and does not extend authenticated/native acceptance.

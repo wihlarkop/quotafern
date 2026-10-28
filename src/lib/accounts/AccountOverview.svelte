@@ -9,6 +9,8 @@
   import {
     contextLabel,
     contextOptions,
+    contextSelectorGroups,
+    primaryContextKey,
     selectionInvalid,
     selectionKey,
     selectorSelection,
@@ -33,6 +35,7 @@
     ondetails,
     onback,
     onrefresh,
+    onaccounts,
     refreshing = false,
     synthetic = true,
   }: {
@@ -43,6 +46,7 @@
     ondetails: (target: DetailTarget, controlId: string) => void;
     onback: () => void;
     onrefresh?: () => void;
+    onaccounts?: () => void;
     refreshing?: boolean;
     synthetic?: boolean;
   } = $props();
@@ -84,8 +88,30 @@
       : `${contextLabel(accountState, selectedDetail?.selection ?? navigation.selection)} · Selection unavailable`,
   );
   let options = $derived(contextOptions(accountState));
+  let groups = $derived(contextSelectorGroups(accountState));
   let displayedSelection = $derived(selectorSelection(accountState, navigation));
   let selectedKey = $derived(selectionKey(displayedSelection));
+  let primaryAccountLabel = $derived(
+    groups.primary
+      .flatMap((g) => g.options)
+      .find((o) => o.key === primaryContextKey(displayedSelection))?.label,
+  );
+  let advancedSelection = $derived(
+    displayedSelection.kind === "provider" ||
+      displayedSelection.kind === "connection" ||
+      (displayedSelection.kind === "account" && !!displayedSelection.workspaceId),
+  );
+  let primaryKey = $derived(
+    advancedSelection ? selectedKey : primaryContextKey(displayedSelection),
+  );
+  let advancedLabel = $derived(
+    groups.advanced.flatMap((g) => g.options).find((o) => o.key === selectedKey)?.label ??
+      "Selection unavailable",
+  );
+  let advancedOpen = $state(false);
+  $effect(() => {
+    advancedOpen = selectedKey !== "all" && advancedSelection;
+  });
   let invalid = $derived(selectionInvalid(accountState, navigation.selection));
   function changeContext(event: Event) {
     oncontext(
@@ -137,21 +163,50 @@
     <strong>SYNTHETIC DEMO</strong><span>Illustrative values. No live account is connected.</span>
   </div>{/if}
 <div class="account-context-control">
-  <label for="account-context">Account context</label><select
+  <label for="account-context">Account</label><select
     id="account-context"
-    value={selectedKey}
+    value={primaryKey}
     title={contextLabel(accountState, displayedSelection)}
     aria-describedby="account-context-status"
     onchange={changeContext}
-    >{#if !options.some((option) => option.key === selectedKey)}<option value={selectedKey} disabled
-        >Selection unavailable</option
-      >{/if}{#each options as option (option.key)}<option value={option.key}>{option.label}</option
+    ><option value="all">All accounts</option
+    >{#if primaryKey !== "all" && !groups.primary.some( (g) => g.options.some((o) => o.key === primaryKey) )}<option
+        value={primaryKey}
+        disabled
+        >{displayedSelection.kind === "provider"
+          ? advancedLabel
+          : primaryAccountLabel && options.some((o) => o.key === selectedKey)
+            ? `${primaryAccountLabel} · ${advancedLabel}`
+            : "Selection unavailable"}</option
+      >{/if}{#each groups.primary as group (group.key)}<optgroup label={group.label}
+        >{#each group.options as option (option.key)}<option value={option.key}
+            >{option.label}</option
+          >{/each}</optgroup
       >{/each}</select
   >
 </div>
+{#if groups.primary.length > 0}<details class="advanced-contexts" bind:open={advancedOpen}>
+    <summary>Advanced filters{advancedSelection ? ` · ${advancedLabel}` : ""}</summary><label
+      for="advanced-context">Provider, workspace or connection</label
+    ><select
+      id="advanced-context"
+      value={selectedKey}
+      onchange={changeContext}
+      aria-describedby="account-context-status"
+      ><option value="all">All accounts</option
+      >{#if !options.some((o) => o.key === selectedKey)}<option value={selectedKey} disabled
+          >Selection unavailable</option
+        >{/if}{#each groups.advanced as group (group.key)}<optgroup label={group.label}
+          >{#each group.options as option (option.key)}<option value={option.key}
+              >{option.label}</option
+            >{/each}</optgroup
+        >{/each}</select
+    >
+  </details>{/if}
 <p
   id="account-context-status"
   class="context-announcement"
+  class:sr-only={!navigation.notice && !invalid}
   role="status"
   aria-live="polite"
   aria-atomic="true"
@@ -230,6 +285,9 @@
         This source is missing or its account is pending removal. Use Back to return to the current
         overview.
       </p>
+      {#if onaccounts}<Button variant="outline" size="sm" onclick={onaccounts}
+          >Manage accounts</Button
+        >{/if}
     </section>{/if}
 {:else}
   <div class="owned-source-list">
@@ -330,5 +388,8 @@
           ? "Add an account in Accounts to see its quota."
           : "Connect an account to read its quota. Missing readings are unknown, not zero."}
       </p>
+      {#if onaccounts}<Button variant="outline" size="sm" onclick={onaccounts}
+          >Manage accounts</Button
+        >{/if}
     </section>{/if}
 {/if}
