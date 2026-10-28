@@ -79,7 +79,7 @@
   font-weight: 600;
   margin-top: 4px;
 }
-.local-dialog input,
+.local-dialog input:not([type="radio"]),
 .local-dialog select {
   width: 100%;
   min-width: 0;
@@ -111,6 +111,79 @@
   justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
+}
+.local-dialog .fixed-provider {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 4px;
+}
+.fixed-provider strong {
+  color: var(--text);
+}
+.codex-login-choice {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.codex-login-choice legend {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.local-dialog .codex-login-choice label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-inset);
+  font-weight: 500;
+  cursor: pointer;
+}
+.codex-login-choice label:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.codex-login-choice input {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.more-settings {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+.more-settings summary,
+.advanced-contexts summary {
+  cursor: pointer;
+  border-radius: 3px;
+  width: fit-content;
+}
+.more-settings-content {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+.more-settings h2 {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.more-settings p,
+.settings-secondary-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.manage-accounts-link {
+  margin-top: 16px;
+  font-size: 12px;
 }
 .local-owner-context {
   font-weight: 600;
@@ -295,6 +368,7 @@ button:not(:disabled),
 button:focus-visible,
 select:focus-visible,
 input:focus-visible,
+summary:focus-visible,
 [tabindex]:focus-visible,
 [data-tabs-trigger]:focus-visible {
   outline: var(--focus-width) solid var(--focus);
@@ -1219,6 +1293,9 @@ input:focus-visible,
   font-size: 11px;
   line-height: 1.35;
 }
+.preference-message.sr-only {
+  min-height: 0;
+}
 
 .motion-group {
   margin-top: 15px;
@@ -2034,12 +2111,14 @@ button.activity-cell {
   gap: 6px;
   min-width: 0;
 }
-.account-context-control label {
+.account-context-control label,
+.advanced-contexts label {
   color: var(--muted);
   font-size: 11px;
   font-weight: 600;
 }
-.account-context-control select {
+.account-context-control select,
+.advanced-contexts select {
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -2048,6 +2127,20 @@ button.activity-cell {
   border-radius: var(--radius-control);
   background: var(--surface-raised);
   color: var(--text);
+}
+.advanced-contexts {
+  margin: 10px 0 16px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.advanced-contexts label {
+  display: block;
+  margin: 10px 0 6px;
+}
+.owned-empty .qf-button {
+  margin-top: 12px;
 }
 .context-announcement {
   margin: 8px 0 16px;
@@ -2215,11 +2308,79 @@ button.activity-cell {
   list-style: none;
 }
 .owned-account {
-  margin-top: 16px;
-  padding-left: 12px;
+  margin-top: 12px;
+  padding: 12px 0;
 }
 .owned-account-heading {
+  align-items: center;
+  gap: 8px;
+}
+.owned-account + .owned-account {
+  border-top: 1px solid var(--border);
+}
+.account-summary-copy {
+  flex: 1;
+  min-width: 0;
+}
+.account-summary-meta,
+.account-connection-summary p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.account-connection-summary .source-stale {
+  color: var(--low-ink);
+}
+.account-connection-summary .connection-problem,
+.account-connection-summary .connection-feedback {
+  color: var(--text);
+}
+.owned-account-heading > .connection-state-text {
+  max-width: 100px;
+  text-align: right;
+}
+.connection-disclosure,
+.account-contexts,
+.coming-soon-providers,
+.account-monitoring-details {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.connection-disclosure summary,
+.account-contexts summary,
+.coming-soon-providers summary,
+.account-monitoring-details summary {
+  cursor: pointer;
+  width: fit-content;
+  border-radius: 3px;
+}
+.connection-disclosure p,
+.coming-soon-providers p,
+.account-monitoring-details p {
+  margin: 8px 0 0;
+}
+.connection-disclosure .account-navigation-link {
+  margin-top: 8px;
+}
+.account-reading-actions {
+  display: flex;
+  align-items: baseline;
   flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.local-storage-notice:empty {
+  display: none;
+}
+.overview-connection-notice {
+  margin: 12px 0;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 .owned-account h3 {
   margin: 0;
@@ -2227,10 +2388,6 @@ button.activity-cell {
   font-weight: 650;
   overflow-wrap: anywhere;
   min-width: 0;
-}
-.account-kind {
-  color: var(--muted);
-  font-size: 11px;
 }
 .owned-connection-list {
   margin-top: 10px;
@@ -2272,6 +2429,37 @@ button.activity-cell {
 }
 .owned-detail-readings {
   margin-bottom: 16px;
+}
+.focused-connection-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 8px;
+}
+.focused-quota > .source-freshness {
+  margin: 0 0 12px;
+}
+.focused-source-choices {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  display: grid;
+  gap: 8px;
+}
+.focused-source-choice {
+  width: 100%;
+  height: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  white-space: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.focused-source-choice small {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
 }
 .owned-empty {
   margin: 16px 0;

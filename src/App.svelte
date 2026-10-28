@@ -15,6 +15,7 @@
   import { onMount, tick } from "svelte";
 
   import AccountOverview from "./lib/accounts/AccountOverview.svelte";
+  import AccountQuotaDetails from "./lib/accounts/AccountQuotaDetails.svelte";
   import AccountsPanel from "./lib/accounts/AccountsPanel.svelte";
   import {
     ACCOUNT_DEMO_SCENARIOS,
@@ -28,10 +29,12 @@
   } from "./lib/accounts/direct";
   import { createLocalStore } from "./lib/accounts/local";
   import LocalAccounts from "./lib/accounts/LocalAccounts.svelte";
-  import type { ConnectionId } from "./lib/accounts/model";
+  import type { ConnectionId, SourceId } from "./lib/accounts/model";
   import {
     initialNavigation,
     reconcileNavigation,
+    openFocusedQuota,
+    chooseFocusedQuota,
     type AccountNavigation,
     type DetailTarget,
     type ReturnTarget,
@@ -98,6 +101,7 @@
   );
   let directPresentations = $state.raw<Partial<Record<ConnectionId, DirectPresentation>>>({});
   const directController = createDirectController(localStore.state, (state, presentations) => {
+    liveNowMs = Date.now();
     localAccountState = state;
     directPresentations = presentations;
   });
@@ -136,6 +140,7 @@
       selection,
       detail: null,
       detailReturn: null,
+      focusedQuota: null,
     };
     navigationVersion++;
     tabScroll.overview = 0;
@@ -144,12 +149,30 @@
       ?.scrollTo({ top: 0, behavior: "instant" });
   }
   function openAccountOverview(selection: Selection, controlId: string) {
+    if (selection.kind === "account" && !selection.workspaceId) {
+      accountNavigation = {
+        ...accountNavigation,
+        notice: "",
+        detail: null,
+        detailReturn: null,
+        focusedQuota: openFocusedQuota(
+          visibleAccountState,
+          selection,
+          returnPoint(controlId),
+          demoPreview ? snapshotNow : liveNowMs,
+          demoPreview ? "synthetic" : "live",
+        ),
+      };
+      void revealAccountContext();
+      return;
+    }
     accountNavigation = {
       selection,
       notice: "",
       detail: null,
       detailReturn: null,
       overviewReturn: returnPoint(controlId),
+      focusedQuota: null,
     };
     void revealAccountContext();
   }
@@ -165,13 +188,16 @@
     void revealAccountContext();
   }
   async function backAccountContext() {
-    const target = accountNavigation.detail
-      ? accountNavigation.detailReturn
-      : accountNavigation.overviewReturn;
+    const target =
+      accountNavigation.focusedQuota?.returnTo ??
+      (accountNavigation.detail
+        ? accountNavigation.detailReturn
+        : accountNavigation.overviewReturn);
     accountNavigation = {
       ...accountNavigation,
       detail: null,
       detailReturn: null,
+      focusedQuota: null,
       overviewReturn: target?.tab === "accounts" ? null : accountNavigation.overviewReturn,
     };
     const version = ++navigationVersion;
@@ -196,6 +222,27 @@
         : panel?.querySelector<HTMLElement>("h1"))
     )?.focus({ preventScroll: true });
     if (panel) panel.scrollTop = target?.scrollTop ?? 0;
+  }
+  function chooseAccountQuota(id: SourceId) {
+    const target = accountNavigation.focusedQuota;
+    if (!target) return;
+    accountNavigation = {
+      ...accountNavigation,
+      focusedQuota: chooseFocusedQuota(
+        visibleAccountState,
+        target,
+        id,
+        demoPreview ? snapshotNow : liveNowMs,
+        demoPreview ? "synthetic" : "live",
+      ),
+    };
+    void tick().then(() =>
+      document.getElementById("owned-details-title")?.focus({ preventScroll: true }),
+    );
+  }
+  function openNormalOverview() {
+    if (accountNavigation.focusedQuota)
+      accountNavigation = { ...accountNavigation, focusedQuota: null };
   }
   // Tabs unmount their panels; keep only transient reading positions in the app shell.
   $effect(() => {
@@ -228,7 +275,9 @@
   let codexNotice = $state("");
   let connectConsent = $state(false);
   let closeMessage = $state("");
-  let preferenceMessage = $state("Theme choices are saved on this device.");
+  let preferenceMessage = $state("");
+  let preferenceStorageError = $state(false);
+  let demoSwitchBusy = $state(false);
   let refreshCooldownSeconds = $derived(
     Math.max(0, Math.ceil((refreshCooldownUntilMs - liveNowMs) / 1000)),
   );
@@ -387,18 +436,42 @@
     showCodexDetails = false;
     connectConsent = false;
     if (!enabled) {
-      codexNotice = CODEX_CONNECTION_AVAILABLE
-        ? "Demo preview closed. Connect to Codex again from Accounts when you’re ready."
-        : "Demo preview closed. Live Codex connection remains unavailable in this build.";
+      codexNotice =
+        CODEX_CONNECTION_AVAILABLE || CODEX_DIRECT_CONNECTION_AVAILABLE
+          ? "Demo preview closed. Reconnect from Accounts when you’re ready."
+          : "Demo preview closed. Live Codex connection remains unavailable in this build.";
     }
   }
 
   function updatePreferences(patch: Partial<Preferences>) {
     preferences = { ...preferences, ...patch };
     const saved = storePreferences(preferences);
+    preferenceStorageError = !saved;
     preferenceMessage = saved
-      ? "Preferences saved on this device."
+      ? patch.theme
+        ? `Color mode: ${patch.theme}.`
+        : `Color palette: ${preferences.palette === "graphite-jade" ? "Graphite & Jade" : "Zinc & Signal"}.`
       : "Browser storage is unavailable. These choices will last until this popup closes.";
+  }
+
+  async function manageAccounts() {
+    activeTab = "accounts";
+    await tick();
+    (
+      document.getElementById("local-accounts-title") ??
+      document.querySelector<HTMLElement>('[role="tabpanel"][data-state="active"] h1')
+    )?.focus({ preventScroll: true });
+  }
+
+  async function requestDemoChange(control: HTMLInputElement) {
+    if (demoSwitchBusy) return;
+    demoSwitchBusy = true;
+    try {
+      await changeDemoPreview(control.checked);
+    } finally {
+      demoSwitchBusy = false;
+      control.checked = demoPreview;
+    }
   }
 
   function handleStorage(event: StorageEvent) {
@@ -646,7 +719,12 @@
   {/if}
 
   <Tabs.List class="tab-list" aria-label="Quotafern sections">
-    <Tabs.Trigger class="tab-trigger" value="overview">
+    <Tabs.Trigger
+      class="tab-trigger"
+      value="overview"
+      onclick={openNormalOverview}
+      onfocus={openNormalOverview}
+    >
       <Monitor size={15} strokeWidth={1.9} aria-hidden="true" /><span>Overview</span>
     </Tabs.Trigger>
     <Tabs.Trigger class="tab-trigger" value="accounts">
@@ -665,19 +743,32 @@
     }}
   >
     {#if demoPreview || CODEX_DIRECT_CONNECTION_AVAILABLE || !CODEX_CONNECTION_AVAILABLE}
-      <AccountOverview
-        state={visibleAccountState}
-        synthetic={demoPreview}
-        nowMs={demoPreview ? snapshotNow : liveNowMs}
-        navigation={accountNavigation}
-        oncontext={selectAccountContext}
-        ondetails={openAccountDetails}
-        onback={backAccountContext}
-        onrefresh={!demoPreview && CODEX_DIRECT_CONNECTION_AVAILABLE && directConnectedCount > 0
-          ? () => void directController.refreshAll()
-          : undefined}
-        refreshing={Object.values(directPresentations).some((p) => p?.busy)}
-      />
+      {#if accountNavigation.focusedQuota}
+        <AccountQuotaDetails
+          state={visibleAccountState}
+          target={accountNavigation.focusedQuota}
+          nowMs={demoPreview ? snapshotNow : liveNowMs}
+          synthetic={demoPreview}
+          presentations={demoPreview ? {} : directPresentations}
+          onchoose={chooseAccountQuota}
+          onback={backAccountContext}
+        />
+      {:else}
+        <AccountOverview
+          state={visibleAccountState}
+          synthetic={demoPreview}
+          nowMs={demoPreview ? snapshotNow : liveNowMs}
+          navigation={accountNavigation}
+          oncontext={selectAccountContext}
+          ondetails={openAccountDetails}
+          onback={backAccountContext}
+          onaccounts={manageAccounts}
+          onrefresh={!demoPreview && CODEX_DIRECT_CONNECTION_AVAILABLE && directConnectedCount > 0
+            ? () => void directController.refreshAll()
+            : undefined}
+          refreshing={Object.values(directPresentations).some((p) => p?.busy)}
+        />
+      {/if}
     {:else if showCodexDetails}
       <div class="view-heading">
         <div>
@@ -896,18 +987,17 @@
         nowMs={snapshotNow}
         bind:collapsedProviders
         onoverview={openAccountOverview}
-        ondetails={openAccountDetails}
       />
     {:else}
       <LocalAccounts
         state={localAccountState}
+        nowMs={liveNowMs}
         store={localStore}
         onstate={(state) => directController.updateMetadata(state)}
         direct={directController}
         presentations={directPresentations}
         bind:collapsedProviders
         onoverview={openAccountOverview}
-        ondetails={openAccountDetails}
       />
       {#if CODEX_CONNECTION_AVAILABLE}
         <div class="view-heading">
@@ -1070,36 +1160,9 @@
     <div class="view-heading">
       <div>
         <h1>Settings</h1>
-        <p>Appearance and demo preview</p>
+        <p>Appearance and preferences</p>
       </div>
     </div>
-
-    <section class="settings-group source-mode-group">
-      <div class="setting-heading">
-        <h2>Demo preview</h2>
-        <span class="system-chip">Synthetic</span>
-      </div>
-      <label class="demo-toggle-row">
-        <span class="demo-toggle-copy">
-          <strong>Show synthetic quota examples</strong>
-          <small>
-            Turning this on stops Codex monitoring first. Turning it off does not reconnect Codex.
-          </small>
-        </span>
-        <input
-          type="checkbox"
-          checked={demoPreview}
-          disabled={codexBusy}
-          onchange={(event) =>
-            void changeDemoPreview((event.currentTarget as HTMLInputElement).checked)}
-          aria-label="Show synthetic quota examples"
-          data-testid="demo-preview-toggle"
-        />
-      </label>
-      {#if codexNotice}
-        <p class="preference-message" role="status" aria-live="polite">{codexNotice}</p>
-      {/if}
-    </section>
 
     <fieldset class="settings-group appearance-group">
       <legend>Appearance</legend>
@@ -1171,47 +1234,68 @@
             >{/if}
         </button>
       </div>
-      <p class="preference-message" role="status" aria-live="polite">{preferenceMessage}</p>
+      <p
+        class="preference-message"
+        class:sr-only={!preferenceStorageError}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {preferenceMessage}
+      </p>
     </fieldset>
 
-    <section class="settings-group motion-group">
-      <div class="setting-heading">
-        <h2>Motion</h2>
-        <span class="system-chip">System</span>
-      </div>
-      <p>Respects your device’s reduced-motion setting.</p>
-    </section>
-
-    {#if isDevelopment && demoPreview}
-      <section class="settings-group scenario-group">
-        <label for="demo-scenario">Demo scenario</label>
-        <select id="demo-scenario" value={scenario} onchange={chooseScenario}>
-          {#each ACCOUNT_DEMO_SCENARIOS as item (item[0])}
-            <option value={item[0]}>{item[1]}</option>
-          {/each}
-        </select>
-        <p>
-          Development-only fixture selection. Release Demo uses the multiple-account example.
-          Nothing is saved.
+    <details class="more-settings">
+      <summary>More settings</summary>
+      <div class="more-settings-content">
+        <section class="settings-group source-mode-group" aria-labelledby="demo-settings-title">
+          <h2 id="demo-settings-title">Demo preview</h2>
+          <p id="demo-effect-warning">
+            Enabling Demo disconnects all Codex accounts and removes their remembered monitoring
+            permission. Turning it off does not reconnect them.
+          </p>
+          <label class="demo-toggle-row"
+            ><span class="demo-toggle-copy"><strong>Show synthetic quota examples</strong></span
+            ><input
+              type="checkbox"
+              checked={demoPreview}
+              disabled={codexBusy || demoSwitchBusy}
+              onchange={(event) => void requestDemoChange(event.currentTarget as HTMLInputElement)}
+              aria-label="Show synthetic quota examples"
+              aria-describedby="demo-effect-warning"
+              data-testid="demo-preview-toggle"
+            /></label
+          >
+          {#if codexNotice}<p class="preference-message" role="status" aria-live="polite">
+              {codexNotice}
+            </p>{/if}
+        </section>
+        {#if isDevelopment && demoPreview}
+          <section class="settings-group scenario-group">
+            <label for="demo-scenario">Demo scenario</label>
+            <select id="demo-scenario" value={scenario} onchange={chooseScenario}>
+              {#each ACCOUNT_DEMO_SCENARIOS as item (item[0])}
+                <option value={item[0]}>{item[1]}</option>
+              {/each}
+            </select>
+            <p>
+              Development-only fixture selection. Release Demo uses the multiple-account example.
+              Nothing is saved.
+            </p>
+          </section>
+        {/if}
+        <p class="settings-secondary-note">Motion follows your device’s reduced-motion setting.</p>
+        <p class="settings-secondary-note">
+          Appearance and account names stay on this device. Native permission controls reconnection;
+          Codex manages sign-in. Quota readings are not saved.
         </p>
-      </section>
-    {/if}
-
-    <section class="settings-group">
-      <h2>Account preferences</h2>
-      <p>
-        Manage local account and connection labels in Accounts with Demo off. Labels persist on this
-        device; sessions, authorization and usage do not.
-      </p>
-    </section>
-
-    <section class="privacy-note">
-      <span class="privacy-icon" aria-hidden="true"><Leaf size={15} strokeWidth={1.9} /></span>
-      <p>
-        Quotafern saves appearance preferences and non-sensitive local account metadata. Do not put
-        secrets in labels. No credentials, authorization or usage history are stored.
-      </p>
-    </section>
+      </div>
+    </details>
+    <button
+      type="button"
+      class="account-navigation-link manage-accounts-link"
+      onclick={manageAccounts}>Manage accounts</button
+    >
   </Tabs.Content>
 
   <footer class="popup-footer">

@@ -1,7 +1,14 @@
 import { ACCOUNT_DEMO_SCENARIOS, createAccountDemo } from "../src/lib/accounts/demo";
 import { validMetadata } from "../src/lib/accounts/metadata";
-import { isLocalId } from "../src/lib/accounts/model";
-import { activityMonitoring, contextualAlias } from "../src/lib/accounts/presentation";
+import { isLocalId, PROVIDERS } from "../src/lib/accounts/model";
+import {
+  activityMonitoring,
+  contextualAlias,
+  connectionActions,
+  connectionStatus,
+  quotaDuration,
+  availableAccountProviders,
+} from "../src/lib/accounts/presentation";
 import { accountsView, detailsView, overviewView } from "../src/lib/accounts/views";
 import { buildActivityGrid } from "../src/lib/activity";
 
@@ -142,6 +149,84 @@ export function runAccountUiRegression(): number {
     accountsView(createAccountDemo("empty", now)).every((p) => p.accounts.length === 0),
     "No invented accounts",
   );
-  console.log(`PASS UX-02B account presentation: ${count} assertions`);
+  const connection = accountsView(createAccountDemo("single", now))[0].accounts[0].connections[0];
+  const paused = {
+    busy: false,
+    cleanupPending: true,
+    message: "Refresh paused; last reading is stale.",
+    status: "Reconnect required" as const,
+  };
+  assert(
+    connectionStatus(connection, paused) === "Connected",
+    "UX-03 refresh health never replaces connected lifecycle",
+  );
+  const actions = connectionActions(connection, paused);
+  assert(
+    actions.some((a) => a.label === "Refresh") && actions.some((a) => a.label === "Disconnect"),
+    "UX-03 connected actions retained when refresh pauses",
+  );
+  assert(
+    actions.every((a) => a.target.kind === "direct" && a.target.id === connection.connectionId),
+    "UX-03 account menu targets exact connection ID",
+  );
+  const auth = {
+    ...connection,
+    mechanism: "codex-managed" as const,
+    runtime: { ...connection.runtime, lifecycle: "auth-required" as const },
+  };
+  assert(
+    connectionStatus(auth, paused) === "Sign-in needed",
+    "UX-03 authentication failure remains distinct",
+  );
+  const login = connectionActions(auth)[0];
+  assert(
+    login.label === "Sign in again" &&
+      login.target.kind === "direct" &&
+      login.target.action === "login",
+    "UX-03 managed authentication recovery uses native login",
+  );
+  assert(
+    connectionActions(auth, { ...paused, busy: true })[0].disabled,
+    "UX-03 prevents overlapping recovery actions",
+  );
+  assert(
+    connectionStatus(
+      { ...auth, runtime: { ...auth.runtime, lifecycle: "disconnected" } },
+      paused,
+    ) === "Cleanup pending",
+    "UX-03 failed cleanup remains visible",
+  );
+  assert(
+    quotaDuration(300) === "5 hours" &&
+      quotaDuration(10080) === "7 days" &&
+      quotaDuration(90) === "90 minutes",
+    "UX-03 quota duration preserves exact reported minutes",
+  );
+  assert(
+    availableAccountProviders(PROVIDERS, true)
+      .map((p) => p.id)
+      .join(",") === "codex",
+    "UX-03B current catalogue offers only reviewed Codex setup",
+  );
+  const futureCatalogue = PROVIDERS.map((p) =>
+    p.id === "openrouter" ? { ...p, accountSetupAvailable: true } : p,
+  );
+  assert(
+    availableAccountProviders(futureCatalogue, true)
+      .map((p) => p.id)
+      .join(",") === "codex,openrouter",
+    "UX-03B selector can list a separately implemented future provider",
+  );
+  assert(
+    availableAccountProviders(futureCatalogue, false)
+      .map((p) => p.id)
+      .join(",") === "openrouter",
+    "UX-03B provider selection does not override Codex platform availability",
+  );
+  assert(
+    PROVIDERS.every((p) => !p.accountSetupAvailable),
+    "UX-03B does not enable any additional provider in the real catalogue",
+  );
+  console.log(`PASS UX-02B/UX-03 account presentation: ${count} assertions`);
   return count;
 }

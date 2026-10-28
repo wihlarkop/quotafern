@@ -9,13 +9,21 @@
   import {
     contextLabel,
     contextOptions,
+    contextSelectorGroups,
+    primaryContextKey,
     selectionInvalid,
     selectionKey,
     selectorSelection,
     type AccountNavigation,
     type DetailTarget,
   } from "./navigation";
-  import { activityMonitoring, contextualAlias, providerName, sampleTime } from "./presentation";
+  import {
+    activityMonitoring,
+    contextualAlias,
+    providerName,
+    sampleTime,
+    connectionStatus,
+  } from "./presentation";
   import SourceReadings from "./SourceReadings.svelte";
   import { accountsView, detailsView, overviewView, type Selection } from "./views";
 
@@ -27,6 +35,7 @@
     ondetails,
     onback,
     onrefresh,
+    onaccounts,
     refreshing = false,
     synthetic = true,
   }: {
@@ -37,6 +46,7 @@
     ondetails: (target: DetailTarget, controlId: string) => void;
     onback: () => void;
     onrefresh?: () => void;
+    onaccounts?: () => void;
     refreshing?: boolean;
     synthetic?: boolean;
   } = $props();
@@ -45,6 +55,27 @@
     overviewView(accountState, navigation.selection, nowMs, synthetic ? "synthetic" : "live"),
   );
   let providers = $derived(accountsView(accountState));
+  let attention = $derived(
+    providers.flatMap((p) =>
+      p.accounts.flatMap((a) =>
+        a.connections
+          .filter((c) => {
+            const selection = projected.selection;
+            return (
+              c.runtime.lifecycle !== "connected" &&
+              (selection.kind === "all" ||
+                (selection.providerId === p.providerId &&
+                  (selection.kind === "provider" ||
+                    (selection.accountId === a.accountId &&
+                      (selection.kind === "connection"
+                        ? selection.connectionId === c.connectionId
+                        : !selection.workspaceId || selection.workspaceId === c.workspaceId)))))
+            );
+          })
+          .map((c) => ({ account: a.alias, provider: p.displayName, connection: c })),
+      ),
+    ),
+  );
   let detail = $derived(
     selectedDetail
       ? detailsView(accountState, selectedDetail.selection, nowMs, synthetic ? "synthetic" : "live")
@@ -57,8 +88,30 @@
       : `${contextLabel(accountState, selectedDetail?.selection ?? navigation.selection)} · Selection unavailable`,
   );
   let options = $derived(contextOptions(accountState));
+  let groups = $derived(contextSelectorGroups(accountState));
   let displayedSelection = $derived(selectorSelection(accountState, navigation));
   let selectedKey = $derived(selectionKey(displayedSelection));
+  let primaryAccountLabel = $derived(
+    groups.primary
+      .flatMap((g) => g.options)
+      .find((o) => o.key === primaryContextKey(displayedSelection))?.label,
+  );
+  let advancedSelection = $derived(
+    displayedSelection.kind === "provider" ||
+      displayedSelection.kind === "connection" ||
+      (displayedSelection.kind === "account" && !!displayedSelection.workspaceId),
+  );
+  let primaryKey = $derived(
+    advancedSelection ? selectedKey : primaryContextKey(displayedSelection),
+  );
+  let advancedLabel = $derived(
+    groups.advanced.flatMap((g) => g.options).find((o) => o.key === selectedKey)?.label ??
+      "Selection unavailable",
+  );
+  let advancedOpen = $state(false);
+  $effect(() => {
+    advancedOpen = selectedKey !== "all" && advancedSelection;
+  });
   let invalid = $derived(selectionInvalid(accountState, navigation.selection));
   function changeContext(event: Event) {
     oncontext(
@@ -85,7 +138,7 @@
         ? synthetic
           ? "Quota, credits and activity"
           : "Reported Codex usage"
-        : "Each source belongs to its own account"}
+        : "Remaining quota and reset times"}
     </p>
   </div>
   {#if onrefresh && !synthetic}<Button
@@ -108,27 +161,52 @@
 </div>
 {#if synthetic}<div class="account-demo-notice" role="note">
     <strong>SYNTHETIC DEMO</strong><span>Illustrative values. No live account is connected.</span>
-  </div>{:else}<p class="account-screen-note">
-    {projected.sources.length
-      ? "Live Codex usage · each source belongs to its account"
-      : "Local metadata only · disconnected. No provider identity, quota or activity is available."}
-  </p>{/if}
+  </div>{/if}
 <div class="account-context-control">
-  <label for="account-context">Account context</label><select
+  <label for="account-context">Account</label><select
     id="account-context"
-    value={selectedKey}
+    value={primaryKey}
     title={contextLabel(accountState, displayedSelection)}
     aria-describedby="account-context-status"
     onchange={changeContext}
-    >{#if !options.some((option) => option.key === selectedKey)}<option value={selectedKey} disabled
-        >Selection unavailable</option
-      >{/if}{#each options as option (option.key)}<option value={option.key}>{option.label}</option
+    ><option value="all">All accounts</option
+    >{#if primaryKey !== "all" && !groups.primary.some( (g) => g.options.some((o) => o.key === primaryKey) )}<option
+        value={primaryKey}
+        disabled
+        >{displayedSelection.kind === "provider"
+          ? advancedLabel
+          : primaryAccountLabel && options.some((o) => o.key === selectedKey)
+            ? `${primaryAccountLabel} · ${advancedLabel}`
+            : "Selection unavailable"}</option
+      >{/if}{#each groups.primary as group (group.key)}<optgroup label={group.label}
+        >{#each group.options as option (option.key)}<option value={option.key}
+            >{option.label}</option
+          >{/each}</optgroup
       >{/each}</select
   >
 </div>
+{#if groups.primary.length > 0}<details class="advanced-contexts" bind:open={advancedOpen}>
+    <summary>Advanced filters{advancedSelection ? ` · ${advancedLabel}` : ""}</summary><label
+      for="advanced-context">Provider, workspace or connection</label
+    ><select
+      id="advanced-context"
+      value={selectedKey}
+      onchange={changeContext}
+      aria-describedby="account-context-status"
+      ><option value="all">All accounts</option
+      >{#if !options.some((o) => o.key === selectedKey)}<option value={selectedKey} disabled
+          >Selection unavailable</option
+        >{/if}{#each groups.advanced as group (group.key)}<optgroup label={group.label}
+          >{#each group.options as option (option.key)}<option value={option.key}
+              >{option.label}</option
+            >{/each}</optgroup
+        >{/each}</select
+    >
+  </details>{/if}
 <p
   id="account-context-status"
   class="context-announcement"
+  class:sr-only={!navigation.notice && !invalid}
   role="status"
   aria-live="polite"
   aria-atomic="true"
@@ -138,9 +216,7 @@
     : navigation.notice || (invalid ? "Selection removed; showing All accounts." : "")}
   {selectedDetail
     ? detailOwnership
-    : contextLabel(accountState, projected.selection)}{selectedDetail
-    ? " · details"
-    : " · independent sources"}
+    : contextLabel(accountState, projected.selection)}{selectedDetail ? " · details" : ""}
 </p>
 
 {#if selectedDetail}
@@ -153,19 +229,22 @@
         data-source-id={detailSource.id}
       >
         <h2>{aliasFor(detail.providerId, detail.accountId)}</h2>
-        <p>{providerName(detail.providerId)} · Local account alias</p>
-        {#each detail.connections.filter( (c) => detailSource.association.connectionIds.includes(c.connectionId) ) as connection (connection.connectionId)}<p
-            class="owned-detail-connection"
-          >
-            {contextLabel(accountState, {
-              kind: "connection",
-              providerId: detail.providerId,
-              accountId: detail.accountId,
-              connectionId: connection.connectionId,
-            })} · {connection.verifiedIdentity
-              ? `Verified identity · ${connection.verifiedIdentity}${synthetic ? " (synthetic)" : ""}`
-              : "Identity not verified"}
-          </p>{/each}
+        <p>{providerName(detail.providerId)}</p>
+        <details class="connection-disclosure">
+          <summary>Connection details</summary>
+          {#each detail.connections.filter( (c) => detailSource.association.connectionIds.includes(c.connectionId) ) as connection (connection.connectionId)}<p
+              class="owned-detail-connection"
+            >
+              {contextLabel(accountState, {
+                kind: "connection",
+                providerId: detail.providerId,
+                accountId: detail.accountId,
+                connectionId: connection.connectionId,
+              })}{connection.verifiedIdentity
+                ? ` · Verified identity · ${connection.verifiedIdentity}${synthetic ? " (synthetic)" : ""}`
+                : ""}
+            </p>{/each}
+        </details>
         {#if detailSource.origin === "synthetic" || detailSource.freshness !== "unknown" || detailSource.fetchedAtMs !== null}<p
             class="source-freshness"
           >
@@ -183,11 +262,13 @@
             : "API usage & billing"}
         </h2>
         <SourceReadings source={detailSource} detailed />
-        <p class="source-relationship">
-          {detailSource.association.kind === "verified"
-            ? `Shared by ${detailSource.association.connectionIds.length} connections · shown once`
-            : "Billing relationship unknown; do not add these balances."}
-        </p>
+        {#if detailSource.association.kind === "unknown" || detailSource.association.connectionIds.length > 1}<p
+            class="source-relationship"
+          >
+            {detailSource.association.kind === "verified"
+              ? `Shared quota · ${detailSource.association.connectionIds.length} connections`
+              : "Billing relationship unknown; do not add these balances."}
+          </p>{/if}
       </article>
       {#if synthetic && detail.providerId === "codex"}<CodexDetails
           source="synthetic"
@@ -204,6 +285,9 @@
         This source is missing or its account is pending removal. Use Back to return to the current
         overview.
       </p>
+      {#if onaccounts}<Button variant="outline" size="sm" onclick={onaccounts}
+          >Manage accounts</Button
+        >{/if}
     </section>{/if}
 {:else}
   <div class="owned-source-list">
@@ -240,27 +324,29 @@
               class:source-stale={source.freshness === "stale"}>{source.freshness}</span
             >{/if}
         </div>
-        <p class="owned-source-connection">
-          {connections
-            .map((c) => {
-              const index = account!.connections.findIndex(
-                (a) => a.connectionId === c.connectionId,
-              );
-              return contextualAlias(account!.connections, index, "connection");
-            })
-            .join(" · ")}
-        </p>
+        {#if connections.length > 1}<p class="owned-source-connection">
+            {connections
+              .map((c) => {
+                const index = account!.connections.findIndex(
+                  (a) => a.connectionId === c.connectionId,
+                );
+                return contextualAlias(account!.connections, index, "connection");
+              })
+              .join(" · ")}
+          </p>{/if}
         <SourceReadings {source} />
         <div class="source-meta">
           {#if source.fetchedAtMs !== null}<span
               >{synthetic ? "Sample" : "Updated"} · {sampleTime(source.fetchedAtMs)}</span
-            >{/if}<span>{synthetic ? "Synthetic source" : "Live Codex source"}</span>
+            >{/if}{#if synthetic}<span>Synthetic source</span>{/if}
         </div>
-        <p class="source-relationship">
-          {source.association.kind === "verified"
-            ? `Shared by ${source.association.connectionIds.length} connections · shown once`
-            : "Billing relationship unknown; do not add these balances."}
-        </p>
+        {#if source.association.kind === "unknown" || source.association.connectionIds.length > 1}<p
+            class="source-relationship"
+          >
+            {source.association.kind === "verified"
+              ? `Shared quota · ${source.association.connectionIds.length} connections`
+              : "Billing relationship unknown; do not add these balances."}
+          </p>{/if}
         <Button
           variant="ghost"
           size="sm"
@@ -287,19 +373,23 @@
       </article>
     {/each}
   </div>
+  {#each attention as item (item.connection.connectionId)}<p class="overview-connection-notice">
+      <strong>{item.account}</strong> · {item.provider} · {connectionStatus(item.connection)}{item
+        .connection.runtime.diagnostic
+        ? " · Check this connection in Accounts."
+        : ""}
+    </p>{/each}
   {#if projected.empty}<section class="owned-empty" role="status">
       <h2>
-        {accountState.metadata.accounts.length === 0
-          ? "No accounts configured"
-          : "No quota sources in this context"}
+        {accountState.metadata.accounts.length === 0 ? "No accounts yet" : "No quota available"}
       </h2>
       <p>
-        Unknown, not zero. Disconnected, failed or removing connections have no available values.
+        {accountState.metadata.accounts.length === 0
+          ? "Add an account in Accounts to see its quota."
+          : "Connect an account to read its quota. Missing readings are unknown, not zero."}
       </p>
+      {#if onaccounts}<Button variant="outline" size="sm" onclick={onaccounts}
+          >Manage accounts</Button
+        >{/if}
     </section>{/if}
-  <p class="account-screen-note">
-    Independent sources · no combined quota or balance. {synthetic
-      ? "Demo connections never establish real provider support."
-      : "Local labels never establish provider support or sign-in."}
-  </p>
 {/if}
