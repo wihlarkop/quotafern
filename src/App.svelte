@@ -15,6 +15,7 @@
   import { onMount, tick } from "svelte";
 
   import AccountOverview from "./lib/accounts/AccountOverview.svelte";
+  import AccountQuotaDetails from "./lib/accounts/AccountQuotaDetails.svelte";
   import AccountsPanel from "./lib/accounts/AccountsPanel.svelte";
   import {
     ACCOUNT_DEMO_SCENARIOS,
@@ -28,10 +29,12 @@
   } from "./lib/accounts/direct";
   import { createLocalStore } from "./lib/accounts/local";
   import LocalAccounts from "./lib/accounts/LocalAccounts.svelte";
-  import type { ConnectionId } from "./lib/accounts/model";
+  import type { ConnectionId, SourceId } from "./lib/accounts/model";
   import {
     initialNavigation,
     reconcileNavigation,
+    openFocusedQuota,
+    chooseFocusedQuota,
     type AccountNavigation,
     type DetailTarget,
     type ReturnTarget,
@@ -137,6 +140,7 @@
       selection,
       detail: null,
       detailReturn: null,
+      focusedQuota: null,
     };
     navigationVersion++;
     tabScroll.overview = 0;
@@ -145,12 +149,30 @@
       ?.scrollTo({ top: 0, behavior: "instant" });
   }
   function openAccountOverview(selection: Selection, controlId: string) {
+    if (selection.kind === "account" && !selection.workspaceId) {
+      accountNavigation = {
+        ...accountNavigation,
+        notice: "",
+        detail: null,
+        detailReturn: null,
+        focusedQuota: openFocusedQuota(
+          visibleAccountState,
+          selection,
+          returnPoint(controlId),
+          demoPreview ? snapshotNow : liveNowMs,
+          demoPreview ? "synthetic" : "live",
+        ),
+      };
+      void revealAccountContext();
+      return;
+    }
     accountNavigation = {
       selection,
       notice: "",
       detail: null,
       detailReturn: null,
       overviewReturn: returnPoint(controlId),
+      focusedQuota: null,
     };
     void revealAccountContext();
   }
@@ -166,13 +188,16 @@
     void revealAccountContext();
   }
   async function backAccountContext() {
-    const target = accountNavigation.detail
-      ? accountNavigation.detailReturn
-      : accountNavigation.overviewReturn;
+    const target =
+      accountNavigation.focusedQuota?.returnTo ??
+      (accountNavigation.detail
+        ? accountNavigation.detailReturn
+        : accountNavigation.overviewReturn);
     accountNavigation = {
       ...accountNavigation,
       detail: null,
       detailReturn: null,
+      focusedQuota: null,
       overviewReturn: target?.tab === "accounts" ? null : accountNavigation.overviewReturn,
     };
     const version = ++navigationVersion;
@@ -197,6 +222,27 @@
         : panel?.querySelector<HTMLElement>("h1"))
     )?.focus({ preventScroll: true });
     if (panel) panel.scrollTop = target?.scrollTop ?? 0;
+  }
+  function chooseAccountQuota(id: SourceId) {
+    const target = accountNavigation.focusedQuota;
+    if (!target) return;
+    accountNavigation = {
+      ...accountNavigation,
+      focusedQuota: chooseFocusedQuota(
+        visibleAccountState,
+        target,
+        id,
+        demoPreview ? snapshotNow : liveNowMs,
+        demoPreview ? "synthetic" : "live",
+      ),
+    };
+    void tick().then(() =>
+      document.getElementById("owned-details-title")?.focus({ preventScroll: true }),
+    );
+  }
+  function openNormalOverview() {
+    if (accountNavigation.focusedQuota)
+      accountNavigation = { ...accountNavigation, focusedQuota: null };
   }
   // Tabs unmount their panels; keep only transient reading positions in the app shell.
   $effect(() => {
@@ -673,7 +719,12 @@
   {/if}
 
   <Tabs.List class="tab-list" aria-label="Quotafern sections">
-    <Tabs.Trigger class="tab-trigger" value="overview">
+    <Tabs.Trigger
+      class="tab-trigger"
+      value="overview"
+      onclick={openNormalOverview}
+      onfocus={openNormalOverview}
+    >
       <Monitor size={15} strokeWidth={1.9} aria-hidden="true" /><span>Overview</span>
     </Tabs.Trigger>
     <Tabs.Trigger class="tab-trigger" value="accounts">
@@ -692,20 +743,32 @@
     }}
   >
     {#if demoPreview || CODEX_DIRECT_CONNECTION_AVAILABLE || !CODEX_CONNECTION_AVAILABLE}
-      <AccountOverview
-        state={visibleAccountState}
-        synthetic={demoPreview}
-        nowMs={demoPreview ? snapshotNow : liveNowMs}
-        navigation={accountNavigation}
-        oncontext={selectAccountContext}
-        ondetails={openAccountDetails}
-        onback={backAccountContext}
-        onaccounts={manageAccounts}
-        onrefresh={!demoPreview && CODEX_DIRECT_CONNECTION_AVAILABLE && directConnectedCount > 0
-          ? () => void directController.refreshAll()
-          : undefined}
-        refreshing={Object.values(directPresentations).some((p) => p?.busy)}
-      />
+      {#if accountNavigation.focusedQuota}
+        <AccountQuotaDetails
+          state={visibleAccountState}
+          target={accountNavigation.focusedQuota}
+          nowMs={demoPreview ? snapshotNow : liveNowMs}
+          synthetic={demoPreview}
+          presentations={demoPreview ? {} : directPresentations}
+          onchoose={chooseAccountQuota}
+          onback={backAccountContext}
+        />
+      {:else}
+        <AccountOverview
+          state={visibleAccountState}
+          synthetic={demoPreview}
+          nowMs={demoPreview ? snapshotNow : liveNowMs}
+          navigation={accountNavigation}
+          oncontext={selectAccountContext}
+          ondetails={openAccountDetails}
+          onback={backAccountContext}
+          onaccounts={manageAccounts}
+          onrefresh={!demoPreview && CODEX_DIRECT_CONNECTION_AVAILABLE && directConnectedCount > 0
+            ? () => void directController.refreshAll()
+            : undefined}
+          refreshing={Object.values(directPresentations).some((p) => p?.busy)}
+        />
+      {/if}
     {:else if showCodexDetails}
       <div class="view-heading">
         <div>

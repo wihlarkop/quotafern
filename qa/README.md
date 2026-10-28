@@ -21,3 +21,9 @@ The two result JSON files record assertions and capture paths. Five canonical af
 The same `bun run qa:ux03 source` and `bun run qa:ux03 production` commands now include UX-03B. Start the same source/preview servers on 4177/4178. Current results and six canonical captures per mode are written to `docs/evidence/ux-03b/`; additional captures go to ignored `.tmp/qa/screenshots/ux-03b/`. Old UX-03 results remain historical; use commit `1f3ce659a6aff771ba88868c6cf5694f94a3bb12` to reproduce that exact earlier UI.
 
 Current checks add 380×660/320px Add radios/cancellation, compact Appearance-first Settings and storage feedback, Demo warning/cleanup failure/no reconnect, 1/3/24 grouped account choices, advanced context recovery, and View quota → Overview → Back focus/scroll. See [UX-03B validation and owner Windows checklist](../docs/validation/ux-03b.md). All providers/credentials/IPC remain synthetic during developer verification.
+
+## UX-03C (current)
+
+The same source/production commands now validate direct focused quota details as well as the existing flows. Results and four canonical views per mode go to `docs/evidence/ux-03c/`; other captures go to ignored `.tmp/qa/screenshots/ux-03c/`. Use `e2307da2dee61a79031aaea49da9d8a788048724` to reproduce UX-03B exactly.
+
+Focused checks cover one/multiple/shared/zero sources, pinned-source disappearance, direct Back with scroll/focus, normal Overview by mouse/keyboard, optional diagnostics and 320px dark mode. The fixture clock advances only to exercise existing automatic refresh with fake IPC; this does not change production polling. [Evidence and limits](../docs/validation/ux-03c.md).

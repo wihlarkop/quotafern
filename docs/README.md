@@ -20,3 +20,5 @@ Initial gated Codex implementation history: [CODEX-LIVE-01 direct integration](s
 Current Windows Codex behavior and owner-reported full acceptance: [CODEX-MERGE-PREP-01](validation/codex-merge-prep-01.md). macOS/Linux live access remains blocked pending native acceptance.
 
 Current UX follow-up: [UX-03B browser acceptance, before/after captures and owner Windows checklist](validation/ux-03b.md). It preserves the accepted native implementation and does not extend authenticated/native acceptance.
+
+Latest quota navigation: [UX-03C direct focused details, source chooser and validation](validation/ux-03c.md). Native/authenticated acceptance remains separate.

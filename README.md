@@ -12,7 +12,7 @@ The owner reported **combined Windows native UI acceptance** after UX-02A/B/C, I
 
 ## Codex connection status
 
-The [UX-03B polish](docs/validation/ux-03b.md) simplifies Add account, puts Appearance first in Settings, groups account choices with advanced filters, and makes View quota open the selected account's Overview with Back navigation. The existing native consent and monitoring boundaries are preserved.
+The [UX-03B polish](docs/validation/ux-03b.md) simplifies Add account and Settings. [UX-03C](docs/validation/ux-03c.md) makes View quota open focused account details directly, with a source chooser when needed and Back to Accounts. Normal Overview retains grouped account selection and advanced filters. Native consent and monitoring boundaries are preserved.
 
 Windows supports two reviewed native routes: Existing Codex uses a short-lived supervised App Server over private stdin/stdout; separate managed accounts use isolated Codex homes and direct HTTPS quota reads. ACC-04 remains a label registry, never authentication. Only provider-returned quota/reset/plan/credit fields are displayed.
 

@@ -14,14 +14,12 @@ async (page) => {
   const base = "QA_BASE_URL";
   const capture = async (p, name) => {
     const canonical = [
-      "add-380-light",
-      "add-320-dark",
-      "settings-light",
-      "settings-dark",
-      "selector-three",
-      "view-quota",
+      "focused-light",
+      "focused-320-dark",
+      "focused-chooser",
+      "focused-unavailable",
     ].includes(name);
-    const path = `${canonical ? "docs/evidence/ux-03b" : ".tmp/qa/screenshots/ux-03b"}/QA_MODE-${name}.png`;
+    const path = `${canonical ? "docs/evidence/ux-03c" : ".tmp/qa/screenshots/ux-03c"}/QA_MODE-${name}.png`;
     screenshots.push({ name, path });
     await p.screenshot({ path, scale: "css" });
   };
@@ -403,6 +401,11 @@ async (page) => {
     }
     const quotaPage = await fresh(3, "light", 380, 660);
     await row(quotaPage, 3).getByText("Stale quota", { exact: false }).waitFor();
+    await quotaPage.getByRole("tab", { name: "Overview", exact: true }).click();
+    await quotaPage
+      .locator("#account-context")
+      .selectOption("account_d0030000-0000-4000-8000-000000000002");
+    await quotaPage.getByRole("tab", { name: "Accounts", exact: true }).click();
     assert(
       (await panel(quotaPage).locator("h3 button").count()) === 0,
       "Account names do not duplicate View quota navigation",
@@ -415,11 +418,11 @@ async (page) => {
     const scrollBefore = await panel(quotaPage).evaluate((el) => el.scrollTop);
     await quotaButton.click();
     const quotaOverview = quotaPage.getByRole("tabpanel", { name: "Overview", exact: true });
-    await quotaOverview.getByRole("heading", { name: "Usage overview", exact: true }).waitFor();
+    await quotaOverview.getByRole("heading", { name: "Managed Free", exact: true }).waitFor();
     assert(
-      (await quotaOverview.locator("#account-context").inputValue()) ===
-        "account_d0030000-0000-4000-8000-000000000003",
-      "View quota selects intended account in Overview",
+      (await quotaOverview.locator("#account-context").count()) === 0 &&
+        (await quotaOverview.locator("#advanced-context").count()) === 0,
+      "Focused quota hides account and advanced selectors",
     );
     assert(
       (await quotaOverview.locator("[data-source-id]").count()) === 1 &&
@@ -428,7 +431,31 @@ async (page) => {
           .count()) === 1,
       "View quota preserves source ownership without another quota renderer",
     );
-    await capture(quotaPage, "view-quota");
+    assert(
+      (await quotaOverview.getByRole("button", { name: /^View .* details$/ }).count()) === 0,
+      "Focused quota has no redundant View details step",
+    );
+    assert(
+      (await quotaOverview.getByText("Connected", { exact: true }).isVisible()) &&
+        (await quotaOverview.getByText(/^Stale quota/).isVisible()),
+      "Focused connection lifecycle stays distinct from stale quota",
+    );
+    assert(
+      (await quotaOverview.getByText("0%", { exact: true }).isVisible()) &&
+        (await quotaOverview.getByText("Free plan", { exact: true }).isVisible()),
+      "Focused details show reported quota and plan directly",
+    );
+    assert(
+      await quotaOverview.locator(".connection-disclosure").evaluate((el) => !el.open),
+      "Technical connection information starts collapsed",
+    );
+    assert(
+      await quotaPage
+        .locator("#owned-details-title")
+        .evaluate((el) => el === document.activeElement),
+      "Focused alias heading receives navigation focus",
+    );
+    await capture(quotaPage, "focused-light");
     await quotaOverview.getByRole("button", { name: "Back", exact: true }).click();
     assert(
       await quotaPage
@@ -440,6 +467,26 @@ async (page) => {
       Math.abs((await panel(quotaPage).evaluate((el) => el.scrollTop)) - scrollBefore) <= 1,
       "Overview Back restores Accounts scroll position",
     );
+    await quotaPage.getByRole("tab", { name: "Overview", exact: true }).click();
+    assert(
+      (await quotaOverview.locator("#account-context").inputValue()) ===
+        "account_d0030000-0000-4000-8000-000000000002" &&
+        (await quotaOverview.locator(".advanced-contexts summary").isVisible()),
+      "Ordinary Overview retains its previous account filter and advanced controls",
+    );
+    await quotaPage.getByRole("tab", { name: "Accounts", exact: true }).click();
+    await row(quotaPage, 3)
+      .getByRole("button", { name: "View quota for Codex Managed Free", exact: true })
+      .click();
+    await quotaPage.getByRole("tab", { name: "Accounts", exact: true }).click();
+    await quotaPage.getByRole("tab", { name: "Accounts", exact: true }).press("ArrowLeft");
+    await quotaOverview.getByRole("heading", { name: "Usage overview", exact: true }).waitFor();
+    assert(
+      (await quotaOverview.locator("#account-context").inputValue()) ===
+        "account_d0030000-0000-4000-8000-000000000002",
+      "Keyboard Overview activation clears focus mode and preserves normal selection",
+    );
+    await quotaPage.getByRole("tab", { name: "Accounts", exact: true }).click();
     await menu(quotaPage, 1, "Disconnect");
     await row(quotaPage, 1)
       .getByRole("button", { name: "View quota for Codex Existing Codex", exact: true })
@@ -454,6 +501,89 @@ async (page) => {
       "Disconnected View quota offers useful account recovery without synthetic values",
     );
     await quotaPage.close();
+    const disappearing = await fresh(3, "dark", 320, 660, () => {
+      const clock = Date.now;
+      Date.now = () => clock() + (window.__ux03.timeOffset ?? 0);
+    });
+    await row(disappearing, 3).getByText("Stale quota", { exact: false }).waitFor();
+    await row(disappearing, 3)
+      .getByRole("button", { name: "View quota for Codex Managed Free", exact: true })
+      .click();
+    const focused = disappearing.getByRole("tabpanel", { name: "Overview", exact: true });
+    await focused.getByRole("heading", { name: "Managed Free", exact: true }).waitFor();
+    await audit(disappearing, "Focused details 320px dark");
+    await capture(disappearing, "focused-320-dark");
+    await disappearing.evaluate(() => {
+      window.__ux03.modes["connection_d0030000-0000-4000-8000-000000000003"] = "auth-required";
+      window.__ux03.timeOffset = 181000;
+    });
+    await focused.getByRole("heading", { name: "Quota unavailable", exact: true }).waitFor();
+    assert(
+      (await focused.locator("[data-source-id]").count()) === 0 &&
+        (await focused.getByText("Sign-in needed", { exact: true }).isVisible()),
+      "Disappearing selected source removes readings and exposes authentication state",
+    );
+    assert(
+      (await focused.getByRole("heading", { name: "Managed Free", exact: true }).isVisible()) &&
+        !(await focused.getByText("Managed Plus", { exact: true }).isVisible()),
+      "Disappearance retains selected alias without another account's data",
+    );
+    assert(
+      !(await focused.innerText()).includes("[directAuthenticationRequired]"),
+      "Focused failure keeps raw diagnostic codes out of primary copy",
+    );
+    await focused.getByText("Connection details", { exact: true }).click();
+    assert(
+      await focused.getByText(/\[directAuthenticationRequired\]/).isVisible(),
+      "Full diagnostics remain available in the optional disclosure",
+    );
+    await focused.getByText("Connection details", { exact: true }).click();
+    await capture(disappearing, "focused-unavailable");
+    await focused.getByRole("button", { name: "Back", exact: true }).click();
+    assert(
+      await disappearing
+        .locator("#account-overview-account_d0030000-0000-4000-8000-000000000003")
+        .evaluate((el) => el === document.activeElement),
+      "Disappearing-source Back still restores Accounts opener",
+    );
+    await disappearing.close();
+    const multipleQuota = await fresh(0, "light", 320, 660);
+    await multipleQuota.getByRole("tab", { name: "Settings", exact: true }).click();
+    await multipleQuota.getByText("More settings", { exact: true }).click();
+    await multipleQuota.getByRole("checkbox", { name: "Show synthetic quota examples" }).check();
+    await multipleQuota.getByRole("tab", { name: "Accounts", exact: true }).click();
+    const multiButton = panel(multipleQuota).getByRole("button", {
+      name: "View quota for OpenRouter Personal",
+      exact: true,
+    });
+    await multiButton.click();
+    const chooser = multipleQuota.getByRole("tabpanel", { name: "Overview", exact: true });
+    await chooser.getByRole("heading", { name: "Choose a quota source", exact: true }).waitFor();
+    assert(
+      (await chooser.locator(".focused-source-choice").count()) === 2 &&
+        (await chooser.locator("[data-source-id]").count()) === 0,
+      "Multiple sources show a chooser without arbitrarily displaying quota",
+    );
+    await audit(multipleQuota, "Source chooser at 320px");
+    await capture(multipleQuota, "focused-chooser");
+    await chooser.locator(".focused-source-choice").nth(1).click();
+    assert(
+      (await chooser.locator("[data-source-id]").count()) === 1 &&
+        (await chooser.getByRole("heading", { name: "Personal", exact: true }).isVisible()),
+      "Explicit source choice opens one source under its account alias",
+    );
+    assert(
+      await chooser
+        .getByText("Billing relationship unknown; do not add these balances.", { exact: true })
+        .isVisible(),
+      "Focused independent-source details preserve meaningful association warning",
+    );
+    await chooser.getByRole("button", { name: "Back", exact: true }).click();
+    assert(
+      await multiButton.evaluate((el) => el === document.activeElement),
+      "Chosen-source Back returns directly to Accounts, not the chooser",
+    );
+    await multipleQuota.close();
     for (const size of [1, 3, 24]) {
       const p = await fresh(
         Math.min(size, 3),
@@ -726,6 +856,23 @@ async (page) => {
       "Multiple connections available through disclosure",
     );
     await capture(demo, "shared-connections");
+    if ("QA_MODE" === "source") {
+      await panel(demo)
+        .getByRole("button", { name: "View quota for OpenRouter Personal", exact: true })
+        .click();
+      const shared = demo.getByRole("tabpanel", { name: "Overview", exact: true });
+      assert(
+        (await shared.locator("[data-source-id]").count()) === 1 &&
+          (await shared.locator(".focused-source-choice").count()) === 0,
+        "Shared source opens directly once, not one choice per connection",
+      );
+      assert(
+        await shared
+          .getByText("Shared quota · 2 connections · shown once", { exact: true })
+          .isVisible(),
+        "Focused shared relationship stays visible",
+      );
+    }
     await demo.close();
     for (const theme of ["light", "dark"]) {
       const p = await fresh(0, theme, theme === "dark" ? 360 : 460, theme === "dark" ? 420 : 580);
