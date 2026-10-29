@@ -1,0 +1,6 @@
+{
+  "baseline": "1f3ce659a6aff771ba88868c6cf5694f94a3bb12",
+  "comparisons": 120,
+  "differences": 0,
+  "method": "Transpile actual baseline/current Svelte module scripts with Bun; compare exported buttonClass for defaults and all variant/size combinations with absent, padding-conflict, height-conflict, conditional-array and hover-conflict caller classes. No app or native code launched."
+}

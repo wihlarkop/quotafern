@@ -1,0 +1,20 @@
+[
+  {
+    "name": "release-default",
+    "mode": "release",
+    "startedAt": "2026-10-28T21:41:41.252Z",
+    "wallMs": 116572.8986,
+    "code": 0,
+    "hookExecuted": true,
+    "exeBytes": 14078976
+  },
+  {
+    "name": "debug-ci-override",
+    "mode": "debug",
+    "startedAt": "2026-10-28T21:43:37.826Z",
+    "wallMs": 44335.837899999984,
+    "code": 0,
+    "hookExecuted": false,
+    "exeBytes": 22318080
+  }
+]

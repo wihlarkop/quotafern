@@ -1,0 +1,79 @@
+[
+  {
+    "path": "apple-touch-icon.png",
+    "rawBytes": 13058,
+    "gzipBytes": 12889,
+    "brotliBytes": 13035,
+    "sha256": "944de30ff5cf6138057b647772b29265273647d8d7cd2cfe2b3c3d7c9d37d586"
+  },
+  {
+    "path": "assets/app-A1IARBvh.css",
+    "rawBytes": 48230,
+    "gzipBytes": 10094,
+    "brotliBytes": 8873,
+    "sha256": "99cce4e2cc9e2f8fbcd1b13853a475ac6386008d60a0781944a5aa5a172bdea0"
+  },
+  {
+    "path": "assets/app-DxY0MoXT.js",
+    "rawBytes": 93762,
+    "gzipBytes": 33075,
+    "brotliBytes": 29434,
+    "sha256": "2a9e3c3527251a7ddee5c734a47ab160c76c490132755ebec1202fc139aea18c"
+  },
+  {
+    "path": "assets/consent-DKdDqG9P.css",
+    "rawBytes": 1844,
+    "gzipBytes": 636,
+    "brotliBytes": 507,
+    "sha256": "a00ed5a57962d4279406152de1bfc8865e67d890fc7e40422698b51abfaa3a8e"
+  },
+  {
+    "path": "assets/consent-MS1Y6JHI.js",
+    "rawBytes": 4513,
+    "gzipBytes": 2146,
+    "brotliBytes": 1819,
+    "sha256": "3f5fa44f8fe9feeb67b74ff939f425a82fa44b13d08309ceb9dea65291d8d303"
+  },
+  {
+    "path": "assets/main-Dr2ztjmc.js",
+    "rawBytes": 230977,
+    "gzipBytes": 68364,
+    "brotliBytes": 58656,
+    "sha256": "3ca8bf72099be02a7b3415a02e56f276ce60dabd205741f384b2841e955b04e5"
+  },
+  {
+    "path": "consent.html",
+    "rawBytes": 619,
+    "gzipBytes": 345,
+    "brotliBytes": 216,
+    "sha256": "a8c595c9fd92e4a7d059238b985e9088b5f5330b1cbc8b33ccbecf3525898880"
+  },
+  {
+    "path": "favicon-16.png",
+    "rawBytes": 496,
+    "gzipBytes": 519,
+    "brotliBytes": 500,
+    "sha256": "21986a46814e7f87ecd952c110b749a54fea8b098fbbd35559498e48a6c2329d"
+  },
+  {
+    "path": "favicon-32.png",
+    "rawBytes": 1317,
+    "gzipBytes": 1340,
+    "brotliBytes": 1321,
+    "sha256": "f66cbf18fad50d0b631d59ac5972f7e60cdefd08a8dd4590d69df54771f6c3fe"
+  },
+  {
+    "path": "favicon.ico",
+    "rawBytes": 5945,
+    "gzipBytes": 5932,
+    "brotliBytes": 5879,
+    "sha256": "4779b7796f0f9ed6054dd5e027a3b4e118885680aecbb9cc571ebd9fcc46638c"
+  },
+  {
+    "path": "index.html",
+    "rawBytes": 834,
+    "gzipBytes": 411,
+    "brotliBytes": 275,
+    "sha256": "3a493558377df254714e26c681287c66c0f17fe549ea576f92930129fd1593d2"
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "method": "Logical package file bytes, excluding transitive dependencies; not disk allocation or shipped bundle size",
+  "rows": [
+    {
+      "name": "@lucide/svelte",
+      "files": 8180,
+      "bytes": 7936738
+    },
+    {
+      "name": "@tauri-apps/api",
+      "files": 68,
+      "bytes": 892209
+    },
+    {
+      "name": "bits-ui",
+      "files": 982,
+      "bytes": 2058538
+    },
+    {
+      "name": "clsx",
+      "files": 10,
+      "bytes": 8555
+    },
+    {
+      "name": "svelte",
+      "files": 399,
+      "bytes": 3406458
+    },
+    {
+      "name": "tailwind-merge",
+      "files": 36,
+      "bytes": 1052654
+    },
+    {
+      "name": "tailwind-variants",
+      "files": 29,
+      "bytes": 331595
+    },
+    {
+      "name": "vite",
+      "files": 37,
+      "bytes": 2383283
+    },
+    {
+      "name": "typescript",
+      "files": 140,
+      "bytes": 24346827
+    },
+    {
+      "name": "svelte-check",
+      "files": 11,
+      "bytes": 5952286
+    },
+    {
+      "name": "tailwindcss",
+      "files": 34,
+      "bytes": 772893
+    }
+  ]
+}

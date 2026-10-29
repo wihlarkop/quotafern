@@ -1,0 +1,38 @@
+[
+  {
+    "task": "fmt:check",
+    "startedAt": "2026-10-28T21:34:08.029Z",
+    "wallMs": 1906.9301,
+    "code": 0
+  },
+  {
+    "task": "regression",
+    "startedAt": "2026-10-28T21:34:09.937Z",
+    "wallMs": 645.8434,
+    "code": 0
+  },
+  {
+    "task": "fmt:rust",
+    "startedAt": "2026-10-28T21:34:10.584Z",
+    "wallMs": 923.3712999999998,
+    "code": 0
+  },
+  {
+    "task": "check:rust",
+    "startedAt": "2026-10-28T21:34:11.507Z",
+    "wallMs": 251892.8418,
+    "code": 0
+  },
+  {
+    "task": "lint:rust",
+    "startedAt": "2026-10-28T21:38:23.403Z",
+    "wallMs": 18300.8701,
+    "code": 0
+  },
+  {
+    "task": "regression:rust",
+    "startedAt": "2026-10-28T21:38:41.704Z",
+    "wallMs": 84862.60149999999,
+    "code": 0
+  }
+]

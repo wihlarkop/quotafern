@@ -1,0 +1,20 @@
+[
+  {
+    "variant": "baseline",
+    "baseline": "e2307da2dee61a79031aaea49da9d8a788048724",
+    "startedAt": "2026-10-29T14:05:58.107Z",
+    "wallMs": 166962.7991,
+    "code": 0,
+    "exeBytes": 13947392,
+    "method": "Same native source, release flags, two-job warmed target and null hook; only the prebuilt baseline/optimized frontend directory changes. Browser correctness QA may run concurrently; no timing improvement is claimed."
+  },
+  {
+    "variant": "optimized",
+    "baseline": "e2307da2dee61a79031aaea49da9d8a788048724",
+    "startedAt": "2026-10-29T14:08:45.074Z",
+    "wallMs": 111138.05069999996,
+    "code": 0,
+    "exeBytes": 13947392,
+    "method": "Same native source, release flags, two-job warmed target and null hook; only the prebuilt baseline/optimized frontend directory changes. Browser correctness QA may run concurrently; no timing improvement is claimed."
+  }
+]

@@ -1,0 +1,447 @@
+{
+  "baseline": "1f3ce659a6aff771ba88868c6cf5694f94a3bb12",
+  "measuredSource": {
+    "head": "1f3ce659a6aff771ba88868c6cf5694f94a3bb12",
+    "trackedFrontendDiffSha256": "f5f6ee8f90b92fc284921c6418f7861f4e4f614470e3bed1650bbdb8f6acb983",
+    "sources": {
+      "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+      "src/lib/components/ui/button/button.svelte": "7a741f32bcdc419e7d7404c88d30c665a265365b3cae49f32f7a19d8c7a63e09",
+      "src/app.css": "ddc3958b03d1e4e29a621f27d99220d11d249636a01b7507300e1e22cfba6229",
+      "vite.config.ts": "0408164d1a8483d12e434601059924267f3e0e9d2367c48cb6e58b6f1ee466df",
+      "bun.lock": "24104772fcc8e12b2a3bb66d3f4c09428f393ecc2259ef7cbdd4685037918fcc",
+      "package.json": "02d8781d75fed18e15a14c9e80510e70bb053a47a6a0fe2e64f9cef146b2d66f"
+    },
+    "textHashMethod": "SHA-256 of UTF-8 text with CRLF normalized to LF; tracked frontend diff relative to measured HEAD"
+  },
+  "environment": {
+    "bun": "1.4.4",
+    "os": "win32",
+    "release": "10.0.26200",
+    "cpu": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
+    "logicalCpus": 12,
+    "totalMemory": 17013329920,
+    "freeMemoryAtEnd": 5718994944
+  },
+  "method": "Warm OS/file caches shared across separate Bun processes, one warmup per variant then nine interleaved samples, instrumented Vite-only builds; no concurrent local builds. Only baseline consent/button source is substituted in memory; source files are never rewritten. Module renderedLength values precede minification; do not sum as shipped bytes.",
+  "rows": [
+    {
+      "key": "warmup-0-baseline",
+      "warmup": true,
+      "variant": "baseline",
+      "startedAt": "2026-10-28T21:31:21.779Z",
+      "completedAt": "2026-10-28T21:31:27.925Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "75333fbaa3d31359df3626c8c62eb1a733252aef0faeee59df32fbb515394ade",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 6719.7533,
+      "viteMs": 6145.8598,
+      "transformed": 4779,
+      "svelteTransforms": 2140
+    },
+    {
+      "key": "warmup-1-icons",
+      "warmup": true,
+      "variant": "icons",
+      "startedAt": "2026-10-28T21:31:28.497Z",
+      "completedAt": "2026-10-28T21:31:32.037Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 4094.0012000000006,
+      "viteMs": 3539.9264000000003,
+      "transformed": 736,
+      "svelteTransforms": 254
+    },
+    {
+      "key": "warmup-2-optimized",
+      "warmup": true,
+      "variant": "optimized",
+      "startedAt": "2026-10-28T21:31:32.676Z",
+      "completedAt": "2026-10-28T21:31:36.032Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "7a741f32bcdc419e7d7404c88d30c665a265365b3cae49f32f7a19d8c7a63e09"
+      },
+      "wallMs": 3988.0229999999992,
+      "viteMs": 3356.1211000000003,
+      "transformed": 736,
+      "svelteTransforms": 254
+    },
+    {
+      "key": "run-3-baseline",
+      "warmup": false,
+      "variant": "baseline",
+      "startedAt": "2026-10-28T21:31:36.624Z",
+      "completedAt": "2026-10-28T21:31:43.305Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "75333fbaa3d31359df3626c8c62eb1a733252aef0faeee59df32fbb515394ade",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 7308.383900000001,
+      "viteMs": 6681.7587,
+      "transformed": 4779,
+      "svelteTransforms": 2140
+    },
+    {
+      "key": "run-4-icons",
+      "warmup": false,
+      "variant": "icons",
+      "startedAt": "2026-10-28T21:31:43.915Z",
+      "completedAt": "2026-10-28T21:31:46.861Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 3505.8662000000004,
+      "viteMs": 2945.6252,
+      "transformed": 736,
+      "svelteTransforms": 254
+    },
+    {
+      "key": "run-5-optimized",
+      "warmup": false,
+      "variant": "optimized",
+      "startedAt": "2026-10-28T21:31:47.414Z",
+      "completedAt": "2026-10-28T21:31:50.506Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "7a741f32bcdc419e7d7404c88d30c665a265365b3cae49f32f7a19d8c7a63e09"
+      },
+      "wallMs": 3659.3395999999993,
+      "viteMs": 3092.3935,
+      "transformed": 736,
+      "svelteTransforms": 254
+    },
+    {
+      "key": "run-6-optimized",
+      "warmup": false,
+      "variant": "optimized",
+      "startedAt": "2026-10-28T21:31:51.090Z",
+      "completedAt": "2026-10-28T21:31:54.085Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "7a741f32bcdc419e7d7404c88d30c665a265365b3cae49f32f7a19d8c7a63e09"
+      },
+      "wallMs": 3555.389199999998,
+      "viteMs": 2995.0246,
+      "transformed": 736,
+      "svelteTransforms": 254
+    },
+    {
+      "key": "run-7-icons",
+      "warmup": false,
+      "variant": "icons",
+      "startedAt": "2026-10-28T21:31:54.637Z",
+      "completedAt": "2026-10-28T21:31:57.641Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 3551.3176999999996,
+      "viteMs": 3004.086,
+      "transformed": 736,
+      "svelteTransforms": 254
+    },
+    {
+      "key": "run-8-baseline",
+      "warmup": false,
+      "variant": "baseline",
+      "startedAt": "2026-10-28T21:31:58.164Z",
+      "completedAt": "2026-10-28T21:32:04.526Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "75333fbaa3d31359df3626c8c62eb1a733252aef0faeee59df32fbb515394ade",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 6937.394199999995,
+      "viteMs": 6362.2141,
+      "transformed": 4779,
+      "svelteTransforms": 2140
+    },
+    {
+      "key": "run-9-icons",
+      "warmup": false,
+      "variant": "icons",
+      "startedAt": "2026-10-28T21:32:05.108Z",
+      "completedAt": "2026-10-28T21:32:08.237Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 3669.4842999999964,
+      "viteMs": 3128.3718,
+      "transformed": 736,
+      "svelteTransforms": 254
+    },
+    {
+      "key": "run-10-baseline",
+      "warmup": false,
+      "variant": "baseline",
+      "startedAt": "2026-10-28T21:32:08.785Z",
+      "completedAt": "2026-10-28T21:32:15.166Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "75333fbaa3d31359df3626c8c62eb1a733252aef0faeee59df32fbb515394ade",
+        "src/lib/components/ui/button/button.svelte": "ff233b10e66738cfef90929365d0da2486438b0e83041d47b840b4dd5b6b9f5f"
+      },
+      "wallMs": 6948.877700000005,
+      "viteMs": 6380.2798,
+      "transformed": 4779,
+      "svelteTransforms": 2140
+    },
+    {
+      "key": "run-11-optimized",
+      "warmup": false,
+      "variant": "optimized",
+      "startedAt": "2026-10-28T21:32:15.754Z",
+      "completedAt": "2026-10-28T21:32:18.829Z",
+      "inputSha256": {
+        "src/lib/accounts/ConsentDialog.svelte": "3d5a81a95a65a581c4b6eed752dafaade211d166dbb40069f4d54f2cbe39ff97",
+        "src/lib/components/ui/button/button.svelte": "7a741f32bcdc419e7d7404c88d30c665a265365b3cae49f32f7a19d8c7a63e09"
+      },
+      "wallMs": 3642.0357000000004,
+      "viteMs": 3075.2072,
+      "transformed": 736,
+      "svelteTransforms": 254
+    }
+  ],
+  "assets": {
+    "baseline": [
+      {
+        "path": "apple-touch-icon.png",
+        "rawBytes": 13058,
+        "gzipBytes": 12889,
+        "brotliBytes": 13035,
+        "sha256": "944de30ff5cf6138057b647772b29265273647d8d7cd2cfe2b3c3d7c9d37d586"
+      },
+      {
+        "path": "assets/app-A1IARBvh.css",
+        "rawBytes": 48230,
+        "gzipBytes": 10094,
+        "brotliBytes": 8873,
+        "sha256": "99cce4e2cc9e2f8fbcd1b13853a475ac6386008d60a0781944a5aa5a172bdea0"
+      },
+      {
+        "path": "assets/app-CJr6Dr_V.js",
+        "rawBytes": 123224,
+        "gzipBytes": 41777,
+        "brotliBytes": 31799,
+        "sha256": "90c3a77cd3f7d23b71166df7a955447317bfd9920e24a68370f1f308c508b0cf"
+      },
+      {
+        "path": "assets/consent-BqEAcYC3.js",
+        "rawBytes": 4513,
+        "gzipBytes": 2145,
+        "brotliBytes": 1823,
+        "sha256": "4125c2fb82e3a98d315dd4f74988d7738de268adb7ff10cb457e0f17f37dfdf4"
+      },
+      {
+        "path": "assets/consent-DKdDqG9P.css",
+        "rawBytes": 1844,
+        "gzipBytes": 636,
+        "brotliBytes": 507,
+        "sha256": "a00ed5a57962d4279406152de1bfc8865e67d890fc7e40422698b51abfaa3a8e"
+      },
+      {
+        "path": "assets/main-95HsnSdC.js",
+        "rawBytes": 230977,
+        "gzipBytes": 68364,
+        "brotliBytes": 58666,
+        "sha256": "ef8d0da7952fa237aff4238ef1a760a305942360ba1f347414ed9ddd8eedcba6"
+      },
+      {
+        "path": "consent.html",
+        "rawBytes": 619,
+        "gzipBytes": 345,
+        "brotliBytes": 216,
+        "sha256": "50766f1815fb666920447d5bc6cb44f415fb675f771c27c1ac7d0d862c8c1431"
+      },
+      {
+        "path": "favicon-16.png",
+        "rawBytes": 496,
+        "gzipBytes": 519,
+        "brotliBytes": 500,
+        "sha256": "21986a46814e7f87ecd952c110b749a54fea8b098fbbd35559498e48a6c2329d"
+      },
+      {
+        "path": "favicon-32.png",
+        "rawBytes": 1317,
+        "gzipBytes": 1340,
+        "brotliBytes": 1321,
+        "sha256": "f66cbf18fad50d0b631d59ac5972f7e60cdefd08a8dd4590d69df54771f6c3fe"
+      },
+      {
+        "path": "favicon.ico",
+        "rawBytes": 5945,
+        "gzipBytes": 5932,
+        "brotliBytes": 5879,
+        "sha256": "4779b7796f0f9ed6054dd5e027a3b4e118885680aecbb9cc571ebd9fcc46638c"
+      },
+      {
+        "path": "index.html",
+        "rawBytes": 834,
+        "gzipBytes": 413,
+        "brotliBytes": 273,
+        "sha256": "db957e8571d85690d4193149ee2e3eb57e579e2dde9cd30cada545d930657adc"
+      }
+    ],
+    "icons": [
+      {
+        "path": "apple-touch-icon.png",
+        "rawBytes": 13058,
+        "gzipBytes": 12889,
+        "brotliBytes": 13035,
+        "sha256": "944de30ff5cf6138057b647772b29265273647d8d7cd2cfe2b3c3d7c9d37d586"
+      },
+      {
+        "path": "assets/app-A1IARBvh.css",
+        "rawBytes": 48230,
+        "gzipBytes": 10094,
+        "brotliBytes": 8873,
+        "sha256": "99cce4e2cc9e2f8fbcd1b13853a475ac6386008d60a0781944a5aa5a172bdea0"
+      },
+      {
+        "path": "assets/app-CJr6Dr_V.js",
+        "rawBytes": 123224,
+        "gzipBytes": 41777,
+        "brotliBytes": 31799,
+        "sha256": "90c3a77cd3f7d23b71166df7a955447317bfd9920e24a68370f1f308c508b0cf"
+      },
+      {
+        "path": "assets/consent-BqEAcYC3.js",
+        "rawBytes": 4513,
+        "gzipBytes": 2145,
+        "brotliBytes": 1823,
+        "sha256": "4125c2fb82e3a98d315dd4f74988d7738de268adb7ff10cb457e0f17f37dfdf4"
+      },
+      {
+        "path": "assets/consent-DKdDqG9P.css",
+        "rawBytes": 1844,
+        "gzipBytes": 636,
+        "brotliBytes": 507,
+        "sha256": "a00ed5a57962d4279406152de1bfc8865e67d890fc7e40422698b51abfaa3a8e"
+      },
+      {
+        "path": "assets/main-95HsnSdC.js",
+        "rawBytes": 230977,
+        "gzipBytes": 68364,
+        "brotliBytes": 58666,
+        "sha256": "ef8d0da7952fa237aff4238ef1a760a305942360ba1f347414ed9ddd8eedcba6"
+      },
+      {
+        "path": "consent.html",
+        "rawBytes": 619,
+        "gzipBytes": 345,
+        "brotliBytes": 216,
+        "sha256": "50766f1815fb666920447d5bc6cb44f415fb675f771c27c1ac7d0d862c8c1431"
+      },
+      {
+        "path": "favicon-16.png",
+        "rawBytes": 496,
+        "gzipBytes": 519,
+        "brotliBytes": 500,
+        "sha256": "21986a46814e7f87ecd952c110b749a54fea8b098fbbd35559498e48a6c2329d"
+      },
+      {
+        "path": "favicon-32.png",
+        "rawBytes": 1317,
+        "gzipBytes": 1340,
+        "brotliBytes": 1321,
+        "sha256": "f66cbf18fad50d0b631d59ac5972f7e60cdefd08a8dd4590d69df54771f6c3fe"
+      },
+      {
+        "path": "favicon.ico",
+        "rawBytes": 5945,
+        "gzipBytes": 5932,
+        "brotliBytes": 5879,
+        "sha256": "4779b7796f0f9ed6054dd5e027a3b4e118885680aecbb9cc571ebd9fcc46638c"
+      },
+      {
+        "path": "index.html",
+        "rawBytes": 834,
+        "gzipBytes": 413,
+        "brotliBytes": 273,
+        "sha256": "db957e8571d85690d4193149ee2e3eb57e579e2dde9cd30cada545d930657adc"
+      }
+    ],
+    "optimized": [
+      {
+        "path": "apple-touch-icon.png",
+        "rawBytes": 13058,
+        "gzipBytes": 12889,
+        "brotliBytes": 13035,
+        "sha256": "944de30ff5cf6138057b647772b29265273647d8d7cd2cfe2b3c3d7c9d37d586"
+      },
+      {
+        "path": "assets/app-A1IARBvh.css",
+        "rawBytes": 48230,
+        "gzipBytes": 10094,
+        "brotliBytes": 8873,
+        "sha256": "99cce4e2cc9e2f8fbcd1b13853a475ac6386008d60a0781944a5aa5a172bdea0"
+      },
+      {
+        "path": "assets/app-DxY0MoXT.js",
+        "rawBytes": 93762,
+        "gzipBytes": 33075,
+        "brotliBytes": 29434,
+        "sha256": "2a9e3c3527251a7ddee5c734a47ab160c76c490132755ebec1202fc139aea18c"
+      },
+      {
+        "path": "assets/consent-DKdDqG9P.css",
+        "rawBytes": 1844,
+        "gzipBytes": 636,
+        "brotliBytes": 507,
+        "sha256": "a00ed5a57962d4279406152de1bfc8865e67d890fc7e40422698b51abfaa3a8e"
+      },
+      {
+        "path": "assets/consent-MS1Y6JHI.js",
+        "rawBytes": 4513,
+        "gzipBytes": 2146,
+        "brotliBytes": 1819,
+        "sha256": "3f5fa44f8fe9feeb67b74ff939f425a82fa44b13d08309ceb9dea65291d8d303"
+      },
+      {
+        "path": "assets/main-Dr2ztjmc.js",
+        "rawBytes": 230977,
+        "gzipBytes": 68364,
+        "brotliBytes": 58656,
+        "sha256": "3ca8bf72099be02a7b3415a02e56f276ce60dabd205741f384b2841e955b04e5"
+      },
+      {
+        "path": "consent.html",
+        "rawBytes": 619,
+        "gzipBytes": 345,
+        "brotliBytes": 216,
+        "sha256": "a8c595c9fd92e4a7d059238b985e9088b5f5330b1cbc8b33ccbecf3525898880"
+      },
+      {
+        "path": "favicon-16.png",
+        "rawBytes": 496,
+        "gzipBytes": 519,
+        "brotliBytes": 500,
+        "sha256": "21986a46814e7f87ecd952c110b749a54fea8b098fbbd35559498e48a6c2329d"
+      },
+      {
+        "path": "favicon-32.png",
+        "rawBytes": 1317,
+        "gzipBytes": 1340,
+        "brotliBytes": 1321,
+        "sha256": "f66cbf18fad50d0b631d59ac5972f7e60cdefd08a8dd4590d69df54771f6c3fe"
+      },
+      {
+        "path": "favicon.ico",
+        "rawBytes": 5945,
+        "gzipBytes": 5932,
+        "brotliBytes": 5879,
+        "sha256": "4779b7796f0f9ed6054dd5e027a3b4e118885680aecbb9cc571ebd9fcc46638c"
+      },
+      {
+        "path": "index.html",
+        "rawBytes": 834,
+        "gzipBytes": 411,
+        "brotliBytes": 275,
+        "sha256": "3a493558377df254714e26c681287c66c0f17fe549ea576f92930129fd1593d2"
+      }
+    ]
+  }
+}

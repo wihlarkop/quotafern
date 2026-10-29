@@ -1,0 +1,79 @@
+[
+  {
+    "path": "apple-touch-icon.png",
+    "rawBytes": 13058,
+    "gzipBytes": 12889,
+    "brotliBytes": 13035,
+    "sha256": "944de30ff5cf6138057b647772b29265273647d8d7cd2cfe2b3c3d7c9d37d586"
+  },
+  {
+    "path": "consent.html",
+    "rawBytes": 619,
+    "gzipBytes": 345,
+    "brotliBytes": 216,
+    "sha256": "50766f1815fb666920447d5bc6cb44f415fb675f771c27c1ac7d0d862c8c1431"
+  },
+  {
+    "path": "favicon-16.png",
+    "rawBytes": 496,
+    "gzipBytes": 519,
+    "brotliBytes": 500,
+    "sha256": "21986a46814e7f87ecd952c110b749a54fea8b098fbbd35559498e48a6c2329d"
+  },
+  {
+    "path": "favicon-32.png",
+    "rawBytes": 1317,
+    "gzipBytes": 1340,
+    "brotliBytes": 1321,
+    "sha256": "f66cbf18fad50d0b631d59ac5972f7e60cdefd08a8dd4590d69df54771f6c3fe"
+  },
+  {
+    "path": "favicon.ico",
+    "rawBytes": 5945,
+    "gzipBytes": 5932,
+    "brotliBytes": 5879,
+    "sha256": "4779b7796f0f9ed6054dd5e027a3b4e118885680aecbb9cc571ebd9fcc46638c"
+  },
+  {
+    "path": "index.html",
+    "rawBytes": 834,
+    "gzipBytes": 413,
+    "brotliBytes": 273,
+    "sha256": "db957e8571d85690d4193149ee2e3eb57e579e2dde9cd30cada545d930657adc"
+  },
+  {
+    "path": "assets\\app-A1IARBvh.css",
+    "rawBytes": 48230,
+    "gzipBytes": 10094,
+    "brotliBytes": 8873,
+    "sha256": "99cce4e2cc9e2f8fbcd1b13853a475ac6386008d60a0781944a5aa5a172bdea0"
+  },
+  {
+    "path": "assets\\app-CJr6Dr_V.js",
+    "rawBytes": 123224,
+    "gzipBytes": 41777,
+    "brotliBytes": 31799,
+    "sha256": "90c3a77cd3f7d23b71166df7a955447317bfd9920e24a68370f1f308c508b0cf"
+  },
+  {
+    "path": "assets\\consent-BqEAcYC3.js",
+    "rawBytes": 4513,
+    "gzipBytes": 2145,
+    "brotliBytes": 1823,
+    "sha256": "4125c2fb82e3a98d315dd4f74988d7738de268adb7ff10cb457e0f17f37dfdf4"
+  },
+  {
+    "path": "assets\\consent-DKdDqG9P.css",
+    "rawBytes": 1844,
+    "gzipBytes": 636,
+    "brotliBytes": 507,
+    "sha256": "a00ed5a57962d4279406152de1bfc8865e67d890fc7e40422698b51abfaa3a8e"
+  },
+  {
+    "path": "assets\\main-95HsnSdC.js",
+    "rawBytes": 230977,
+    "gzipBytes": 68364,
+    "brotliBytes": 58666,
+    "sha256": "ef8d0da7952fa237aff4238ef1a760a305942360ba1f347414ed9ddd8eedcba6"
+  }
+]
