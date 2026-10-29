@@ -8,7 +8,7 @@ import { build, type Plugin } from "vite";
 import config from "../../vite.config";
 
 const root = ".tmp/perf-01";
-const baseline = "1f3ce659a6aff771ba88868c6cf5694f94a3bb12";
+const baseline = "e2307da2dee61a79031aaea49da9d8a788048724";
 const consent = "src/lib/accounts/ConsentDialog.svelte";
 const button = "src/lib/components/ui/button/button.svelte";
 const environment = () => ({
@@ -243,17 +243,26 @@ if (mode === "--sample") {
   await json(`${dir}/environment.json`, environment());
 } else if (mode === "qa") {
   if (!["source", "production"].includes(label)) throw Error("Use qa source or production");
-  await mkdir("docs/perf-01/evidence/browser", { recursive: true });
+  await mkdir("docs/perf-01/evidence/integration-browser", { recursive: true });
   const runnerPath = root + "/run-browser.ts";
   let runner = await Bun.file("scripts/run-ux03-check.ts").text();
+  const checkSource = await Bun.file("qa/browser/ux-03/browser-check.js").text();
+  if (
+    !runner.includes("quotafern-ux03b-") ||
+    !runner.includes("docs/evidence/ux-03b") ||
+    !checkSource.includes("docs/evidence/ux-03b") ||
+    !runner.includes('const check = await Bun.file("qa/browser/ux-03/browser-check.js").text();')
+  ) {
+    throw Error("Upstream QA destinations changed; update the PERF adapter before running it");
+  }
   runner = runner
-    .replaceAll("quotafern-ux03-", "quotafern-perf01-")
-    .replaceAll("docs/evidence/ux-03", "docs/perf-01/evidence/browser")
+    .replaceAll("quotafern-ux03b-", "quotafern-perf01-")
+    .replaceAll("docs/evidence/ux-03b", "docs/perf-01/evidence/integration-browser")
     .replaceAll("4177", "4277")
     .replaceAll("4178", "4278");
   runner = runner.replace(
     'const check = await Bun.file("qa/browser/ux-03/browser-check.js").text();',
-    'const check = (await Bun.file("qa/browser/ux-03/browser-check.js").text()).replaceAll("docs/evidence/ux-03", "docs/perf-01/evidence/browser");',
+    'const check = (await Bun.file("qa/browser/ux-03/browser-check.js").text()).replaceAll("docs/evidence/ux-03b", "docs/perf-01/evidence/integration-browser");',
   );
   await Bun.write(runnerPath, runner);
   const result = await run([Bun.argv[0], "run", runnerPath, label]);
@@ -282,6 +291,7 @@ if (mode === "--sample") {
   });
   console.log(JSON.stringify(rows));
 } else {
+  if (mode && mode !== "--help") throw Error("Unknown profiling mode");
   console.log(
     "bun run perf:measure frontend LABEL [COUNT]\nbun run perf:measure paired\nbun run perf:measure dependencies\nbun run perf:measure qa source|production (servers 4277/4278)\nOutputs: .tmp/perf-01. Run sequentially, with no concurrent builds. Never launches native apps or accesses credentials. Paired mode requires the pinned UX-03 baseline commit in local Git.",
   );

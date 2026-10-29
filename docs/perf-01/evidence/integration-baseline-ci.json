@@ -1,0 +1,291 @@
+{
+  "jobs": [
+    {
+      "completed_at": "2026-10-28T21:23:29Z",
+      "conclusion": "success",
+      "id": 123109491683,
+      "name": "Frontend quality",
+      "started_at": "2026-10-28T21:23:00Z",
+      "steps": [
+        {
+          "completed_at": "2026-10-28T21:23:02Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-28T21:23:01Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:04Z",
+          "conclusion": "success",
+          "name": "Check out repository",
+          "started_at": "2026-10-28T21:23:02Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:06Z",
+          "conclusion": "success",
+          "name": "Set up Bun 1.4.4",
+          "started_at": "2026-10-28T21:23:04Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:07Z",
+          "conclusion": "success",
+          "name": "Install locked dependencies",
+          "started_at": "2026-10-28T21:23:06Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:13Z",
+          "conclusion": "success",
+          "name": "Type and Svelte checks",
+          "started_at": "2026-10-28T21:23:07Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:13Z",
+          "conclusion": "success",
+          "name": "Lint",
+          "started_at": "2026-10-28T21:23:13Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:14Z",
+          "conclusion": "success",
+          "name": "Check formatting",
+          "started_at": "2026-10-28T21:23:13Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:25Z",
+          "conclusion": "success",
+          "name": "Build frontend",
+          "started_at": "2026-10-28T21:23:14Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:25Z",
+          "conclusion": "success",
+          "name": "Run snapshot and security regression",
+          "started_at": "2026-10-28T21:23:25Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:26Z",
+          "conclusion": "success",
+          "name": "Post Set up Bun 1.4.4",
+          "started_at": "2026-10-28T21:23:25Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:26Z",
+          "conclusion": "success",
+          "name": "Post Check out repository",
+          "started_at": "2026-10-28T21:23:26Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:26Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-28T21:23:26Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-28T21:31:06Z",
+      "conclusion": "success",
+      "id": 123109491948,
+      "name": "Desktop checks (windows-latest)",
+      "started_at": "2026-10-28T21:23:00Z",
+      "steps": [
+        {
+          "completed_at": "2026-10-28T21:23:03Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-28T21:23:02Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:08Z",
+          "conclusion": "success",
+          "name": "Check out repository",
+          "started_at": "2026-10-28T21:23:03Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:11Z",
+          "conclusion": "success",
+          "name": "Set up Bun 1.4.4",
+          "started_at": "2026-10-28T21:23:08Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:22Z",
+          "conclusion": "success",
+          "name": "Install locked dependencies",
+          "started_at": "2026-10-28T21:23:11Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:28Z",
+          "conclusion": "success",
+          "name": "Set up stable Rust",
+          "started_at": "2026-10-28T21:23:22Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:28Z",
+          "conclusion": "skipped",
+          "name": "Install Tauri Linux prerequisites",
+          "started_at": "2026-10-28T21:23:28Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:33Z",
+          "conclusion": "success",
+          "name": "Check Rust formatting",
+          "started_at": "2026-10-28T21:23:28Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:43Z",
+          "conclusion": "success",
+          "name": "Build frontend assets for the native context",
+          "started_at": "2026-10-28T21:23:33Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:25:35Z",
+          "conclusion": "success",
+          "name": "Lint Rust",
+          "started_at": "2026-10-28T21:23:43Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:25:40Z",
+          "conclusion": "success",
+          "name": "Check Rust package",
+          "started_at": "2026-10-28T21:25:35Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:27:21Z",
+          "conclusion": "success",
+          "name": "Run popup and Codex mock regression",
+          "started_at": "2026-10-28T21:25:40Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:31:02Z",
+          "conclusion": "success",
+          "name": "Compile desktop app without bundling",
+          "started_at": "2026-10-28T21:27:21Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:31:02Z",
+          "conclusion": "success",
+          "name": "Post Set up Bun 1.4.4",
+          "started_at": "2026-10-28T21:31:02Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:31:03Z",
+          "conclusion": "success",
+          "name": "Post Check out repository",
+          "started_at": "2026-10-28T21:31:02Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:31:03Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-28T21:31:03Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-28T21:30:40Z",
+      "conclusion": "success",
+      "id": 123109491969,
+      "name": "Desktop checks (ubuntu-22.04)",
+      "started_at": "2026-10-28T21:23:01Z",
+      "steps": [
+        {
+          "completed_at": "2026-10-28T21:23:02Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-28T21:23:01Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:03Z",
+          "conclusion": "success",
+          "name": "Check out repository",
+          "started_at": "2026-10-28T21:23:02Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:04Z",
+          "conclusion": "success",
+          "name": "Set up Bun 1.4.4",
+          "started_at": "2026-10-28T21:23:03Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:05Z",
+          "conclusion": "success",
+          "name": "Install locked dependencies",
+          "started_at": "2026-10-28T21:23:04Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:06Z",
+          "conclusion": "success",
+          "name": "Set up stable Rust",
+          "started_at": "2026-10-28T21:23:05Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:38Z",
+          "conclusion": "success",
+          "name": "Install Tauri Linux prerequisites",
+          "started_at": "2026-10-28T21:23:06Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:38Z",
+          "conclusion": "success",
+          "name": "Check Rust formatting",
+          "started_at": "2026-10-28T21:23:38Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:23:48Z",
+          "conclusion": "success",
+          "name": "Build frontend assets for the native context",
+          "started_at": "2026-10-28T21:23:38Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:25:21Z",
+          "conclusion": "success",
+          "name": "Lint Rust",
+          "started_at": "2026-10-28T21:23:48Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:25:26Z",
+          "conclusion": "success",
+          "name": "Check Rust package",
+          "started_at": "2026-10-28T21:25:21Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:27:11Z",
+          "conclusion": "success",
+          "name": "Run popup and Codex mock regression",
+          "started_at": "2026-10-28T21:25:26Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:30:39Z",
+          "conclusion": "success",
+          "name": "Compile desktop app without bundling",
+          "started_at": "2026-10-28T21:27:11Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:30:39Z",
+          "conclusion": "success",
+          "name": "Post Set up Bun 1.4.4",
+          "started_at": "2026-10-28T21:30:39Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:30:39Z",
+          "conclusion": "success",
+          "name": "Post Check out repository",
+          "started_at": "2026-10-28T21:30:39Z"
+        },
+        {
+          "completed_at": "2026-10-28T21:30:39Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-28T21:30:39Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-28T21:37:59Z",
+      "conclusion": "cancelled",
+      "id": 123109491974,
+      "name": "Desktop checks (macos-latest)",
+      "started_at": "2026-10-28T21:22:57Z",
+      "steps": []
+    }
+  ]
+}
