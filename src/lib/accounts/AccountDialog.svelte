@@ -4,8 +4,9 @@
   import { Button } from "../components/ui/button";
   import { CODEX_DIRECT_CONNECTION_AVAILABLE, type DirectKind } from "./direct";
   import { aliasError, type LocalAction, type ManagementTarget } from "./local";
-  import { PROVIDERS, type AccountState, type Mechanism, type WorkspaceId } from "./model";
+  import type { AccountState, Mechanism, WorkspaceId } from "./model";
   import { contextLabel } from "./navigation";
+  import { availableAccountProviders, providerName } from "./presentation";
 
   let {
     target: requestedTarget,
@@ -34,6 +35,13 @@
       ? (connection?.alias ?? "")
       : (account?.alias ?? "");
   let alias = $state(original);
+  const addingAccount = target.kind === "add-account";
+  const defaultName = () =>
+    providerId === "codex"
+      ? codexKind === "managed"
+        ? "Another Codex account"
+        : "Existing Codex"
+      : providerName(providerId);
   let providerId = $state(
     target.kind === "add-account"
       ? (target.providerId ?? "codex")
@@ -43,6 +51,7 @@
     account?.providerId === "openrouter" ? "api-key" : "cli-session",
   );
   let codexKind = $state<DirectKind>("system");
+  const availableProviders = availableAccountProviders();
   let saving = $state(false);
   let workspace = $state("");
   let workspaceAlias = $state("");
@@ -54,9 +63,9 @@
   const removing = target.kind.startsWith("remove") || target.kind === "reset";
   const title =
     target.kind === "add-account"
-      ? "Add local account"
+      ? "Add account"
       : target.kind === "add-connection"
-        ? "Add local connection descriptor"
+        ? "Add connection label"
         : target.kind === "rename-account"
           ? "Rename account"
           : target.kind === "rename-connection"
@@ -64,9 +73,9 @@
               ? "Rename key label"
               : "Rename connection"
             : target.kind === "remove-account"
-              ? "Remove local account"
+              ? "Remove account"
               : target.kind === "remove-connection"
-                ? "Remove local connection descriptor"
+                ? "Remove connection"
                 : "Reset local metadata";
   const ownerLabel = account
     ? contextLabel(initialState, {
@@ -77,7 +86,11 @@
     : "";
   onMount(() => {
     dialog.showModal();
-    if (!removing) {
+    if (addingAccount) {
+      (
+        document.getElementById("local-provider") ?? document.getElementById("codex-kind-system")
+      )?.focus();
+    } else if (!removing) {
       input?.focus();
       input?.select();
     }
@@ -96,13 +109,14 @@
   async function save(event: SubmitEvent) {
     event.preventDefault();
     if (saving) return;
-    aliasIssue = !removing && aliasError(alias) !== null;
+    const savedAlias = addingAccount && !alias.trim() ? defaultName() : alias;
+    aliasIssue = !removing && aliasError(savedAlias) !== null;
     workspaceIssue =
       target.kind === "add-connection" &&
       workspace === "new" &&
       aliasError(workspaceAlias) !== null;
     error = aliasIssue
-      ? aliasError(alias)!
+      ? aliasError(savedAlias)!
       : workspaceIssue
         ? `Workspace: ${aliasError(workspaceAlias)}`
         : "";
@@ -116,7 +130,7 @@
         action = {
           kind: target.kind,
           providerId,
-          alias,
+          alias: savedAlias,
           ...(CODEX_DIRECT_CONNECTION_AVAILABLE && providerId === "codex" ? { codexKind } : {}),
         };
         break;
@@ -167,75 +181,89 @@
       {target.kind === "reset"
         ? "This replaces all saved local account, workspace and connection labels, including unreadable metadata. This cannot be undone. No provider account or appearance preference is changed."
         : removing
-          ? "Only the named local metadata is removed. No provider account, sign-in or credentials are changed."
-          : "Local labels only; do not enter secrets. Adding or renaming a record does not authenticate, change a provider account or enable monitoring."}
+          ? "Monitoring must stop before removal. Your provider account and sign-in will be kept."
+          : addingAccount
+            ? "Choose a login, then review monitoring permission."
+            : "Choose a name you recognize. Do not enter passwords or other secrets."}
     </p>
     {#if removing && target.kind !== "reset"}
       <p class="local-removal-name">{original}</p>
       {#if target.kind === "remove-account"}<p>
           Also removes {initialState.metadata.connections.filter((c) => c.accountId === target.id)
-            .length} owned connection descriptors and {initialState.metadata.workspaces.filter(
+            .length} connections and {initialState.metadata.workspaces.filter(
             (w) => w.accountId === target.id,
-          ).length} owned workspaces.
+          ).length} workspace labels from Quotafern.
         </p>{/if}
     {:else if !removing}
       {#if target.kind === "add-account"}
-        <label for="local-provider">Provider</label>
-        <select id="local-provider" bind:value={providerId}
-          >{#each PROVIDERS as provider}<option value={provider.id}
-              >{provider.displayName} · {provider.id === "codex" &&
-              CODEX_DIRECT_CONNECTION_AVAILABLE
-                ? "Available"
-                : provider.adapter === "gated"
-                  ? "Live disabled"
-                  : "Coming Soon"}</option
-            >{/each}</select
-        >
+        {#if availableProviders.length === 1}
+          <p class="fixed-provider">
+            Provider <strong>{availableProviders[0].displayName}</strong>
+          </p>
+        {:else}
+          <label for="local-provider">Provider</label>
+          <select id="local-provider" bind:value={providerId}
+            >{#each availableProviders as provider}<option value={provider.id}
+                >{provider.displayName}</option
+              >{/each}</select
+          >
+        {/if}
       {/if}
       {#if target.kind === "add-account" && providerId === "codex" && CODEX_DIRECT_CONNECTION_AVAILABLE}
-        <label for="codex-account-kind">Codex account</label>
-        <select id="codex-account-kind" bind:value={codexKind}>
-          <option value="system">Use existing Codex account</option>
-          <option value="managed">Sign in to a separate account</option>
-        </select>
-        <p>Adding a label does not connect. You will confirm read-only monitoring separately.</p>
+        <fieldset class="codex-login-choice">
+          <legend>Codex login</legend>
+          <label
+            ><input
+              id="codex-kind-system"
+              type="radio"
+              name="codex-kind"
+              value="system"
+              bind:group={codexKind}
+            />Use existing Codex login</label
+          >
+          <label
+            ><input type="radio" name="codex-kind" value="managed" bind:group={codexKind} />Sign in
+            with another account</label
+          >
+        </fieldset>
       {/if}
       <label for="local-alias"
-        >{target.kind.includes("account") ? "Account alias" : "Connection label"}</label
+        >{target.kind.includes("account")
+          ? addingAccount
+            ? "Account name (optional)"
+            : "Account name"
+          : "Connection name"}</label
       >
       <input
         id="local-alias"
         bind:this={input}
         bind:value={alias}
+        placeholder={addingAccount ? defaultName() : undefined}
         onkeydown={(event) => {
           if (event.key === "Enter" && event.isComposing) event.preventDefault();
         }}
         aria-invalid={aliasIssue}
-        aria-describedby={`local-alias-help${aliasIssue ? " local-save-error" : ""}`}
+        aria-describedby={aliasIssue ? "local-save-error" : undefined}
         autocomplete="off"
         spellcheck="false"
       />
-      <p id="local-alias-help">
-        {Array.from(alias.normalize("NFC").trim()).length} / 80 Unicode code points. Duplicate labels
-        are allowed.
-      </p>
       {#if target.kind === "add-connection"}
-        <label for="local-mechanism">Provisional mechanism descriptor</label>
+        <label for="local-mechanism">Connection type</label>
         <select id="local-mechanism" bind:value={mechanism}>
-          <option value="cli-session">CLI session label</option><option value="api-key"
-            >API key label</option
-          ><option value="oauth-grant">OAuth grant label</option>
+          <option value="cli-session">Existing Codex login label</option><option value="api-key"
+            >API key label (Coming Soon)</option
+          ><option value="oauth-grant">OAuth label (Coming Soon)</option>
         </select>
         <p>
-          Planning descriptors only. No key, token, grant, credential path or actual session is
-          accepted. All provider connections remain unavailable.
+          This only adds a connection label. It does not sign in or allow monitoring. Do not enter
+          credentials.
         </p>
         <label for="local-workspace">Workspace context</label>
         <select id="local-workspace" bind:value={workspace}
           ><option value="">No workspace</option
           >{#each initialState.metadata.workspaces.filter((w) => w.accountId === account?.id) as item}<option
               value={item.id}>{item.alias}</option
-            >{/each}<option value="new">New local workspace label</option></select
+            >{/each}<option value="new">New workspace label</option></select
         >
         {#if workspace === "new"}<label for="local-workspace-alias">Workspace alias</label><input
             id="local-workspace-alias"
@@ -262,14 +290,19 @@
     <div class="local-dialog-actions">
       <Button type="button" variant="outline" disabled={saving} onclick={() => dialog.close()}
         >Cancel</Button
-      ><Button type="submit" disabled={saving}
+      ><Button
+        type="submit"
+        disabled={saving ||
+          (addingAccount && !availableProviders.some((provider) => provider.id === providerId))}
         >{target.kind === "reset"
           ? "Reset local metadata"
           : removing
             ? "Remove"
-            : target.kind.startsWith("add")
-              ? "Add"
-              : "Save"}</Button
+            : addingAccount
+              ? "Continue"
+              : target.kind.startsWith("add")
+                ? "Add"
+                : "Save"}</Button
       >
     </div>
   </form>

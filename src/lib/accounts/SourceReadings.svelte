@@ -1,7 +1,7 @@
 <script lang="ts">
   import { classifyRemainingPercent, formatRemainingPercent } from "../quota";
   import type { QuotaSource } from "./model";
-  import { sampleTime } from "./presentation";
+  import { sampleTime, quotaDuration } from "./presentation";
   let { source, detailed = false }: { source: QuotaSource; detailed?: boolean } = $props();
 </script>
 
@@ -44,12 +44,14 @@
             <span style={`--meter-value: ${window.remainingPercent}%`}></span>
           </div>{/if}
         {#if source.origin === "synthetic" || window.resetAtMs !== null}<p class="owned-reset">
-            Reset · {sampleTime(window.resetAtMs)}
+            Resets {sampleTime(window.resetAtMs)}
           </p>{/if}
         {#if detailed && (source.origin === "synthetic" || window.durationMins !== null)}<p
             class="owned-reset"
           >
-            Window · {window.durationMins === null ? "Unknown" : `${window.durationMins} min`}
+            {window.durationMins === null
+              ? "Duration unknown"
+              : `${quotaDuration(window.durationMins)} window`}
           </p>{/if}
       </section>
     {/each}

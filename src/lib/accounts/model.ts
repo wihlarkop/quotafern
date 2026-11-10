@@ -42,6 +42,8 @@ export interface Provider {
   id: string;
   displayName: string;
   adapter: "gated" | "coming-soon";
+  /** Presentation catalogue only; absent until a separately scoped provider setup exists. */
+  accountSetupAvailable?: boolean;
   capabilities: {
     monitoring: false;
     multipleAccounts: "unverified";

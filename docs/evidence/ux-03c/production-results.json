@@ -1,0 +1,657 @@
+{
+  "mode": "production",
+  "checks": 135,
+  "failures": [],
+  "results": [
+    {
+      "label": "light: current reading remains current",
+      "passed": true
+    },
+    {
+      "label": "light: missing plan is omitted",
+      "passed": true
+    },
+    {
+      "label": "light: reported Plus plan",
+      "passed": true
+    },
+    {
+      "label": "light: reported Free plan",
+      "passed": true
+    },
+    {
+      "label": "light: one menu per ordinary account",
+      "passed": true
+    },
+    {
+      "label": "light: redundant copy absent",
+      "passed": true
+    },
+    {
+      "label": "light: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "light: appearance preserved",
+      "passed": true
+    },
+    {
+      "label": "Add starts on the existing-login radio",
+      "passed": true
+    },
+    {
+      "label": "Fixed Codex provider and two clear login choices",
+      "passed": true
+    },
+    {
+      "label": "Add cancellation restores focus",
+      "passed": true
+    },
+    {
+      "label": "Add cancellation makes no native request",
+      "passed": true
+    },
+    {
+      "label": "Rename restores account menu focus",
+      "passed": true
+    },
+    {
+      "label": "long aliases 320px: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "Disconnect preserves another account",
+      "passed": true
+    },
+    {
+      "label": "Failed cleanup retains account",
+      "passed": true
+    },
+    {
+      "label": "Successful remove preserves other accounts",
+      "passed": true
+    },
+    {
+      "label": "Remove targets native cleanup by account ID",
+      "passed": true
+    },
+    {
+      "label": "Overview exposes failed connection alongside quota",
+      "passed": true
+    },
+    {
+      "label": "Confirmed zero remains zero",
+      "passed": true
+    },
+    {
+      "label": "No duplicate or disconnected source",
+      "passed": true
+    },
+    {
+      "label": "Human readable quota duration",
+      "passed": true
+    },
+    {
+      "label": "Details Back restores opener",
+      "passed": true
+    },
+    {
+      "label": "dark: current reading remains current",
+      "passed": true
+    },
+    {
+      "label": "dark: missing plan is omitted",
+      "passed": true
+    },
+    {
+      "label": "dark: reported Plus plan",
+      "passed": true
+    },
+    {
+      "label": "dark: reported Free plan",
+      "passed": true
+    },
+    {
+      "label": "dark: one menu per ordinary account",
+      "passed": true
+    },
+    {
+      "label": "dark: redundant copy absent",
+      "passed": true
+    },
+    {
+      "label": "dark: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "dark: appearance preserved",
+      "passed": true
+    },
+    {
+      "label": "Zero accounts has useful empty state",
+      "passed": true
+    },
+    {
+      "label": "system: native consent requested only after local dialog closes",
+      "passed": true
+    },
+    {
+      "label": "system: optional name has sensible default",
+      "passed": true
+    },
+    {
+      "label": "system: Add targets new connection ID",
+      "passed": true
+    },
+    {
+      "label": "managed: native consent requested only after local dialog closes",
+      "passed": true
+    },
+    {
+      "label": "managed: optional name has sensible default",
+      "passed": true
+    },
+    {
+      "label": "managed: Add targets new connection ID",
+      "passed": true
+    },
+    {
+      "label": "380: sole provider is a fixed label",
+      "passed": true
+    },
+    {
+      "label": "380: existing login is a clear default",
+      "passed": true
+    },
+    {
+      "label": "380: no routine character-limit paragraph",
+      "passed": true
+    },
+    {
+      "label": "380: Continue visible in compact window",
+      "passed": true
+    },
+    {
+      "label": "380: managed choice has sensible optional name",
+      "passed": true
+    },
+    {
+      "label": "380: choice and cancellation create no account or authorization",
+      "passed": true
+    },
+    {
+      "label": "light: Appearance is the first usable setting",
+      "passed": true
+    },
+    {
+      "label": "light: Demo is secondary by default",
+      "passed": true
+    },
+    {
+      "label": "light: default Settings fits compact window",
+      "passed": true
+    },
+    {
+      "label": "light: color mode still persists",
+      "passed": true
+    },
+    {
+      "label": "light: palette still persists",
+      "passed": true
+    },
+    {
+      "label": "light: success feedback remains accessible without a persistent paragraph",
+      "passed": true
+    },
+    {
+      "label": "light: Demo consequence is disclosed before toggle",
+      "passed": true
+    },
+    {
+      "label": "light: enabling Demo uses existing disconnect flow for each account",
+      "passed": true
+    },
+    {
+      "label": "light: leaving Demo never reconnects or grants access",
+      "passed": true
+    },
+    {
+      "label": "light: Manage accounts navigates and focuses the destination",
+      "passed": true
+    },
+    {
+      "label": "320: sole provider is a fixed label",
+      "passed": true
+    },
+    {
+      "label": "320: existing login is a clear default",
+      "passed": true
+    },
+    {
+      "label": "320: no routine character-limit paragraph",
+      "passed": true
+    },
+    {
+      "label": "320: Continue visible in compact window",
+      "passed": true
+    },
+    {
+      "label": "320: managed choice has sensible optional name",
+      "passed": true
+    },
+    {
+      "label": "320: choice and cancellation create no account or authorization",
+      "passed": true
+    },
+    {
+      "label": "dark: Appearance is the first usable setting",
+      "passed": true
+    },
+    {
+      "label": "dark: Demo is secondary by default",
+      "passed": true
+    },
+    {
+      "label": "dark: default Settings fits compact window",
+      "passed": true
+    },
+    {
+      "label": "dark: color mode still persists",
+      "passed": true
+    },
+    {
+      "label": "dark: palette still persists",
+      "passed": true
+    },
+    {
+      "label": "dark: success feedback remains accessible without a persistent paragraph",
+      "passed": true
+    },
+    {
+      "label": "dark: Demo consequence is disclosed before toggle",
+      "passed": true
+    },
+    {
+      "label": "dark: enabling Demo uses existing disconnect flow for each account",
+      "passed": true
+    },
+    {
+      "label": "dark: leaving Demo never reconnects or grants access",
+      "passed": true
+    },
+    {
+      "label": "dark: Manage accounts navigates and focuses the destination",
+      "passed": true
+    },
+    {
+      "label": "Account names do not duplicate View quota navigation",
+      "passed": true
+    },
+    {
+      "label": "Focused quota hides account and advanced selectors",
+      "passed": true
+    },
+    {
+      "label": "View quota preserves source ownership without another quota renderer",
+      "passed": true
+    },
+    {
+      "label": "Focused quota has no redundant View details step",
+      "passed": true
+    },
+    {
+      "label": "Focused connection lifecycle stays distinct from stale quota",
+      "passed": true
+    },
+    {
+      "label": "Focused details show reported quota and plan directly",
+      "passed": true
+    },
+    {
+      "label": "Technical connection information starts collapsed",
+      "passed": true
+    },
+    {
+      "label": "Focused alias heading receives navigation focus",
+      "passed": true
+    },
+    {
+      "label": "Overview Back restores View quota focus",
+      "passed": true
+    },
+    {
+      "label": "Overview Back restores Accounts scroll position",
+      "passed": true
+    },
+    {
+      "label": "Ordinary Overview retains its previous account filter and advanced controls",
+      "passed": true
+    },
+    {
+      "label": "Keyboard Overview activation clears focus mode and preserves normal selection",
+      "passed": true
+    },
+    {
+      "label": "Disconnected View quota offers useful account recovery without synthetic values",
+      "passed": true
+    },
+    {
+      "label": "Focused details 320px dark: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "Disappearing selected source removes readings and exposes authentication state",
+      "passed": true
+    },
+    {
+      "label": "Disappearance retains selected alias without another account's data",
+      "passed": true
+    },
+    {
+      "label": "Focused failure keeps raw diagnostic codes out of primary copy",
+      "passed": true
+    },
+    {
+      "label": "Full diagnostics remain available in the optional disclosure",
+      "passed": true
+    },
+    {
+      "label": "Disappearing-source Back still restores Accounts opener",
+      "passed": true
+    },
+    {
+      "label": "Multiple sources show a chooser without arbitrarily displaying quota",
+      "passed": true
+    },
+    {
+      "label": "Source chooser at 320px: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "Explicit source choice opens one source under its account alias",
+      "passed": true
+    },
+    {
+      "label": "Focused independent-source details preserve meaningful association warning",
+      "passed": true
+    },
+    {
+      "label": "Chosen-source Back returns directly to Accounts, not the chooser",
+      "passed": true
+    },
+    {
+      "label": "1: primary selector contains All accounts plus individual accounts only",
+      "passed": true
+    },
+    {
+      "label": "1: account choices are distinguishable, including duplicate/reserved aliases",
+      "passed": true
+    },
+    {
+      "label": "1: accounts grouped by provider",
+      "passed": true
+    },
+    {
+      "label": "1: keyboard reaches last account by opaque ID",
+      "passed": true
+    },
+    {
+      "label": "1 accounts at 320px: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "3: primary selector contains All accounts plus individual accounts only",
+      "passed": true
+    },
+    {
+      "label": "3: account choices are distinguishable, including duplicate/reserved aliases",
+      "passed": true
+    },
+    {
+      "label": "3: accounts grouped by provider",
+      "passed": true
+    },
+    {
+      "label": "3: keyboard reaches last account by opaque ID",
+      "passed": true
+    },
+    {
+      "label": "3 accounts at 320px: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "24: primary selector contains All accounts plus individual accounts only",
+      "passed": true
+    },
+    {
+      "label": "24: account choices are distinguishable, including duplicate/reserved aliases",
+      "passed": true
+    },
+    {
+      "label": "24: accounts grouped by provider",
+      "passed": true
+    },
+    {
+      "label": "24: keyboard reaches last account by opaque ID",
+      "passed": true
+    },
+    {
+      "label": "24 accounts at 320px: no horizontal overflow",
+      "passed": true
+    },
+    {
+      "label": "Failed cleanup refuses Demo and resets its checkbox",
+      "passed": true
+    },
+    {
+      "label": "Storage failure remains visible while successful appearance feedback is nonvisual",
+      "passed": true
+    },
+    {
+      "label": "Expanded connection action targets its own connection",
+      "passed": true
+    },
+    {
+      "label": "Collapsed connections retain meaningful failure warning",
+      "passed": true
+    },
+    {
+      "label": "Managed Sign in again targets correct native connection",
+      "passed": true
+    },
+    {
+      "label": "Per-connection Refresh preserves action target and cooldown",
+      "passed": true
+    },
+    {
+      "label": "Workspace selection shows only its own source",
+      "passed": true
+    },
+    {
+      "label": "Active workspace remains explicit in the primary caption",
+      "passed": true
+    },
+    {
+      "label": "Collapsing advanced filters preserves workspace selection",
+      "passed": true
+    },
+    {
+      "label": "Selecting owning account clears the workspace filter in one action",
+      "passed": true
+    },
+    {
+      "label": "Provider filter is accessible and explicit without polluting default account options",
+      "passed": true
+    },
+    {
+      "label": "Advanced connection context retains exact owner and source",
+      "passed": true
+    },
+    {
+      "label": "Changing primary context preserves selector focus",
+      "passed": true
+    },
+    {
+      "label": "Multiple connections available through disclosure",
+      "passed": true
+    },
+    {
+      "label": "light: consent begins on Cancel",
+      "passed": true
+    },
+    {
+      "label": "light: helper disclosure remains visible",
+      "passed": true
+    },
+    {
+      "label": "light: consent actions fit short window",
+      "passed": true
+    },
+    {
+      "label": "Consent Escape sends one cancellation",
+      "passed": true
+    },
+    {
+      "label": "light: consent entry never mounts provider operations",
+      "passed": true
+    },
+    {
+      "label": "dark: consent begins on Cancel",
+      "passed": true
+    },
+    {
+      "label": "dark: helper disclosure remains visible",
+      "passed": true
+    },
+    {
+      "label": "dark: consent actions fit short window",
+      "passed": true
+    },
+    {
+      "label": "Consent sends one native-owned challenge",
+      "passed": true
+    },
+    {
+      "label": "dark: consent entry never mounts provider operations",
+      "passed": true
+    },
+    {
+      "label": "No browser runtime errors: ",
+      "passed": true
+    },
+    {
+      "label": "No external HTTP requests; IPC and credentials are synthetic",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "accounts-light",
+      "path": ".tmp/qa/screenshots/ux-03c/production-accounts-light.png"
+    },
+    {
+      "name": "add-account",
+      "path": ".tmp/qa/screenshots/ux-03c/production-add-account.png"
+    },
+    {
+      "name": "long-alias-narrow",
+      "path": ".tmp/qa/screenshots/ux-03c/production-long-alias-narrow.png"
+    },
+    {
+      "name": "connection-states",
+      "path": ".tmp/qa/screenshots/ux-03c/production-connection-states.png"
+    },
+    {
+      "name": "overview",
+      "path": ".tmp/qa/screenshots/ux-03c/production-overview.png"
+    },
+    {
+      "name": "details",
+      "path": ".tmp/qa/screenshots/ux-03c/production-details.png"
+    },
+    {
+      "name": "accounts-dark",
+      "path": ".tmp/qa/screenshots/ux-03c/production-accounts-dark.png"
+    },
+    {
+      "name": "zero-accounts",
+      "path": ".tmp/qa/screenshots/ux-03c/production-zero-accounts.png"
+    },
+    {
+      "name": "one-account",
+      "path": ".tmp/qa/screenshots/ux-03c/production-one-account.png"
+    },
+    {
+      "name": "add-380-light",
+      "path": ".tmp/qa/screenshots/ux-03c/production-add-380-light.png"
+    },
+    {
+      "name": "settings-light",
+      "path": ".tmp/qa/screenshots/ux-03c/production-settings-light.png"
+    },
+    {
+      "name": "demo-warning-light",
+      "path": ".tmp/qa/screenshots/ux-03c/production-demo-warning-light.png"
+    },
+    {
+      "name": "add-320-dark",
+      "path": ".tmp/qa/screenshots/ux-03c/production-add-320-dark.png"
+    },
+    {
+      "name": "settings-dark",
+      "path": ".tmp/qa/screenshots/ux-03c/production-settings-dark.png"
+    },
+    {
+      "name": "demo-warning-dark",
+      "path": ".tmp/qa/screenshots/ux-03c/production-demo-warning-dark.png"
+    },
+    {
+      "name": "focused-light",
+      "path": "docs/evidence/ux-03c/production-focused-light.png"
+    },
+    {
+      "name": "focused-320-dark",
+      "path": "docs/evidence/ux-03c/production-focused-320-dark.png"
+    },
+    {
+      "name": "focused-unavailable",
+      "path": "docs/evidence/ux-03c/production-focused-unavailable.png"
+    },
+    {
+      "name": "focused-chooser",
+      "path": "docs/evidence/ux-03c/production-focused-chooser.png"
+    },
+    {
+      "name": "selector-1",
+      "path": ".tmp/qa/screenshots/ux-03c/production-selector-1.png"
+    },
+    {
+      "name": "selector-three",
+      "path": ".tmp/qa/screenshots/ux-03c/production-selector-three.png"
+    },
+    {
+      "name": "selector-24",
+      "path": ".tmp/qa/screenshots/ux-03c/production-selector-24.png"
+    },
+    {
+      "name": "reconnect-required",
+      "path": ".tmp/qa/screenshots/ux-03c/production-reconnect-required.png"
+    },
+    {
+      "name": "workspace-overview",
+      "path": ".tmp/qa/screenshots/ux-03c/production-workspace-overview.png"
+    },
+    {
+      "name": "shared-connections",
+      "path": ".tmp/qa/screenshots/ux-03c/production-shared-connections.png"
+    },
+    {
+      "name": "consent-light",
+      "path": ".tmp/qa/screenshots/ux-03c/production-consent-light.png"
+    },
+    {
+      "name": "consent-dark",
+      "path": ".tmp/qa/screenshots/ux-03c/production-consent-dark.png"
+    }
+  ]
+}

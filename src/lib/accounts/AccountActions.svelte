@@ -4,6 +4,7 @@
 
   import type { DirectTarget } from "./direct";
   import type { ManagementTarget } from "./local";
+  import type { AccountAction } from "./presentation";
   let {
     id,
     label,
@@ -12,7 +13,7 @@
   }: {
     id: string;
     label: string;
-    actions: { label: string; target: ManagementTarget | DirectTarget; disabled?: boolean }[];
+    actions: AccountAction[];
     onaction: (target: ManagementTarget | DirectTarget, opener: string) => void;
   } = $props();
 </script>

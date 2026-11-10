@@ -75,24 +75,33 @@
 >
   <div class="consent-brand"><Leaf size={18} aria-hidden="true" /><span>Quotafern</span></div>
   <header class="consent-heading">
-    <h1 id="consent-title">Connect Codex account?</h1>
+    <h1 id="consent-title">Connect to Codex</h1>
     <p class="consent-lead" id="consent-lead">
-      Allow Quotafern to read this account’s quota and reconnect automatically when Quotafern opens?
+      Read this account’s quota and remember permission to reconnect when Quotafern opens.
     </p>
   </header>
   <div class="consent-content">
     {#if prompt}
       <section class="consent-source" aria-label="Selected connection" aria-live="polite">
         <h2><ShieldCheck size={17} aria-hidden="true" />{prompt.source}</h2>
-        <p>{prompt.summary}</p>
+        <p>
+          {prompt.source === "Existing Codex account"
+            ? "Uses your existing Codex login. This may start a supervised local App Server."
+            : "Uses a separate Codex login for this account. Your existing Codex login stays unchanged."}
+        </p>
       </section>
       <p class="consent-lifecycle">
-        Refreshes every three minutes. <strong>Disconnect</strong> stops monitoring and removes this
-        permission. <strong>Quit</strong> keeps permission for the next launch.
+        <strong>Disconnect</strong> stops monitoring and revokes this permission. Quitting keeps it for
+        the next launch.
       </p>
       <details>
-        <summary>What this connection allows</summary>
+        <summary>Connection and authentication details</summary>
+        <p>{prompt.summary}</p>
         <p>{prompt.detail}</p>
+        <p>
+          Quota refreshes every three minutes while connected. Codex manages authentication and may
+          update its own sign-in state.
+        </p>
       </details>
     {:else if !error}
       <p role="status">Preparing secure confirmation…</p>
@@ -107,7 +116,7 @@
       onclick={() => decide(false)}>Cancel</Button
     >
     <Button disabled={!prompt || busy || !!error} onclick={() => decide(true)}
-      >{busy ? "Closing…" : "Connect"}</Button
+      >{busy ? "Closing…" : "Allow connection"}</Button
     >
   </footer>
 </div>
@@ -138,12 +147,12 @@
     font-weight: 650;
   }
   .consent-heading {
-    padding: 24px 24px 0;
+    padding: 20px 24px 0;
     flex-shrink: 0;
   }
   .consent-content {
     min-height: 0;
-    padding: 24px;
+    padding: 20px 24px;
     flex: 1;
     overflow-y: auto;
   }
@@ -162,8 +171,9 @@
   }
   .consent-source {
     margin-top: 0;
-    padding-left: 12px;
-    border-left: 2px solid var(--border);
+    padding: 14px;
+    border-radius: var(--radius-control);
+    background: var(--surface-inset);
   }
   h2 {
     display: flex;
@@ -179,7 +189,7 @@
     color: var(--muted);
   }
   .consent-lifecycle {
-    margin-top: 20px;
+    margin-top: 16px;
   }
   strong {
     color: var(--text);

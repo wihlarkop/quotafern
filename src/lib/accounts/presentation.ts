@@ -1,9 +1,104 @@
 import { unavailableCodexMonitoring, type CodexMonitoring } from "../codex";
-import { PROVIDERS, type QuotaSource } from "./model";
+import {
+  CODEX_DIRECT_CONNECTION_AVAILABLE,
+  type DirectPresentation,
+  type DirectTarget,
+} from "./direct";
+import type { ManagementTarget } from "./local";
+import { PROVIDERS, type Provider, type QuotaSource } from "./model";
 import type { accountsView } from "./views";
 
 export type ProviderView = ReturnType<typeof accountsView>[number];
+export type AccountView = ProviderView["accounts"][number];
+export type ConnectionView = AccountView["connections"][number];
+export type AccountAction = {
+  label: string;
+  target: ManagementTarget | DirectTarget;
+  disabled?: boolean;
+};
 export const providerName = (id: string) => PROVIDERS.find((p) => p.id === id)?.displayName ?? id;
+
+/** Catalogue availability never grants native monitoring authority. */
+export function availableAccountProviders(
+  catalog: readonly Provider[] = PROVIDERS,
+  codexAvailable = CODEX_DIRECT_CONNECTION_AVAILABLE,
+) {
+  return catalog.filter((p) =>
+    p.id === "codex" ? codexAvailable : p.accountSetupAvailable === true,
+  );
+}
+
+export function connectionStatus(
+  connection: ConnectionView,
+  presentation?: DirectPresentation,
+): string {
+  // A paused refresh does not necessarily end the monitoring session.
+  if (connection.runtime.lifecycle === "connected") return "Connected";
+  if (
+    presentation?.cleanupPending &&
+    !presentation.busy &&
+    connection.runtime.lifecycle === "disconnected"
+  )
+    return "Cleanup pending";
+  if (connection.runtime.lifecycle === "auth-required") return "Sign-in needed";
+  if (presentation?.status) return presentation.status;
+  return {
+    connected: "Connected",
+    disconnected: "Disconnected",
+    connecting: "Connecting",
+    "auth-required": "Sign-in needed",
+    error: "Reconnect required",
+  }[connection.runtime.lifecycle];
+}
+
+/** Presentation only; the native controller independently enforces permission. */
+export function connectionActions(
+  connection: ConnectionView,
+  presentation?: DirectPresentation,
+): AccountAction[] {
+  const connected = connection.runtime.lifecycle === "connected";
+  const managed = connection.mechanism === "codex-managed";
+  const reconnect =
+    presentation?.status === "Reconnect required" || connection.runtime.lifecycle === "error";
+  const direct = (
+    label: string,
+    action: DirectTarget["action"],
+    disabled = false,
+  ): AccountAction => ({
+    label,
+    target: { kind: "direct", id: connection.connectionId, action },
+    disabled,
+  });
+  return [
+    ...(!connected
+      ? [
+          direct(
+            managed && connection.runtime.lifecycle === "auth-required"
+              ? "Sign in again"
+              : reconnect
+                ? "Reconnect"
+                : "Connect",
+            managed && connection.runtime.lifecycle === "auth-required" ? "login" : "connect",
+            presentation?.busy,
+          ),
+        ]
+      : []),
+    ...(connected ? [direct("Refresh", "refresh", presentation?.busy)] : []),
+    ...(managed && connection.runtime.lifecycle !== "auth-required"
+      ? [direct("Sign in again", "login", presentation?.busy)]
+      : []),
+    ...(connected || presentation?.cleanupPending || presentation?.busy
+      ? [direct("Disconnect", "disconnect")]
+      : []),
+  ];
+}
+
+export function quotaDuration(minutes: number): string {
+  if (minutes === 0) return "0 minutes";
+  if (minutes % 1440 === 0) return `${minutes / 1440} ${minutes === 1440 ? "day" : "days"}`;
+  if (minutes % 60 === 0) return `${minutes / 60} ${minutes === 60 ? "hour" : "hours"}`;
+  return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+}
 
 /** Duplicate aliases are disambiguated for display only. Routing always uses opaque IDs. */
 export function contextualAlias<T extends { alias: string }>(
