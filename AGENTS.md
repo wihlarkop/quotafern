@@ -1,97 +1,79 @@
-# Repository guidance
+# Quotafern — Repository Agent Instructions
 
-## Stack and commands
+**Applies to all Codex parent agents and subagents contributing to Quotafern.** Quotafern adopts Adevyn/AlgoNaru's issue-governed, dependency-aware, maximum-safe parallelism and ChatGPT-controlled review process, adapted to its **existing Tauri 2 / Rust / Svelte 5 desktop and established CI**.
 
-**Bun-only, Oxc-first, feature-first; no TDD.** Use Bun for all JavaScript installation, execution, scaffolding, scripts, and builds. Oxlint and Oxfmt are the primary lint/format tools; svelte-check supplies Svelte diagnostics. Do not introduce ESLint, Prettier CLI, or Biome.
+Before work, read the live [ROADMAP-001 #22](https://github.com/wihlarkop/quotafern/issues/22), [OPS-001 #23](https://github.com/wihlarkop/quotafern/issues/23), [QA-MANUAL-001 #24](https://github.com/wihlarkop/quotafern/issues/24), [Parallel Execution Playbook](docs/operations/parallel-execution.md), the selected issue/approved security decisions, and exact current `main` and active PRs. Historical plans describe earlier snapshots, not current live authorization.
 
-Use Tauri 2, Rust, Svelte 5, TypeScript, Vite, Bun 1.4.4, Tailwind CSS 4, local shadcn-svelte components, Bits UI, Lucide, Oxlint, and Oxfmt. Bun and Rust lockfiles are committed. Do not add Node/npm setup to project workflows.
+## 0. Authority, source of truth and owner scope (2026-11-10)
 
-Use the package scripts as the command interface:
+- **Owner:** sets product/scope, authorizes a named issue, a bounded next eligible wave or a named complete phase, and separately approves release, publication, visibility/destructive operations and real-credential work. An issue/roadmap update or a merge **does not itself authorize** implementation of the next scope.
+- **Codex parent and subagents:** implement/review their bounded assigned work; may create/update **Draft PRs only**. **Never mark ready, merge, auto-merge, tag, release, deploy or modify another owner's branches/worktrees.**
+- **ChatGPT:** final external independent code reviewer and only merger. Examine **exact PR HEAD**, diff, verified merged prerequisites, applicable QA/security evidence and current GitHub mergeability. Fix actionable blockers in the existing Draft PR and re-review its new HEAD. Merge only within owner-granted integration permission and any owner-specific acceptance gate; do not interpret this document as release authorization.
+- **Native acceptance is a separate truth:** owner-performed Windows/macOS/Linux app tests are tracked in [#24](https://github.com/wihlarkop/quotafern/issues/24). Compilation, hosted CI, browser simulation and independent source review are **not** native QA PASS. Record **PENDING / DEFERRED / NOT RUN** accurately. The owner can explicitly defer native QA for an engineering merge; otherwise preserve the acceptance gate for the active PR. Merged is never automatically release-ready.
+- **Single canonical order:** [ROADMAP-001 #22](https://github.com/wihlarkop/quotafern/issues/22) alone owns issue order, strict prerequisite DAG and parallel candidate frontiers. Individual issue bodies own feature contracts. [OPS-001 #23](https://github.com/wihlarkop/quotafern/issues/23) and the playbook own execution mechanics. Security decisions own provider-specific authorization boundaries. Do not create competing shadow roadmaps.
+- Precedence: latest explicit owner instruction → these AGENTS rules → current approved security/product decisions and ROADMAP/issue contracts → code. If an old note conflicts with merged source, inspect before applying; never silently revert current accepted behavior.
 
-```text
-bun run dev                 bun run dev:desktop
-bun run build               bun run build:desktop
-bun run lint                bun run lint:fix
-bun run fmt                 bun run fmt:check
-bun run check               bun run check:rust
-bun run regression
-bun run lint:rust           bun run fmt:rust
-```
+## 1. Product and supported technology
 
-## F1 product and security boundaries (historical baseline)
+- **Goal:** small, quick, accessible **local-first personal AI coding subscription quota monitor**, not a billing dashboard, activity estimator or general account-management system. One individual may monitor multiple of their own personal accounts, where the provider allows it. **No Team/Business/Enterprise/admin/organization seats or company-wide billing.** Explicit personal-only policy remains [SCOPE-01 #27](https://github.com/wihlarkop/quotafern/issues/27); its older Draft PR #18 must be reconciled with newer governance rather than overwriting these rules.
+- Stack: **Tauri 2, Rust, Svelte 5, TypeScript, Bun 1.4.4, Vite, Tailwind CSS 4, local shadcn-svelte/Bits UI, Lucide, Oxlint and Oxfmt**. Use Bun only for JS package install/scripts/build; do not introduce npm/Yarn/pnpm, ESLint/Prettier/Biome, a new framework, backend daemon, cloud account, telemetry or broad dependency replacements without issue and evidence.
+- Prioritize **fast boot, low idle RAM/CPU, small artifact size, accurate read-only quotas and straightforward UX**. Measure performance rather than assert percentages; preserve installed scripts and real CI quality gates.
+- Keep UI human-readable: **Overview = quota; Accounts = account management; Settings = appearance/advanced**. Avoid repeated technical labels and redundant clicks. Show only provider-reported quota/plan/credits/reset fields; unknown is never zero. Source ownership is per account/connection; never sum percentages or unverifiably shared billing wallets.
+- Demo is **clearly synthetic**, never persisted as real account data and **never used as live fallback**. The real Codex endpoint does not provide daily activity buckets; no inferred GitHub-like heatmap or session-log history. Optional research is deferred in [ACTIVITY-01 #45](https://github.com/wihlarkop/quotafern/issues/45).
+- Preserve theme, keyboard/focus, system tray Close/Show/Hide/Quit, reduced-motion and narrow 320–420px window behavior. Avoid UI redesign in unrelated performance or provider work.
 
-- F1 quota data are synthetic and visibly labeled as demo in every build, including production. Do not add an implicit mock fallback to any future provider flow.
-- F1 must not access credentials, provider HTTP, OAuth, token refresh, account synchronization, telemetry, or credential discovery.
-- Keep the quota snapshot seam in TypeScript. Do not add a redundant Rust quota model or native snapshot authority in F1.
-- At F1, persist only the non-sensitive appearance mode (`system`, `light`, `dark`) and palette (Graphite & Jade / `graphite-jade`, Zinc & Signal / `zinc-signal`) in `localStorage`, as separate preferences. The later ACC-04 exception is narrowly defined below.
-- Keep the native surface to the single `main` window. It opens visible; close hides it; tray actions are Show, Hide, and Quit. Scope the `hide_popup` permission to `main` only.
-- Keep release CSP restricted to bundled content and Tauri IPC. Development-only Vite/HMR allowances must not reach release policy.
-- Treat future CLI discovery, app-owned keychain use, provider token refresh, and sanitized snapshots as design-only until separately scoped.
+## 2. Quality policy — preserve Quotafern's existing automated checks
 
-## Quality and acceptance
+**Quotafern does NOT inherit Adevyn/AlgoNaru's blanket ban on tests/CI.** Its current deterministic regression/security assertions, focused Rust regression fixtures, source/production browser QA and Windows/macOS/Linux hosted CI are already implemented and remain important guardrails.
 
-Keep this application local-first and secure by default. Prefer minimal dependencies and small, reviewable changes. Never merge or publish a release without explicit owner approval.
+- **No TDD and no new standalone unit-test suite mandate.** Do not create a new testing framework, broad fixtures or unrelated test infrastructure unless the owner expressly authorizes it. Maintain applicable existing regressions/browser checks when changing their target behavior.
+- Required as applicable: `bun install --frozen-lockfile`, `bun run check`, `bun run lint`, `bun run fmt:check`, `bun run regression`, `bun run build`, existing `bun run qa:ux03 source` / `production`, `bun run check:rust`, `bun run lint:rust`, `bun run fmt:rust`, `bun run regression:rust`, and `bun run build:desktop --no-bundle`. Inspect script side effects before executing. Not every PR requires all checks: report what actually ran and why.
+- Keep locked Bun/Rust dependencies and existing CI unless an explicitly authorized and measured PERF issue changes scheduling without removing quality gates. PR merges require exact-HEAD CI appropriate to changes; native GUI/real login is still owner-only.
+- Developer/CI runs **must never read real provider credentials, access personal authenticated usage, copy tokens, collect live account identity or require paid accounts**. Use synthetic contract fixtures and isolated fake native/IPC processes where already established.
+- Record **PASS/FAIL/NOT RUN/BLOCKED** with reproducible command and exact HEAD. Never disguise a failed or skipped QA gate as green. Passing compilation is not proof of Windows/macOS/Linux security/process lifetime.
 
-Do not use TDD for this foundation slice. Unit suites are deferred until main features; add the regression, integration, and security checks required by those features. CI covers locked frontend quality, Rust formatting/lint/check on Linux, Windows, and macOS, and an unbundled desktop compilation. Compilation does not prove native tray behavior. Record actual browser or OS acceptance separately from CI results, and leave unexercised platform behavior explicitly pending.
+## 3. Agent models, parallelism and writer ownership
 
-## F3 Codex exception and ongoing boundaries (historical app-server route)
+- Development **parent and every child agent use Luna only**, aligning with the selected Adevyn/AlgoNaru workflow; parent **Luna High/XHigh**, children Luna Low/Medium/High as task complexity requires. Do not silently switch models. Independent Luna High review assists, but never substitutes for ChatGPT's external exact-HEAD review. This restriction concerns **agents developing Quotafern**, not AI providers monitored by the product.
+- **Maximum useful safe parallelism**, not an arbitrary numeric cap: independent READY features may run concurrently with distinct, clean branches/worktrees and disjoint read/write ownership. Assign **one accountable issue owner, one worktree/branch and one focused Draft PR per implementation issue**; helpers may take disjoint subparts under that owner.
+- **Strict post-merge dependency gate:** every strict predecessor must have been independently reviewed by ChatGPT and **MERGED into the required integration base** before dependent implementation starts. Draft PR, green CI, local changes and stacked branches do not satisfy this. No speculative downstream writing.
+- **No global wave barrier:** after a verified upstream merge, a newly READY issue within an explicitly authorized complete phase may start without waiting for unrelated siblings. A named single-wave request stops after that wave; it does not expand automatically into the next wave.
+- **Preflight writer reservations** for `AGENTS.md`, ROADMAP/OPS/ADRs, `package.json` / `bun.lock`, Cargo manifests/lock, `src/App.svelte`, shared account models/nav/state and `src/app.css`, native auth/consent/IPC/process helper/CSP, CI workflows and release metadata. Separate worktrees are **not** permission for concurrent conflicting edits. Choose one integrator/serializer where ownership overlaps.
+- Current historical exception: [PERF-01 Draft PR #21](https://github.com/wihlarkop/quotafern/pull/21) already exists as a stacked PR against [UX-03 Draft PR #20](https://github.com/wihlarkop/quotafern/pull/20). **Preserve it, do not add further stacks**, and after #20 merges carefully rebase/retarget #21 onto merged main with fresh exact-head CI and review.
 
-F1 rules above remain historical foundation boundaries. F3 separately authorizes one native Codex app-server integration after explicit in-app consent. The Rust bridge owns process/protocol communication and returns a small sanitized live presentation contract to TypeScript. No other live provider is authorized.
+## 4. Scope selection and dispatch
 
-- Start disconnected; never remember or silently restore consent. Opening a view must not initiate provider access. Manual refresh only, with a native cooldown.
-- Codex owns authentication. Never directly inspect/copy its credential files, enumerate secrets, or implement login/logout, token injection, turns, reset redemption, purchases, or a raw app-server proxy. Disclose Codex-managed refresh and possible authentication-state writes before connection.
-- No developer or CI credential access is authorized. Use synthetic protocol fixtures and isolated fake processes. Real authenticated acceptance belongs to the owner unless separately authorized.
-- Keep live and demo sources explicit and separate. A live failure must never fall back to synthetic data. Never persist provider secrets, consent/authorization, live quota, account identities or native runtime state. ACC-04 separately permits only schema-validated non-sensitive local metadata as described below.
-- Native commands are fixed, main-only operations; no renderer-controlled executable, path, arguments, filesystem access, or network URL. Keep CSP unchanged and disable optional child telemetry.
-- Review subprocess containment/cleanup and all new permissions. Never merge, deploy, publish, or release without explicit owner approval.
-- The F3 addendum permits read-only `account/usage/read` and optional credit/spending/earned-reset metadata. Never consume resets, purchase credits, change limits, or initiate inference. Calendar gaps are unknown; token counts never imply money. Unimplemented providers are Coming Soon outside explicitly labeled demos.
-- Sign in with ChatGPT identity and inference scopes are distinct from Codex monitoring authorization. Do not add OAuth or request inference scopes without evidence of the required read-only monitoring grant and a separately reviewed credential lifecycle. Keep SEC-01/SEC-02 gates in `docs/security-roadmap.md` explicit.
+1. Read [ROADMAP #22](https://github.com/wihlarkop/quotafern/issues/22), [OPS #23](https://github.com/wihlarkop/quotafern/issues/23), [QA ledger #24](https://github.com/wihlarkop/quotafern/issues/24), the named issue, current main and PR branches. Classify each: `COVERED/MERGED`, `READY`, `DRAFT_PR`, `WAITING_FOR_MERGE`, `BLOCKED`, `DEFERRED`, `OUT_OF_SCOPE`.
+2. `Execute issue #N` = one issue. `Execute next eligible issue` = first READY issue only. `Execute next eligible parallel wave in Qn` = current eligible disjoint frontier in Qn only. `Execute complete Qn` = all independently READY in Qn, advancing **only after each actual merged prerequisite**. Never interpret `next` as all phases.
+3. Before children start, record issue → parent/child Luna → base HEAD/required merged SHAs → branch/worktree → reserved files → expected outcome → true blockers. If every remaining issue is waiting on review/merge, stop and hand off, not invent audit-only busywork or run background jobs.
+4. Implement the smallest **real functioning feature**, not a speculative provider interface, mock-only milestone, broad architecture reorg or unrelated cleanup. Preserve existing active PRs and owner design choices.
+5. Run applicable existing checks, independent Luna High review, and report practical owner-native PowerShell steps. Create/update **Draft PR only**, then stop for ChatGPT review. Do not start unrequested next scope.
 
-## CODEX-LIVE-01 direct quota exception (2026-10-26)
+## 5. Native consent, Codex and provider security
 
-- Owner authorization permits native read-only reuse of the selected Codex file login after fresh native consent. This narrowly supersedes F3's credential-read/login prohibition for the separate direct adapter only. Developer/CI access to real credentials remains unauthorized.
-- Support personal Free, Go, Plus and Pro. Use only the fixed trusted HTTPS usage endpoint; no app-server polling, local session logs, copied OAuth client registration, browser cookies, token renewal implementation, inference, purchases, reset consumption or billing.
-- Codex owns authentication and credential renewal. Managed accounts use ordinary user-initiated Codex login in isolated app-owned homes, without changing system login. Never overwrite system auth or expose tokens, credential paths or native account identity to the renderer, logs or evidence.
-- ACC-04 opaque IDs bind selected native sessions; aliases never authenticate identities. Persist only non-sensitive metadata, including the managed connection mechanism. Consent and live readings remain memory-only. Remove disconnects without deleting credentials.
-- Fixed main-only commands accept validated opaque account/connection IDs and system/managed selection, never executable/path/URL/RPC input. Keep CSP and unrelated provider gates unchanged.
-- Conservative refresh is allowed only for explicitly consented connected sessions, with native cooldown/backoff and per-account cancellation. Failures never produce demo fallback or a fresh success timestamp.
-- The new native and renderer direct gates stay false until dedicated security review and required native/owner account acceptance. Old app-server gates remain false independently. See docs/security/codex-live-01.md and docs/validation/codex-live-01.md.
+- **Current merged production baseline:** [Codex PR #16](https://github.com/wihlarkop/quotafern/pull/16) enables Windows Codex monitoring. **Existing CLI** uses a pinned, supervised Codex App Server over private stdio; **managed accounts** use isolated app-owned Codex homes and bounded direct read-only HTTPS. macOS/Linux live gates remain closed pending native acceptance. Retired legacy bridges remain disabled.
+- **Rust is the security authority.** Local account aliases, localStorage, Svelte states, screenshots or knowledge of a CLI login are not authorization. Fixed native IPC commands and opaque ID/generation binding, platform gate, executable integrity/path checks, helper process containment, account isolation, strict file permissions and sanitization remain enforced. No renderer-controlled arbitrary executable, URL, filesystem, shell, RPC or secrets.
+- The **isolated Rust-owned Svelte consent window** is a single-use, expiring native challenge. A manually approved successful read may persist a minimal native **remembered monitoring grant** for future launches; old or absent grants never auto-upgrade. Auto-reconnect is allowed **only with a valid grant**. Manual Disconnect durably revokes that permission and does not log out of Codex; Quit cleans up Quotafern-owned processes without erasing an acknowledged remembered grant. No automatic login, logout or account switch.
+- Preserve **Remote Control disabled** for supervised app-server, no unintended listeners, bounded timeouts/requests, correct cancellation/backoff, cooldown/refresh and no orphaned child processes. Do not weaken this for start speed or a Windows ACL workaround. Never automatically edit a user's system credential DACL.
+- Codex may manage its own normal authentication/token renewal after consent. Quotafern does not export/store raw credentials or emulate provider OAuth clients. No purchase, inference, billing changes, reset credit redemption or provider-private polling added without a separately reviewed scope.
+- **Claude Code subscription live monitoring is currently NO-GO** under [Claude research #29](https://github.com/wihlarkop/quotafern/issues/29) until an official, permitted read-only personal quota route is demonstrated. Do not scrape Claude Code OAuth tokens or private endpoints. Gemini, Copilot, OpenCode and OpenRouter research are separate PAUSED issues, not permission for live work. App-owned API keys require separate OS-protected credential design. SCOPE-01 forbids organizational monitoring.
+- Do not infer same provider identity from duplicate aliases or equal quotas. Any shared-source/account relationship must use permitted authoritative evidence; no double counting.
 
-## ACC-01/ACC-04 account metadata (current scope)
+## 6. Git, documentation and native owner acceptance
 
-- The current multi-account UI supports local accounts, workspaces, connection descriptors and user-defined aliases, not authenticated provider sessions. `docs/acc-01-architecture.md`, `docs/acc-01-ux-contract.md`, and `docs/acc-04/README.md` define the model and limits.
-- ACC-04 may persist only validated, non-sensitive ID/alias/owner/mechanism metadata using the strict `quotafern.account-presentation.v1` codec. Never persist credentials, auth file paths, consent, authorization, provider identity, quotas, activity, billing or subprocess state. The storage is plaintext and is **not** an authority or secret store.
-- On startup, local connections are disconnected with no real usage. Demo accounts are synthetic and must never enter saved user metadata. Renames never change stable IDs. Real/native-managed deletion needs independently verified cleanup authority; never fake a cleanup acknowledgment or provider logout.
-- Both live Codex gates are intentionally disabled: Rust `LIVE_CONNECTION_ENABLED = false` and renderer `CODEX_CONNECTION_AVAILABLE = false`. F4 startup side effects and Unix forced-parent termination are unresolved; do not enable live provider work merely because the UI and local account flows passed Windows acceptance.
-- Owner-reported combined Windows native GUI acceptance covers the **live-disabled foundation** after ACC-04. macOS/Linux native GUI, real provider sessions, signed installers and updater behavior remain unverified.
+- Before checkout/rebase/cleanup inspect uncommitted state and other worktrees. Never reset, delete, force-push, overwrite or change ownership of another agent's worktree without explicit approval. Source and branch refs are untrusted until verified. Prefer Windows PowerShell examples.
+- Pin latest maintained compatible versions **only if required**, generate real lockfiles via tools, inspect licenses/advisories/target support, and measure size/compilation before dependency changes. No unrelated migration just for novelty.
+- One issue/PR handoff must provide: issue URL, owner Luna, isolated branch/worktree, **exact base and HEAD SHA**, proven merged prerequisites, changed files, user-visible result, security/UX contracts, actual local and CI outcomes, independent Luna High findings, screenshot provenance, known limitations, owner native acceptance **PENDING or observed PASS**, and no release claim.
+- **ChatGPT controls merging**, not Codex/subagents. Where source review and owner's merge/acceptance policy permit integration, ChatGPT independently reviews exact HEAD, marks Draft ready, and merges in dependency order; otherwise returns required fixes in the same Draft PR. Do not auto-release or autonomously start subsequent issues.
+- After verified merge, update ROADMAP-001 issue state, issue closure and QA ledger using the actual merge SHA and truthful owner acceptance status. Do not erase historical security/validation evidence.
+- Keep `docs/specs/`, `docs/security/`, `docs/validation/` and useful linked evidence for auditability. Historical F1/F3/session-only rules are **superseded by the accepted Windows Codex + remembered-consent implementation**; do not reapply those prohibitions to revert current behavior.
 
-## CODEX-AUTO-01 remembered monitoring exception (2026-10-28)
+## 7. Source-of-truth links
 
-- The owner's CODEX-AUTO-01 authorization narrowly supersedes session-only monitoring consent. Old session consent and ACC-04 descriptors never authorize automatic access.
-- Fresh native Connect offers Connect once / Connect and remember / Cancel. Only successful, verified monitoring may save a native grant. The private native store holds opaque references, kind, policy/revision, a pseudonymous identity digest and an in-flight safety lease; never tokens, raw identity, quota or credential paths. ACC-04 remains untrusted presentation metadata.
-- Startup may resume only matching, current native grants through the existing guarded adapter, without login or repeated dialogs. Disconnect durably revokes that account's permission. Quit stops owned resources and preserves explicit permission after bounded safe cleanup acknowledgement; crashes or unacknowledged/terminal failures require manual reconnection.
-- Preserve pinned executable/startup policy, Remote Control prevention, private transport, account isolation, native cooldown and three-minute refresh. Retry only typed transient failures with bounded backoff; unknown App Server failures remain terminal.
-- No system ACL changes, automatic login/logout, launch-at-login or unrelated tray changes. Acceptance gates remain local; production patch gates remain disabled. See `docs/security/codex-auto-01.md`.
+- [ROADMAP-001 #22](https://github.com/wihlarkop/quotafern/issues/22): only canonical issue queue, strict DAG and parallel frontiers.
+- [OPS-001 #23](https://github.com/wihlarkop/quotafern/issues/23): Codex/ChatGPT review workflow and issue bookkeeping.
+- [QA-MANUAL-001 #24](https://github.com/wihlarkop/quotafern/issues/24): native Windows/macOS/Linux acceptance debt.
+- [Parallel Execution Playbook](docs/operations/parallel-execution.md): exact dispatch and single-writer reservations.
+- [Product scope #27](https://github.com/wihlarkop/quotafern/issues/27), [Codex Windows validation](docs/validation/codex-merge-prep-01.md), [security decisions](docs/security/), [UX-03 #25](https://github.com/wihlarkop/quotafern/issues/25) and [PERF-01 #26](https://github.com/wihlarkop/quotafern/issues/26).
 
-## Svelte consent simplification (2026-10-28)
-
-- Owner approved the isolated Svelte/Tauri consent design and then requested replacement of all app-owned OS message boxes. Manual Connect now means remembered monitoring permission; Cancel/close/Escape never approve. Old session-only consent is not upgraded.
-- Rust creates one dedicated `codex-consent` child with a separate bundled entry and only prompt/confirm/cancel IPC. Main cannot approve its own request; child cannot access provider or general window APIs. Challenges are native, random, one-time, expiring and bound to the current account/connection/kind/generation. Main is disabled while the dialog is active and re-enabled on bounded cleanup.
-- Permission is still saved only after a successful verified read. Direct adapters, native identity/ACL checks, private helper and three-minute refresh remain unchanged. Policy version 4 invalidates previous grants for renewed consent.
-- No app-owned OS message-box fallback. If the custom native window cannot be safely created/focused/cleaned, monitoring fails closed. Retired legacy integration remains disabled and refuses authorization. Codex/browser-owned authentication windows are outside Quotafern's UI authority.
-- This narrowly permits the additional consent window; the main tray popup and main-only provider capabilities remain unchanged. See `docs/security/connect-consent-svelte.md`. No production activation, commit/push/merge/release.
-
-## CODEX-MERGE-PREP-01 final Windows scope (2026-10-28)
-
-- Latest owner authorization supersedes earlier acceptance-only/always-false direct-gate instructions: enable the reviewed live implementation on Windows with native `cfg!(windows)`; renderer platform availability is advisory. macOS/Linux live access stays closed pending native acceptance. Both retired legacy gates remain false.
-- Existing System uses only the reviewed private pinned helper over supervised stdio; managed accounts keep isolated direct HTTP. No shared-daemon attachment or automatic unreviewed helper fallback. No system ACL or credential changes.
-- Keep isolated Rust-owned Svelte consent, native remembered authority, identity binding, three-minute refresh, cancellation, Remote Control disable/status, listener guard and owned-job cleanup. Remove production startup probes/receipt writers and endpoint observations; retain synthetic regressions. Tests must not rewrite live gates or access real credentials.
-- Owner confirms full Windows System/managed Plus/Free, multi-account/Refresh all, Disconnect/Reconnect, persistent consent/relaunch auto-reconnect and Svelte consent PASS. See `docs/validation/codex-merge-prep-01.md` for limits and exact validation/review provenance.
-- Commit/push/update Draft PR #16 and await exact-commit three-OS CI are authorized. Never merge, tag, release or modify unrelated PRs/worktrees. Earlier contrary scope statements remain historical.
-
-## Documentation hygiene
-
-- Keep `docs/superpowers/plans/`, architecture/security decisions, roadmap contracts, and acceptance evidence needed for audit or reproducibility.
-- A screenshot without an explicit Markdown link may still be used by a dynamically named browser capture or JSON results. `source-` and `production-` screenshots may be byte-identical but carry separate test provenance. Do not delete based on filenames or file hashes alone.
-- Future milestones should curate their canonical linked screenshots and use temporary/CI artifacts for nonessential exploratory captures. Before deleting existing files, verify scripts, result artifacts, Markdown references and test reproduction together.
-- Keep public README descriptions aligned with implemented milestones; historical F1/F2/F3 evidence should remain historically accurate, not retroactively edited to claim native or live acceptance.
+**Operating principle:** explicit bounded owner scope → maximum safe *actually READY* feature parallelism → one isolated Draft PR per issue → independent exact-HEAD ChatGPT review and owner-governed merge → truthful separately tracked manual acceptance. Never substitute tooling or mock output for a real supported quota source.
