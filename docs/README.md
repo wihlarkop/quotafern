@@ -1,5 +1,13 @@
 # Documentation
 
+## Roadmap and agent workflow
+
+- [Canonical execution roadmap (ROADMAP-001)](https://github.com/wihlarkop/quotafern/issues/22) — **the** source for issue order, strict dependencies and parallel frontiers.
+- [Agent policy](../AGENTS.md) and [parallel execution playbook](operations/parallel-execution.md) — Luna-only issue ownership, safe worktrees, shared-file serialization and Draft PR handoff.
+- [OPS-001](https://github.com/wihlarkop/quotafern/issues/23) — ChatGPT exact-HEAD review/merge process.
+- [QA-MANUAL-001](https://github.com/wihlarkop/quotafern/issues/24) — owner-native Windows/macOS/Linux acceptance ledger; CI is not native QA.
+
+
 Quotafern documentation is grouped by purpose; use the links below instead of searching old PR-specific folders.
 
 - [Specifications](specs/): architecture, ACC-01 contracts, account management, visual design and ICON-01.
