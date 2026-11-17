@@ -1,4 +1,4 @@
-# Quotafern â€” Repository Agent Instructions
+# Quotafern — Repository Agent Instructions
 
 **Applies to all Codex parent agents and subagents contributing to Quotafern.** Quotafern adopts Adevyn/AlgoNaru's issue-governed, dependency-aware, maximum-safe parallelism and ChatGPT-controlled review process, adapted to its **existing Tauri 2 / Rust / Svelte 5 desktop and established CI**.
 
@@ -11,7 +11,7 @@ Before work, read the live [ROADMAP-001 #22](https://github.com/wihlarkop/quotaf
 - **ChatGPT:** final external independent code reviewer and only merger. Examine **exact PR HEAD**, diff, verified merged prerequisites, applicable QA/security evidence and current GitHub mergeability. Fix actionable blockers in the existing Draft PR and re-review its new HEAD. Merge only within owner-granted integration permission and any owner-specific acceptance gate; do not interpret this document as release authorization.
 - **Native acceptance is a separate truth:** owner-performed Windows/macOS/Linux app tests are tracked in [#24](https://github.com/wihlarkop/quotafern/issues/24). Compilation, hosted CI, browser simulation and independent source review are **not** native QA PASS. Record **PENDING / DEFERRED / NOT RUN** accurately. The owner can explicitly defer native QA for an engineering merge; otherwise preserve the acceptance gate for the active PR. Merged is never automatically release-ready.
 - **Single canonical order:** [ROADMAP-001 #22](https://github.com/wihlarkop/quotafern/issues/22) alone owns issue order, strict prerequisite DAG and parallel candidate frontiers. Individual issue bodies own feature contracts. [OPS-001 #23](https://github.com/wihlarkop/quotafern/issues/23) and the playbook own execution mechanics. Security decisions own provider-specific authorization boundaries. Do not create competing shadow roadmaps.
-- Precedence: latest explicit owner instruction â†’ these AGENTS rules â†’ current approved security/product decisions and ROADMAP/issue contracts â†’ code. If an old note conflicts with merged source, inspect before applying; never silently revert current accepted behavior.
+- Precedence: latest explicit owner instruction → these AGENTS rules → current approved security/product decisions and ROADMAP/issue contracts → code. If an old note conflicts with merged source, inspect before applying; never silently revert current accepted behavior.
 
 ## 1. Product and supported technology
 
@@ -20,9 +20,9 @@ Before work, read the live [ROADMAP-001 #22](https://github.com/wihlarkop/quotaf
 - Prioritize **fast boot, low idle RAM/CPU, small artifact size, accurate read-only quotas and straightforward UX**. Measure performance rather than assert percentages; preserve installed scripts and real CI quality gates.
 - Keep UI human-readable: **Overview = quota; Accounts = account management; Settings = appearance/advanced**. Avoid repeated technical labels and redundant clicks. Show only provider-reported quota/plan/credits/reset fields; unknown is never zero. Source ownership is per account/connection; never sum percentages or unverifiably shared billing wallets.
 - Demo is **clearly synthetic**, never persisted as real account data and **never used as live fallback**. The real Codex endpoint does not provide daily activity buckets; no inferred GitHub-like heatmap or session-log history. Optional research is deferred in [ACTIVITY-01 #45](https://github.com/wihlarkop/quotafern/issues/45).
-- Preserve theme, keyboard/focus, system tray Close/Show/Hide/Quit, reduced-motion and narrow 320â€“420px window behavior. Avoid UI redesign in unrelated performance or provider work.
+- Preserve theme, keyboard/focus, system tray Close/Show/Hide/Quit, reduced-motion and narrow 320–420px window behavior. Avoid UI redesign in unrelated performance or provider work.
 
-## 2. Quality policy â€” preserve Quotafern's existing automated checks
+## 2. Quality policy — preserve Quotafern's existing automated checks
 
 **Quotafern does NOT inherit Adevyn/AlgoNaru's blanket ban on tests/CI.** Its current deterministic regression/security assertions, focused Rust regression fixtures, source/production browser QA and Windows/macOS/Linux hosted CI are already implemented and remain important guardrails.
 
@@ -45,7 +45,7 @@ Before work, read the live [ROADMAP-001 #22](https://github.com/wihlarkop/quotaf
 
 1. Read [ROADMAP #22](https://github.com/wihlarkop/quotafern/issues/22), [OPS #23](https://github.com/wihlarkop/quotafern/issues/23), [QA ledger #24](https://github.com/wihlarkop/quotafern/issues/24), the named issue, current main and PR branches. Classify each: `COVERED/MERGED`, `READY`, `DRAFT_PR`, `WAITING_FOR_MERGE`, `BLOCKED`, `DEFERRED`, `OUT_OF_SCOPE`.
 2. `Execute issue #N` = one issue. `Execute next eligible issue` = first READY issue only. `Execute next eligible parallel wave in Qn` = current eligible disjoint frontier in Qn only. `Execute complete Qn` = all independently READY in Qn, advancing **only after each actual merged prerequisite**. Never interpret `next` as all phases.
-3. Before children start, record issue â†’ parent/child Luna â†’ base HEAD/required merged SHAs â†’ branch/worktree â†’ reserved files â†’ expected outcome â†’ true blockers. If every remaining issue is waiting on review/merge, stop and hand off, not invent audit-only busywork or run background jobs.
+3. Before children start, record issue → parent/child Luna → base HEAD/required merged SHAs → branch/worktree → reserved files → expected outcome → true blockers. If every remaining issue is waiting on review/merge, stop and hand off, not invent audit-only busywork or run background jobs.
 4. Implement the smallest **real functioning feature**, not a speculative provider interface, mock-only milestone, broad architecture reorg or unrelated cleanup. Preserve existing active PRs and owner design choices.
 5. Run applicable existing checks, independent Luna High review, and report practical owner-native PowerShell steps. Create/update **Draft PR only**, then stop for ChatGPT review. Do not start unrequested next scope.
 
@@ -91,5 +91,4 @@ Before work, read the live [ROADMAP-001 #22](https://github.com/wihlarkop/quotaf
 - [Parallel Execution Playbook](docs/operations/parallel-execution.md): exact dispatch and single-writer reservations.
 - [Product scope #27](https://github.com/wihlarkop/quotafern/issues/27), [Codex Windows validation](docs/validation/codex-merge-prep-01.md), [security decisions](docs/security/), [UX-03 #25](https://github.com/wihlarkop/quotafern/issues/25) and [PERF-01 #26](https://github.com/wihlarkop/quotafern/issues/26).
 
-**Operating principle:** explicit bounded owner scope â†’ maximum safe _actually READY_ feature parallelism â†’ one isolated Draft PR per issue â†’ independent exact-HEAD ChatGPT review and owner-governed merge â†’ truthful separately tracked manual acceptance. Never substitute tooling or mock output for a real supported quota source.
-
+**Operating principle:** explicit bounded owner scope → maximum safe _actually READY_ feature parallelism → one isolated Draft PR per issue → independent exact-HEAD ChatGPT review and owner-governed merge → truthful separately tracked manual acceptance. Never substitute tooling or mock output for a real supported quota source.
